@@ -1,0 +1,1368 @@
+Title: Self-Supervised Learning for Speaker Recognition: A study and review
+
+URL Source: https://arxiv.org/pdf/2602.10829v1
+
+Published Time: Thu, 12 Feb 2026 01:56:58 GMT
+
+Number of Pages: 27
+
+Markdown Content:
+# Self-Supervised Learning for Speaker Recognition: A study and review 
+
+Theo Lepage ∗, Reda Dehak 
+
+> EPITA Research Laboratory (LRE), France
+
+Abstract 
+
+Deep learning models trained in a supervised setting have revolutionized audio and speech processing. However, their performance inherently depends on the quantity of human-annotated data, making them costly to scale and prone to poor generalization under unseen conditions. To address these challenges, Self-Supervised Learning (SSL) has emerged as a promising paradigm, leveraging vast amounts of unlabeled data to learn relevant representations. The application of SSL for Automatic Speech Recognition (ASR) has been extensively studied, but research on other downstream tasks, notably Speaker Recognition (SR), remains in its early stages. This work describes major SSL instance-invariance frameworks (e.g., SimCLR, MoCo, and DINO), initially developed for computer vision, along with their adaptation to SR. Various SSL methods for SR, proposed in the literature and built upon these frameworks, are also presented. An extensive review of these approaches is then conducted: (1) the e ff ect of the main hyperparameters of SSL frameworks is investigated; (2) the role of SSL components is studied (e.g., data-augmentation, projector, positive sampling); and (3) SSL frameworks are evaluated on SR with in-domain and out-of-domain data, using a consistent experimental setup, and a comprehensive comparison of SSL methods from the literature is provided. Specifically, DINO achieves the best downstream performance and e ff ectively models intra-speaker variability, although it is highly sensitive to hyperparameters and training conditions, while SimCLR and MoCo provide robust alternatives that e ff ectively capture inter-speaker variability and are less prone to collapse. This work aims to highlight recent trends and advancements, identifying current challenges in the field. 
+
+Keywords: Self-Supervised Learning, Speaker Recognition, Speaker Representations, Speech Processing 
+
+1. Introduction 
+
+Speaker Recognition (SR) refers to the task of determining a person’s identity based on voice characteristics, making it a fundamental aspect of speech processing. It encompasses two main objectives: Speaker Identification (SID), which assigns an unknown voice to one of several enrolled speakers, and Speaker Verification (SV), which determines whether an unknown voice matches a claimed identity. SR has numerous applications, in-cluding forensic analysis, access control, and security systems, where voice-based authentication o ff ers an alternative to tradi-tional biometric modalities, such as fingerprints or facial recog-nition [1]. This work focuses exclusively on SV, as it aligns with the primary applications of SR in real-world systems. The common principle behind SV methods is to learn speech representations that maximize inter-speaker distances and min-imize intra-speaker variances, while ensuring robustness to ex-trinsic variabilities, such as speech context and emotion, noise, environment, recording, and channel conditions. These sys-tems have undergone significant evolution, transitioning from statistical modeling to deep learning approaches. Early meth-ods relied on the i-vector [2], a compact representation de-rived from a probabilistic framework involving Gaussian Mix-ture Models (GMM) and Universal Background Models (UBM)      
+
+> ∗Corresponding author
+> Email addresses: theo.lepage@epita.fr (Theo Lepage ),
+> reda.dehak@epita.fr (Reda Dehak )
+
+[3]. Along with the emergence of deep learning, the x-vector [4] approach was proposed to learn speaker representations by training a Deep Neural Network (DNN) to match speech utter-ances to their correct speaker identities in a supervised manner. Traditional machine learning methods, which combined front-end feature extraction and back-end scoring systems, have been surpassed by end-to-end DNN-based models, where scoring is performed by computing the cosine similarity between speaker representations [5]. Other model architectures, such as VGG [6], ResNet [7], ECAPA-TDNN [8], Res2Net [9], and MFA-Conformer [10], have also been applied, and subsequent ad-vancements have refined these methods by exploring improved pooling strategies and training objectives [11, 12, 13]. These developments have been driven by SR labeled datasets, such as the NIST SRE corpora [14] and VoxCeleb [6, 15]. However, as with many deep learning approaches, the performance of these systems scales with larger amounts of training data [16]. This reliance on vast labeled datasets poses a significant challenge, as annotated samples are often scarce and costly to obtain, lim-iting the scalability and accessibility of these methods. Self-Supervised Learning (SSL) methods have been devel-oped to overcome this limitation by enabling models to learn relevant representations directly from the input data without human supervision. SSL has demonstrated its ability to im-prove scalability by exploiting the vast amounts of unlabeled data that are readily available. The standard framework in-volves training models on a general pretext task and apply-ing the learned representations to a downstream task for spe- 
+
+> Preprint submitted to Speech Communication February 12, 2026
+> arXiv:2602.10829v1 [eess.AS] 11 Feb 2026
+
+cific applications, with an optional supervised fine-tuning step. SSL demonstrated its potential in Natural Language Process-ing (NLP) with models such as BERT [17], leveraging se-quence prediction pretext objectives, which consist of predict-ing masked parts of a sequence ( masked language modeling ). The same strategy was widely adopted in Speech Processing (SP), particularly for Automatic Speech Recognition (ASR), leading to models such as wav2vec 2.0 [18], HuBERT [19], UniSpeech [20], data2vec [21], and WavLM [22]. These ap-proaches represent milestones in self-supervised speech repre-sentation learning, as they demonstrated that models can learn meaningful acoustic and linguistic structures directly from raw waveforms. Early work such as Contrastive Predictive Cod-ing (CPC) [23] and the original wav2vec model [24] laid the groundwork by introducing contrastive learning objectives to predict future latent representations. Subsequent frameworks extended this concept of predicting masked or missing infor-mation: wav2vec 2.0 [18] employs a contrastive objective on masked latent representations, while HuBERT [19] predicts dis-crete cluster assignments for masked frames. More recent mod-els, such as WavLM [22], further advance this paradigm by in-tegrating robust pretraining strategies that improve generaliza-tion across diverse speech domains and noisy conditions. This line of research established self-supervised pretraining as a cor-nerstone of modern ASR systems. In Computer Vision (CV), SSL primarily relies on instance-invariance pretext objectives, which involve maximizing the similarity between representa-tions of the same class, encompassing various paradigms such as contrastive learning , clustering , information maximization ,and self-distillation . SimCLR [25], MoCo [26], and DINO [27] are some examples of these frameworks and will be covered in further detail in the following. SSL has also been successfully applied to SV, with two main strategies emerging: (1) fine-tuning a large-scale SSL founda-tion model, pre-trained on speech data, with speaker identity labels [28, 29, 30, 31] and (2) training an SSL model on unla-beled data and directly using the learned representations on SV. Although the former achieves state-of-the-art performance, it is not the focus of this work because it relies on annotated sam-ples. The latter approach is based on SSL instance-invariance 
+
+frameworks, drawing parallels to CV, where similar methods are used for downstream tasks related to image processing. Note that SV does not require fine-tuning the SSL model, un-like many downstream tasks (e.g., classification, segmentation, transcription), since verification scores can be inferred directly from the representations due to the similarity between the pre-text and downstream tasks. SSL frameworks for instance-invariance are based on the 
+
+joint-embedding architecture (Figure 1(a)), generating repre-sentations from an anchor and a positive sample derived from distinct augmented views of the same input, thereby repre-senting the same high-level attributes [32]. These methods aim to maximize the similarity of anchor -positive pairs and employ di ff erent mechanisms to prevent a collapsing solution (i.e., a trivial solution leading to non-informative representa-tions). In the context of SV, the fundamental assumption is that the anchor and positive originate from the same speaker iden-tity, since both are extracted from the same speech utterance. Therefore, providing di ff erent versions of the same input audio with data-augmentation is fundamental for learning robust rep-resentations that primarily capture speaker identity rather than extrinsic information (e.g., noise conditions, room acoustics, microphone characteristics, transmission system, compression codecs) invariant within utterances [33, 34, 35]. Contrastive learning frameworks, such as CPC [23], Sim-CLR [25], and MoCo [26], aim to maximize the similarity of anchor-positive pairs while minimizing the similarity of anchor-negative pairs, where negatives are sampled from all other ut-terances within the current training batch or a memory queue. Clustering frameworks, like DeepCluster [36] and SwAV [37], learn by grouping representations into clusters and using the re-sulting assignments as supervisory signals. Information maxi-mization frameworks, such as W-MSE [38], Barlow Twins [39], and VICReg [40], impose statistical constraints on the embed-dings to ensure invariance between anchor and positive em-beddings while explicitly preventing collapse. Self-distillation frameworks, like BYOL [41], SimSiam [42], and DINO [27], are based on knowledge distillation and the student-teacher paradigm, where the student model learns to predict the out-put of the teacher model, while the latter is bootstrapped from the former and iteratively refined. Based on these SSL frameworks, various methods have been developed specifically for SV, which can be categorized into 
+
+single-stage and multi-stage approaches. Single-stage methods correspond to models trained with an SSL objective. Multi-stage methods correspond to models trained using pseudo-labels generated from a single-stage SSL model in a supervised fashion. Most of the methods are based on contrastive learning 
+
+[43, 33, 34, 44] and self-distillation [45, 46, 47, 48, 49] since DINO is currently at the core of state-of-the-art approaches. The focus of single-stage methods has been to complement tra-ditional SSL frameworks through various aspects, such as re-ducing the encoding of channel information [43, 50], devel-oping new positive sampling strategies [51, 47, 52], improv-ing speaker separability [44], addressing class collisions [34], and evaluating the complementarity of di ff erent frameworks [35, 53, 46]. Most multi-stage methods have been proposed for the SSL tracks of the VoxCeleb Speaker Recognition Challenge (VoxSRC) [54] and aim to mitigate label noise from unreliable pseudo-labels [55, 56, 57, 58] or rely on multi-modal audio-visual representations [59, 51, 47] to further enhance down-stream performance. Given the growing interest in SSL, several reviews have been published covering the technology [60, 32, 61], as well as its applications in NLP [62, 63, 64], CV [65], and SP [66, 67]. A brief overview of SSL self-distillation methods for SV has been published [68]. However, none of these works provides a dedicated and extensive analysis of SSL for SV. Several aspects of SSL remain unclear in this context, including its underlying mechanisms, key properties, and limitations. The community has developed numerous methods, yet no clear direction or con-sensus has emerged regarding the best approaches to consider. Therefore, this work presents the first review and study of the application of SSL to the downstream task of SV. 2The contributions of this work are outlined below: 
+
+• A comprehensive comparison of all major SSL frame-works on SV benchmarks, evaluated under consistent ex-perimental conditions; 
+
+• An overview and comparison of single- and multi-stage SSL methods for SV from the literature; 
+
+• An analysis of the e ff ect of key hyperparameters in SSL frameworks (e.g., number of negatives, temperatures, mo-mentum update coe ffi cient); 
+
+• A study of the role of various SSL components (e.g., data-augmentation, projector, positive sampling); 
+
+• The identification of the primary bottlenecks in current SSL approaches, with several suggestions for future re-search directions. 
+
+• sslsv 1: an open-source PyTorch-based toolkit for training and evaluating SSL frameworks on SV, which enables the reproduction of all results presented in this article. The content of this article is organized as follows. First, major SSL frameworks are presented and applied to SV (Sec-tion 2). Then, an overview of single- and multi-stage SSL meth-ods for SV, proposed in the literature, is provided (Section 3). Subsequently, the experimental setup is described (Section 4), followed by an investigation into the role of SSL hyperparame-ters (Section 5) and a detailed study of the core components of SSL frameworks (Section 6). Then, SSL frameworks are eval-uated and various SSL methods for SV are compared on Vox-Celeb benchmarks (Section 7). Finally, the article concludes and discusses future research directions (Section 8). 
+
+2. Self-Supervised Learning Frameworks 
+
+The SSL training framework adopts the joint-embedding ar-chitecture, depicted in Figure 1(a), to generate a pair of repre-sentations and a pair of embeddings from an unlabeled audio waveform. The objective is to maximize the similarity of dif-ferent views of the same input in latent space, by assuming that each training sample contains speech from a single speaker. Let I ≡ { 1, . . . , N} be the indices of the training set of N
+
+samples. At each iteration, B utterances are sampled to cre-ate a batch with indices B ⊆ I . From each utterance ui with 
+
+i ∈ B , two segments, denoted by xi (anchor ) and x′ 
+
+> i
+
+(posi-tive ), are randomly extracted. Random data-augmentation pre-processing is applied to both segments, and their mel-scaled spectrogram features are used as input for the model. Apply-ing data-augmentation to generate di ff erent views of the same input audio, commonly through background noise addition and reverberation, is essential for emphasizing speaker identity over extrinsic factors, which are invariant within utterances.    
+
+> 1The sslsv toolkit used to conduct all experiments presented in this article is publicly available at https://github.com/theolepage/sslsv .
+
+The joint-embedding architecture comprises two branches: (1) encoder fθ and projector gϕ; (2) encoder fθ′ and projec-tor gϕ′ . f and g share the same architecture across branches. The encoders fθ and fθ′ create representations yi = fθ(xi) and 
+
+y′ 
+
+> i
+
+= fθ′ (x′ 
+
+> i
+
+) of dimension Dr. The projectors gϕ and gϕ′ cre-ate embeddings zi = gϕ(yi) and z′ 
+
+> i
+
+= gϕ′ (y′ 
+
+> i
+
+) of dimension De.The representations are used for the SV downstream task (Fig-ure 1(b)), while the embeddings are used to compute the objec-tive function L during training (Figure 1(a)). The projector is discarded for some frameworks, since it degrades performance, as detailed in Section 6.4, in which case g is the identity func-tion (i.e., embeddings are identical to representations). The default training scheme adopts the symmetrical ver-sion of the architecture where the weights are shared across branches: θ′ = θ and ϕ′ = ϕ. The asymmetrical variant (i.e., MoCo, BYOL, and DINO) dissociates the two branches, with the first referred to as student or query , and the second as 
+
+teacher or key . In this case, no gradient is propagated through the second branch, via a stop-gradient (sg) operation, and the weights of the second branch are updated using an Exponen-tial Moving Average (EMA) of the weights of the first branch: 
+
+θ′ ← mθ′ + (1 − m)θ and ϕ′ ← mϕ′ + (1 − m)ϕ, with m ∈ [0 , 1) the momentum update factor. As batches of utterances are processed during training, the following notations are introduced: X = {xi}i∈B , X′ = {x′ 
+
+> i
+
+}i∈B ,
+
+Y = {yi}i∈B , Y′ = {y′ 
+
+> i
+
+}i∈B , Z = {zi}i∈B , and Z′ = {z′ 
+
+> i
+
+}i∈B .In the following, zi is the i-th embedding of Z, zd is the d-th dimension of embeddings in Z, and ℓ(a, b) = exp (sim ( a, b) /τ )where τ is a temperature hyperparameter and sim( a, b) is the cosine similarity between the vectors a and b.This section presents the main SSL instance-invariance 
+
+frameworks from di ff erent paradigms, which have initially been proposed for CV downstream tasks: contrastive learning (Sec-tion 2.1), clustering (Section 2.2), information maximization 
+
+(Section 2.3), and self-distillation (Section 2.4). These frame-works aim to maximize the similarity of anchor -positive pairs, representing the same speaker identity, and rely on di ff erent techniques to prevent collapse. A conceptual comparison of these approaches is provided in Figure 2. 
+
+2.1. Contrastive learning 
+
+Contrastive learning frameworks (Figure 2(a)) aim at max-imizing the similarity of anchor-positive pairs while minimiz-ing the similarity of anchor-negative pairs, where negatives are sampled from the training batch or a larger memory queue by assuming that they belong to a distinct speaker identity. The impact of “class collisions” (i.e., false negatives arising from random negative sampling) is generally considered negligible. The existence of negatives pairs is the main component prevent-ing collapse, as demonstrated in Section 6.1. 
+
+2.1.1. CPC 
+
+CPC ( Contrastive Predictive Coding ) [23, 69] learns repre-sentations by predicting future frames in latent space using ag-gregated information from past frames. The contrastive loss in-duces the latent space to capture the most valuable information 3Batch of unlabeled audio waveforms                     
+
+> Data-augmentation
+> Data-augmentation
+> Encoder
+> Encoder
+> Projector
+> Projector
+> Noise
+> Reverb IR
+> 1
+> 2
+> Representations Embeddings
+> Loss (a) Training (Pretext task) Encoder Encoder
+> Score
+> Cosine scoring (b) Evaluation (Downstream task)
+> Figure 1: SSL framework for SV . The training (a) is performed on a pretext task to learn relevant representations, which will be used to perform the evaluation (b)
+> on the downstream task. The training framework adopts the joint-embedding architecture to generate a pair of embeddings ( anchor and positive ) from an unlabeled audio waveform.
+
+for predicting future timesteps. Unlike all other frameworks, CPC processes frame-level representations of utterances. Let T
+
+be the total number of timesteps and t0 the timestep from which predictions will be made. The encoder outputs representations 
+
+{y(t) 
+
+> i
+
+}1≤t≤T from xi and {y′(t) 
+
+> i
+
+}1≤t≤T from x′ 
+
+> i
+
+. An autoregressive model gϕ transforms {y(t) 
+
+> i
+
+}1≤t≤t0 to z(t) and a predictor model hψ
+
+maps z(t) to predictions {p(t) 
+
+> i
+
+}t0+1≤t≤T . The LCPC loss is defined as: 
+
+LCPC = − 1
+
+B · T
+
+X
+
+> i∈B
+> T
+
+X
+
+> t=t0+1
+
+log ℓ p(t) 
+
+> i
+
+, y′(t)
+
+> i
+
+P
+
+> j∈B
+
+ℓ p(t) 
+
+> i
+
+, y′(t)
+
+> j
+
+ . (1) 
+
+2.1.2. SimCLR 
+
+SimCLR [25, 70] is a simple contrastive framework where negatives are sampled from the current batch. Each anchor-positive pair is associated with B − 1 anchor-negative pairs. The LSimCLR loss, referred to as the NT-Xent (Normalized Temperature-scaled Cross Entropy) objective function in the original paper [25], is defined as: 
+
+LSimCLR = − 1
+
+B
+
+X
+
+> i∈B
+
+log ℓ zi, z′
+
+> i
+
+P
+
+> j∈B
+
+ℓ zi, z′j
+
+ . (2) Note that the implementation is symmetric, resulting in 2 B pos-itive pairs with 2( B − 1) negative pairs each. 
+
+2.1.3. MoCo 
+
+MoCo [26, 71] is a contrastive learning approach employ-ing the asymmetrical joint-embedding architecture and a large memory queue QMoCo of embeddings from previous iterations to increase the number of negative pairs further. The queue is updated at each training step with embeddings from the key branch. Each anchor-positive pair is associated with |QMoCo |
+
+negatives such that |QMoCo | ≫ B. The LMoCo loss is defined as: 
+
+LMoCo = − 1
+
+B
+
+X
+
+> i∈B
+
+log ℓ zi, z′
+
+> i
+
+
+
+ℓ zi, z′
+
+> i
+
+ + P
+
+> j∈J
+
+ℓ zi, q j
+
+ , (3) where J ≡ { 1, . . . , |QMoCo |} are the memory queue indices and 
+
+q j is the j-th element from the queue. 
+
+2.2. Clustering 
+
+Clustering frameworks (Figure 2(b)) generate assignments from representations by grouping them into discrete clusters, enabling the model to learn discriminative features by predict-ing these cluster assignments. 
+
+2.2.1. DeepCluster 
+
+DeepCluster [36] iteratively groups all training embeddings learned via SSL with a clustering algorithm and uses the as-signments as supervision to optimize the model. Clustering is performed using k-means at the beginning of each epoch on all embeddings from the previous epoch. The resulting labels are used to optimize a standard cross-entropy classification loss. The LDeepCluster loss is defined as: 
+
+LDeepCluster = − 1
+
+B
+
+X
+
+> i∈B
+
+log ℓ  zi, cci
+
+
+
+> K
+
+P
+
+> k=1
+
+ℓ (zi, ck)
+
+, (4) where K is the number of clusters, ck is the prototype (centroid) of the k-th cluster and ci is the assigned cluster for the i-th sam-ple. Note that the implementation is symmetric (i.e., the classi-fication is performed on both anchor and positive embeddings, which is equivalent to the single-branch method described in the original paper [36]), and the clustering is repeated multiple times to optimize the model with di ff erent sets of pseudo-labels from di ff erent views. 
+
+2.2.2. SwAV 
+
+SwAV [37] learns to map embeddings to a set of clusters in an online fashion. Prototypes are jointly optimized with the model, and soft assignments are created using the Sinkhorn-Knopp al-gorithm [72]. Sinkhorn-Knopp balances two objectives: (1) maximizing the similarity between embeddings and centroids and (2) ensuring balanced cluster sizes by uniformly distribut-ing the assignments. The “swapped” mechanism, where the code of the anchor is predicted from the positive embedding and vice versa, enforces consistency between assignments pro-duced from di ff erent views of the same utterance. Note that a queue QSwAV of latest embeddings is introduced after several 4CPC 
+
+> F-norm
+> F-norm
+
+SimCLR  
+
+> F-norm F-norm
+
+MoCo   
+
+> F-norm F-norm
+> Queue
+> EMA
+> EMA
+> Query Key
+
+(a) Contrastive learning DeepCluster  
+
+> F-norm F-norm
+> Clustering
+
+SwAV   
+
+> F-norm F-norm
+> Quantization
+
+(b) Clustering Barlow Twins  
+
+> B-norm B-norm
+
+VICReg 
+
+(c) Information maximization BYOL  
+
+> F-norm
+> F-norm
+> EMA
+> EMA
+> Student Teacher
+
+SimSiam  
+
+> F-norm
+> F-norm
+> Student Teacher
+
+DINO   
+
+> EMA
+> EMA
+> Softmax
+> Softmax
+> Centering
+> Student Teacher
+
+(d) Self-distillation 
+
+Figure 2: Conceptual comparison of di ff erent SSL frameworks across various paradigms . The joint-embedding architecture remains constant, but the mechanisms to prevent collapse vary between methods. Encoders are represented in green , projectors in red , predictors in purple , operations in yellow , and losses in blue . Rectangular-shaped modules process fixed-length feature vectors or sequences of feature vectors, while trapezoid-shaped modules, functioning as encoders or autoregressive models, reduce variable-length sequences into fixed-length feature vectors. F-norm refers to feature normalization, B-norm to batch normalization, EMA to Exponential Moving Average, and sg to stop-gradient. 
+
+5epochs to provide more stable assignments. The LSwAV loss is defined as: 
+
+LSwAV = − 1
+
+B · P
+
+X
+
+> i∈B
+> P
+
+X
+
+> k=1
+
+ai,k log ℓ z′ 
+
+> i
+
+, ck
+
+
+
+> P
+
+P
+
+> k′=1
+
+ℓ z′ 
+
+> i
+
+, ck′
+
+ , (5) where P is the number of prototypes, ai,k is the assignment for the i-th anchor embedding and k-th prototype, and ck is the k-th prototype. Note that the swapped mechanism is not represented in the objective function for conciseness. 
+
+2.3. Information maximization 
+
+Information maximization frameworks (Figure 2(c)) learn meaningful representations by maximizing the similarity be-tween embeddings of anchor-positive pairs while minimizing redundancy across their dimensions to avoid collapse. 
+
+2.3.1. W-MSE 
+
+W-MSE [38] maximizes the similarity of anchor-positive pairs while ensuring that the embeddings lie within a spherical distribution using a whitening projection. The whitening op-eration transforms the embeddings into the eigenspace of their covariance matrix, which has a “scattering” e ff ect on the batch samples, preventing degenerate solutions. The LW-MSE loss is defined as: 
+
+LW-MSE = 2 − 2 · 1
+
+B
+
+X
+
+> i∈B
+
+sim  W(zi), W(z′ 
+
+> i
+
+) , (6) where W(z) = W(z − μ) corresponds to the whitening projec-tion, W is the whitening matrix, and μ is the mean of the em-beddings. The whitening operation may be repeated over mul-tiple iterations. For more details on how W is computed, refer to the original implementation [38]. Batch slicing is applied to mitigate the high variance that can arise when estimating the whitening matrix. 
+
+2.3.2. Barlow Twins 
+
+Barlow Twins [39] maximizes the similarity of anchor-positive pairs by introducing constraints on the cross-correlation matrix C between Z and Z′. The invariance com-ponent forces the embeddings to be invariant to di ff erent trans-formations by pushing the on-diagonal coe ffi cients to one. The 
+
+redundancy reduction component decorrelates the dimensions of the embeddings by pushing o ff -diagonal coe ffi cients to zero. The complete objective function makes C similar to the identity matrix. The LBarlowTwins loss is defined as: 
+
+LBarlowTwins =
+
+> D
+
+X
+
+> d=1
+
+1 − C  Z, Z′ d,d
+
+2
+
++ λ
+
+> D
+
+X
+
+> d=1
+> D
+
+X
+
+> d′=1
+> d′,d
+
+C  Z, Z′ 2 
+
+> d,d′
+
+, (7) where λ is a hyperparameter to scale the redundancy reduction 
+
+component. 
+
+2.3.3. VICReg 
+
+VICReg [40] maximizes the similarity of anchor-positive pairs using multiple training objectives that provide an explicit solution to prevent collapse. 
+
+• The variance (v) term generates class-dependent represen-tations, assuming that each sample in the batch is from a distinct speaker, and avoids collapse by enforcing the vari-ance to reach one along the dimensions of the embeddings: 
+
+v (Z) = 1
+
+> De
+
+PDe 
+
+> d=1
+
+max 0, 1 − pVar( zd).
+
+• The invariance (s) term learns invariance to di ff erent transformations of the same utterance by minimizing the Euclidean distance between anchor-positive embeddings: 
+
+s (Z, Z′) = 1
+
+> B
+
+Pi∈B zi − z′
+
+> i
+> 22
+
+.
+
+• The covariance (c) term prevents feature dimensions from encoding similar information by pushing o ff -diagonal co-effi cients of their covariance matrix C to zero: 
+
+c (Z) = 1
+
+> De
+
+PDe
+
+> d=1
+
+PDe
+
+> d′=1
+> d′,d
+
+[C(Z)] 2 
+
+> d,d′
+
+.The LVICReg loss is defined as: 
+
+LVICReg = λ s  Z, Z′
+
++ μ  v(Z) + v  Z′ 
+
++ ν  c(Z) + c  Z′ , (8) where λ, μ, and ν are hyperparameters to weight the invariance ,
+
+variance and covariance components. 
+
+2.4. Self-distillation 
+
+Self-distillation frameworks (Figure 2(d)) rely on the knowl-edge distillation training paradigm where a student model learns to predict the output of a teacher model. The intu-ition behind self-distillation is that the teacher will bootstrap supervision from the inherent properties of the data, even in the early stages of training, and that its capabilities will be progres-sively refined throughout the training. The main mechanisms to prevent collapse are the embedding normalizations and /or the asymmetry in the joint-embedding architecture, as shown in Section 6.1. 
+
+2.4.1. BYOL 
+
+BYOL [41] implements self-distillation and relies on the 
+
+asymmetrical joint-embedding architecture. A predictor mod-ule hψ is introduced into the student branch to predict the output of the teacher projector. The LBYOL loss is defined as: 
+
+LBYOL = 2 − 2 · 1
+
+B
+
+X
+
+> i∈B
+
+sim  pi, z′
+
+> i
+
+ , (9) where pi = hψ(zi) is the output of the predictor module. Note that the implementation is symmetric by recomputing the loss after swapping the anchor and positive inputs. 62.4.2. SimSiam 
+
+SimSiam [42] is similar to BYOL except that the weights are shared between branches following the symmetrical joint-embedding architecture. To avoid collapse, a stop-gradient op-eration is introduced when computing the loss to prevent the gradient from flowing through both branches. The LSimSiam loss is defined as: 
+
+LSimSiam = − 1
+
+B
+
+X
+
+> i∈B
+
+sim  pi, sg( z′ 
+
+> i
+
+) , (10) where pi = hψ(zi) is the output of the predictor module and sg is a stop-gradient operation. Note that the implementation is symmetric by recomputing the loss after swapping the anchor and positive inputs. 
+
+2.4.3. DINO 
+
+DINO [27] is a self-distillation framework based on the 
+
+asymmetrical joint-embedding architecture. Following the “multi-crop” strategy [37], a larger set of augmented utterances with di ff erent segment lengths is considered, resulting in L short (local ) and G long ( global ) segments. Local and global views are fed through the student model, while only global views are fed through the teacher model to learn “local-to-global” rela-tionships. The objective function optimizes the cross-entropy between the student and teacher output distributions. To pre-vent a collapsing solution, centering and sharpening are imple-mented for the teacher. The former avoids one dimension from prevailing, while the latter avoids collapse to the uniform dis-tribution. The LDINO is defined as: 
+
+LDINO = 1
+
+B
+
+X
+
+> i∈B
+> G
+
+X
+
+> t=1
+> G+L
+
+X
+
+> s=1
+> s,t
+
+H
+
+ z′ 
+
+> i,t
+
+− c
+
+τt
+
+, zi,s
+
+τs
+
+
+
+, (11) where H (a, b) = − softmax( a) log (softmax( b)), z′ 
+
+> i,t
+
+is the t-th teacher embedding of the i-th sample, zi,s is the s-th student embedding of the i-th sample, τt is the teacher temperature, τs is the student temperature, and c is a running mean on the teacher outputs. 
+
+3. Self-Supervised Methods for Speaker Verification 
+
+Several methods have been proposed for the downstream task of SV. All the methods presented below are based on the SSL frameworks described in the previous section. Single-stage methods correspond to SSL models trained in an end-to-end fashion, while multi-stage methods correspond to supervised models trained using pseudo-labels generated from a single-stage SSL model and iteratively refined. This section lays the groundwork for comparing and evaluating these methods on SV in Section 7.2. An overview of the evolution of the literature on single-stage SSL for SV over the years is provided in Figure 3, highlighting the growing interest in this field and the gradual shift from contrastive learning to self-distillation approaches. 
+
+3.1. Single-stage methods 
+
+The most common single-stage methods are presented below, first grouped by their underlying framework, contrastive learn-ing and self-distillation, and subsequently organized by theme within each framework. 
+
+3.1.1. Contrastive learning General methods. Given that contrastive learning represents the earliest self-supervised paradigm applied to SV, several methods have introduced broad extensions of contrastive frame-works without introducing any novel concepts. GCL (Gener-alized Contrastive Loss) [76] follows the SimCLR framework and unifies losses from supervised metric learning and unsuper-vised contrastive learning, enabling the application of the latter to semi-supervised scenarios (i.e., when the training set con-tains both labeled and unlabeled samples). 
+
+Cross-modal methods. Cross-modal approaches leverage com-plementary information from multiple modalities, typically speech and visual data, to learn more robust speaker repre-sentations. These methods tend to enhance speaker discrimi-nation but require additional modalities during training, which can limit their general applicability to audio-only training sets. 
+
+Disent. (Disentangled Speech Embeddings) [73] relies on the cross-modal relationships between speech and face represen-tations from videos by performing video-to-audio matching within and across tracks while disentangling information be-tween content and identity. CDDL (Cross-Domain Discrim-inative Loss) [74] employs audio-to-video and video-to-audio matching objective functions and a cross-domain discrimina-tive loss to enforce intra-class separation within modalities. 
+
+Regularization-based approaches. To enhance the robustness of contrastive learning, regularization-based methods introduce additional loss terms to learn more relevant representations or stabilize training convergence. Such regularization can improve representation smoothness and generalization but often requires careful balancing with the main contrastive objective. CEL 
+
+(Contrastive Equilibrium Learning) [75] adopts the Angular Prototypical (AP) loss [12], equivalent to the NT-Xent loss [25] but with learnable scale and bias, and introduces a uniformity loss to further separate embeddings in the batch with a Gaus-sian pairwise similarity function. SimCLR + MSE loss [33] implements a simple regularization term to the SimCLR frame-work to prevent the model from encoding channel information by minimizing the Euclidean distance between pairs of clean and augmented embeddings of the same utterance. Contrastive 
+
++ VICReg [35] explores the complementarity between the con-trastive objective and the training components of VICReg (vari-ance, invariance, and covariance) at di ff erent stages of the joint-embedding architecture. 
+
+Negative sampling and class-collision. Among various exten-sions of contrastive learning, several methods focus on improv-ing the negative sampling strategy and mitigating class col-lisions. By identifying false negatives or weighting di ffi cult negatives, these approaches aim to enhance the reliability of 7Disent. [73]                                                               
+
+> CDDL [74]
+> CEL [75]
+> GCL [76]
+> AAT [43]
+> SimCLR +MSE loss [33]
+> MoCo +ProtoNCE [34]
+> SimCLR +AAT [57]
+> SSReg [53]
+> i-mix /l-mix [50]
+> DINO (Fast ResNet-34) [48]
+> C3-MoCo [45]
+> C3-DINO [45]
+> DINO (RawNet3) [77]
+> DINO +Cosine loss [58]
+> Contrastive +VICReg [35]
+> DINO +Aug. [68]
+> DPP [51]
+> RDINO [46]
+> DINO +Curriculum [49]
+> CA-DINO [47]
+> PDC-RDINO [78]
+> W-ACSG [79]
+> SimCLR +Margin [44]
+> MeMo [80]
+> RDINO +W-GVKT [81]
+> DINO +RMP [82]
+> SDPN [83]
+> EBCA-DINO [84]
+> SimCLR-SSPS [52]
+> DINO-SSPS [52]
+> 2020 2021 2022 2023 2024 2025
+> Contrastive learning Self-distillation
+> Figure 3: Timeline of a selection of single-stage SSL methods for SV from the literature .Methods are categorized by framework: Contrastive learning or
+> Self-distillation . The release date is determined according to the conference or journal publication date of the corresponding article.
+
+contrastive pairs and the discriminative capacity of the result-ing embeddings. C3-MoCo (Class-Collision Correction) [45], equivalent to MoCo + ProtoNCE [34], addresses the issue of class collisions, stemming from false-negative samples in the memory queue used by MoCo, by clustering speaker represen-tations and relying on the ProtoNCE loss which considers pro-totypes from the same class as positives and prototypes from distinct classes as negatives. W-ACSG (Weighted Asymmet-ric Clean Segments-Guided) [79] incorporates clean and aug-mented segments into the contrastive loss to generate additional positive and negative pairs and assigns larger weights to hard negative pairs based on their cosine similarity. 
+
+Mixup-based augmentation. Mixup-based augmentation ap-proaches generate new training samples by interpolating be-tween existing ones to improve robustness and generalization. 
+
+i-mix / l-mix [50] proposes to improve the generalization of speaker representations by creating diverse synthetic training samples following the mixup augmentation strategy [85]: i-mix (instance mix) performs interpolation on the input feature space, while l-mix (latent space i-mix) performs interpolation on the representation space. 
+
+Margin-based discriminative learning. By incorporating mar-gins into the contrastive loss, either in cosine or angular space, margin-based methods aim to enhance inter-speaker separation and produce more discriminative and compact speaker repre-sentations. SimCLR + Margin [86, 44] investigates the e ff ect of margins, such as CosFace [87] and ArcFace [88], to improve the discriminative capacity of SSL contrastive losses by fur-ther separating positive from negative pairs in the representa-tion space. 
+
+Channel-e ff ects mitigation. Through improved positive sam-pling strategies or additional regularization terms, several meth-ods seek to disentangle speaker identity from channel factors re-lated to recording conditions to improve the quality of speaker representations. AAT (Augmentation Adversarial Training) 
+
+[43] introduces an adversarial loss, penalizing the ability of the model to predict whether pairs of augmented segments share the same channel characteristics, to disentangle the speaker in-formation from the channel information encoded in the repre-sentations. SimCLR + AAT [57] employs the SimCLR frame-work and the AAT method [43] to disentangle speaker and channel information. DPP (Diverse Positive Pairs) [51] intro-duces a multi-modal contrastive learning loss and aims to de-termine diverse positives from distinct utterances of the same speaker by cross-referencing speech and face data derived from training videos. SimCLR-SSPS (Self-Supervised Positive Sam-pling) [89, 52] addresses the limitation of SSL same-utterance positive sampling by finding appropriate pseudo-positives (i.e., same speaker identity but di ff erent recording condition) in la-tent space to reduce intra-speaker variance caused by extrinsic variabilities such as channel information. 
+
+3.1.2. Self-distillation General methods. Self-distillation, and particularly the DINO framework, became a central SSL approach in the field. It has been applied successfully across multiple encoder archi-tectures, demonstrating strong performance and serving as a foundation for many subsequent studies. DINO (Fast ResNet-34) [48, 90] presents a model following the DINO framework, which outperforms the MoCo contrastive baseline trained with a larger encoder. DINO (RawNet3) [77] reports the perfor-mance of DINO used in combination with the RawNet3 en-coder, an evolution of ECAPA-TDNN [8] and RawNet2 [91]. 
+
+Regularization-based approaches. Regularization strategies for self-distillation aim to stabilize training and improve em-bedding quality by leveraging auxiliary loss terms or initial-ization strategies, sometimes based on other SSL objectives or pre-trained SSL models. They generally enhance robustness and generalization but may require careful tuning of hyperpa-rameters. SSReg (Self-Supervised Regularization) [53] paved the way for self-distillation approaches in SV by combining a contrastive learning objective function (AP loss [12]) and the SimSiam self-distillation framework as a regularization tech-nique. C3-DINO [45] optimizes a DINO-based model, initial-ized from the weights of C3-MoCo [45], described previously, to further improve downstream performance. DINO + Cosine 
+
+8loss [58] employs the DINO framework and a consistency regu-larization loss that maximizes the cosine similarity between em-beddings from the same utterance, thereby encouraging consis-tent speaker representations in cosine space. RDINO (Regular-ized DINO) [46] applies two regularization techniques to com-plement the DINO framework: a diversity term and a redun-dancy elimination term, based on the variance and covariance components of the VICReg objective function, respectively. 
+
+Augmentation-driven techniques. Since the training data serves as both input and target in SSL, some methods en-hance self-distillation frameworks by applying richer data-augmentations or diversifying input features to improve robust-ness to channel variability and other extrinsic factors. DINO 
+
++ Aug. [68] proposes a study on self-distillation approaches for SV and introduces a new extensive data-augmentation strat-egy based on pitch perturbation to further improve the ro-bustness of DINO to channel perturbations. RDINO + W-GVKT (Within-Global-View Knowledge Transfer) [81] enables transferring knowledge from the teacher to the student based on the same global views and implements diversified versions of global views by applying spectral augmentation (SpecAug-ment [92]) and feature diversification (MFCCs, LFCCs, spec-trogram), to further facilitate the transfer of knowledge from the teacher to the student. 
+
+Curriculum learning. Progressive training strategies gradually increase task di ffi culty or data diversity during self-distillation to stabilize training and improve convergence. They are par-ticularly e ff ective for managing large inter-speaker variability and reducing early-stage training instability. DINO + Curricu-lum [49] shows that limiting inter-speaker variance at the ini-tial phase of training is very e ff ective and designs two curricu-lum learning strategies that: (1) gradually increases the number of speakers throughout the training; (2) gradually increases the proportion of augmented utterances. 
+
+Optimized positive sampling. Through the selection of more informative positives, self-distillation can be improved by re-ducing intra-class variance introduced by extrinsic factors. These methods enhance the discriminative quality of represen-tations and prove especially e ff ective in conditions with high variability in recordings. CA-DINO (Cluster-Aware DINO) 
+
+[47] clusters speaker representations to sample positives from the same class as the anchor, providing an alternative to the conventional same-utterance positive sampling. DINO-SSPS 
+
+[89, 52] applies SSPS (Self-Supervised Positive Sampling) to the DINO framework, similarly to SimCLR-SSPS [89]. 
+
+Prototype refinement. Prototypes from the last linear layer of the projector are central to self-distillation, and several methods have investigated strategies to refine them or impose additional constraints to enhance representation compactness and inter-class separability. PDC-RDINO (Prototype Division - Clus-tering) [78] generates fine-grained prototypes for the projection head by deriving new prototypes from the neighborhood of the existing prototypes to separate confused speaker classes. SDPN 
+
+(Self-Distillation Prototypes Network) [83] revisits the learning process of prototypes within the self-distillation framework, no-tably using Sinkhorn-Knopp [72] and Me-Max regularization [93] to refine target distributions, and introduces a diversity reg-ularization loss to maximize the inter-speaker distance of rep-resentations within the batch. 
+
+Distillation variants. Several approaches extend the standard self-distillation framework by modifying the teacher-student interactions, for example through multiple branches, cross-distillation, or confidence-aware strategies. MeMo (Multi-Head Multi-Mode) [80] introduces an additional student-teacher pair to perform self-distillation between branches with the same architecture and cross-distillation between branches with di ff erent architectures, while applying contrastive learn-ing on representations during the early training stages. EBCA-DINO (Energy-based Confidence-Aware Distillation) [84] ex-tends DINO by categorizing training samples into high- and low-energy groups based on their uncertainty, dynamically ad-justing the teacher temperature to soften the target distribution for uncertain samples and sharpen the target distribution for confident samples. 
+
+Reconstruction-based learning. Some methods have explored combining self-distillation with masked modeling objectives, where the model learns to infer missing frame-level represen-tations from unmasked information, enhancing the contextual richness and robustness of the learned speaker embeddings. 
+
+DINO + RMP (Relational Mask Prediction) [82] proposes to combine DINO with a masked modeling objective on frame-level representations, through the introduction of a Block Ag-gregation Transformer (BA-Transformer) encoder, to capture global context information and enrich frame-level features. 
+
+3.2. Multi-stage methods 
+
+Multi-stage methods currently achieve state-of-the-art per-formance on SV by relying on the learned SSL speaker rep-resentations to provide supervision for a standard supervised classification loss. These approaches have the disadvantage of being more expensive to train, as they may require multiple iter-ations of pseudo-labels refinement, and the number of speaker classes C must be estimated from the unlabeled data. The training process is described as follows: 1. Train a single-stage SSL method until convergence; 2. Extract representations {yi}i∈I of all training samples; 3. Cluster representations into C classes and generate pseudo-labels {li}i∈I ⊂ { 1, . . . , C};4. Train a new model or fine-tune the encoder fθ with a su-pervised classification loss using the pseudo-labels; 5. Repeat steps 2, 3, and 4 for several iterations to refine the quality of the pseudo-labels (optional). For the supervised training, the joint-embedding architecture and the projector are discarded. A linear classifier is introduced to map representations to their respective speaker identities, such that wc is the prototype of the c-th class. The standard 9objective function is the AAM-Softmax loss [88], denoted by 
+
+LSup. and defined as: 
+
+LSup. = − 1
+
+B
+
+X
+
+> i∈B
+
+log ℓ+  yi, wli
+
+
+
+ℓ+  yi, wli
+
+ + CP
+
+> c=1
+> c,li
+
+ℓ− (yi, wc)
+
+, (12) where ℓ+(a, b) = exp  s · cos  θa,b + m , ℓ−(a, b) =
+
+exp  s · cos  θa,b
+
+ , θa,b is the angle between two feature vec-tors and cos( θa,b) corresponds to their cosine similarity, s is the scale hyperparameter, and m is the margin hyperparameter. Several methods have explored this training framework to further improve downstream performance. The most common approaches are presented below, classified by theme. 
+
+Methods without pseudo-label filtering. Pseudo-labels can be used without any filtering or correction, relying directly on clus-tering outputs to iteratively refine the speaker representations. This straightforward approach simplifies the pipeline but may propagate clustering errors across iterations, especially in the presence of noisy data. IDLAB (VoxSRC-20) [56] uses the Sub-center AAM-Softmax loss [94], to mitigate the e ff ects of label noise and large intra-class variability, and increases the margin hyperparameter m during the final training steps, which is referred to as LMFT (Large Margin Fine-Tuning) . JHU 
+
+(VoxSRC-21) [95] adopts the multi-stage training strategy start-ing from the single-stage DINO (Fast ResNet-34) [48] method and applies LMFT without any particular filtering of pseudo-labels. SNU-HIL (VoxSRC-21) [96] follows the multi-stage training framework bootstrapped by the single-stage CEL [75] method without any filtering of pseudo-labels. 
+
+Heuristic-based pseudo-label filtering. Heuristic-based pseudo-label filtering methods aim to improve label reliability by removing low-confidence samples or small uncertain clusters. These straightforward yet e ff ective strategies improve cluster purity and training stability, albeit at the cost of reduced data diversity due to the exclusion of potentially useful but ambiguous samples. DKU-DukeECE (VoxSRC-20) [55] implements a strategy to purify the generated pseudo-labels by (1) discarding samples with the least clustering confidence (i.e., large distance between sample and centroid); (2) ignoring clusters for which the number of samples is insu ffi cient. 
+
+DukeECE [97] is an extension of the work in DKU-DukeECE 
+
+(VoxSRC-20) [55] with a larger number of iterations. 
+
+Loss-based pseudo-label filtering. Loss-based pseudo-label filtering represents one of the most common strategies to mit-igate label noise, leveraging the training loss as an indica-tor of pseudo-label reliability. By adaptively or dynamically discarding high-loss samples, these methods improve robust-ness to noisy supervision, though they risk excluding chal-lenging yet informative examples. LGL (Loss Gated Learn-ing) [57] is bootstrapped from the single-stage SimCLR +
+
+AAT [57] method and discards unreliable pseudo-labels using a fixed threshold based on the finding that samples with incor-rect pseudo-labels typically have higher loss values after a few training epochs, which can be attributed to the model’s gen-eralization to reliable pseudo-labels, representing the majority of the training data. DLG-LC [58] is bootstrapped from the single-stage DINO + Cosine loss [58] method and extends 
+
+LGL [57] by filtering reliable and unreliable pseudo-labels: 
+
+DLG (Dynamic Loss-Gate) determines the filtering threshold by modeling the training loss distribution using a Gaussian Mixture Model (GMM) with two components (reliable and un-reliable) and LC (Label Correction) avoids discarding all unre-liable pseudo-labels by minimizing the cross-entropy between the predicted posterior probability of clean and augmented seg-ments of the same utterance when the predicted label shows high confidence. AT + HT [98] combines two components: AT 
+
+(Adaptive Threshold) to discard unreliable pseudo-labels simi-larly to DLG [58] and HT (Hierarchical Training) to address the greater sensitivity of top layers to label noise by optimizing top layers after bottom layers have converged. 
+
+Pseudo-label correction. Pseudo-label correction methods it-eratively refine or adjust noisy pseudo-labels during training, combining filtering and model-based corrections to improve label reliability. These approaches can enhance downstream performance by retaining informative samples while reducing the negative impact of mislabeled data, though they may in-troduce additional computational complexity. Sub-PTM (Sub-structure of Pre-Trained Model) [99] uses Infomap [100] for clustering and iteratively refines pseudo-labels by assigning more weight on the model prediction as the training progresses, rescaling reliable pseudo-labels in the loss, and discarding sam-ples that do not have a consistent pseudo-label across chunks. 
+
+SSRL (Self-Supervised Reflective Learning) [101] enables con-tinuous refinement of pseudo-labels during training with an online clustering mechanism, eliminating the need for addi-tional clustering iterations, implements a label noise model-ing strategy to give greater emphasis to reliable samples, and uses pseudo-label queues to filter out outlier predictions. BDS-BPLC (Batch-scale Data Screening and Pseudo-Label Correc-tion) [102] uses adaptive local and global thresholds to dis-tinguish reliable from unreliable samples, applying a correc-tion loss to the latter by leveraging the model’s own predic-tions as supervision to refine pseudo-labels. AdaptiveDrop 
+
+[103] jointly integrates pseudo-label filtering and correction in an end-to-end framework by adaptively dropping or correcting samples based on their consistency with dynamically tracked dominant sub-centers per class, following Sub-center ArcFace [94] and BoundaryFace [104]. 
+
+Cross-modal methods. Cross-modal methods leverage comple-mentary information from multiple modalities, typically au-dio and visual data, to generate more robust pseudo-labels through joint representations or knowledge transfer. These ap-proaches can improve label quality and model generalization, especially in scenarios where one modality may be noisy or in-su ffi cient, but they require additional computational resources and careful handling of modality alignment. DKU-DukeECE 
+
+(VoxSRC-21) [59, 105] performs iterative clustering on multi-modal audio-visual representations, using a voting strategy to 10 fuse the resulting assignments, and applies label smoothing regularization to deal with label noise. DPP [51] follows the standard multi-stage procedure starting from the single-stage 
+
+DPP [51] method and performs the clustering on concatenated speech-face representations. Co-Meta (Co-teaching and Meta-learning) [106] improves audio-visual multi-stage frameworks by transferring knowledge between modalities, following Co-teaching + [107] and MAML [108], such that the learning abil-ity of the model on di ffi cult samples can be improved by the other modality. CA-DINO + DLG-LC [47] applies the multi-stage training framework of DLG-LC [58] to CA-DINO [47] and performs the clustering on the fusion of audio-visual repre-sentations. 
+
+Clustering algorithms. Other approaches have introduced in-novative clustering algorithms to produce robust pseudo-labels, enabling the training pipeline to operate in an end-to-end man-ner. CAMSAT (Clustering based on Augmentation Mix and Self-Augmented Training) [109] learns robust pseudo-labels with a novel end-to-end SSL clustering algorithm based on IM-SAT [110], which maximizes the mutual information between inputs and their discrete representation, and AugMix [111]. 
+
+Encoders and base models. Certain approaches leverage large-scale encoders to advance the performance frontier, while oth-ers generate initial pseudo-labels from lightweight unsuper-vised models to reduce computational complexity. DINO-WavLM [112] fine-tunes WavLM [22], a large-scale SSL speech foundation model, with the MHFA back-end [113], us-ing pseudo-labels initially derived from a DINO-based model, and incorporates DLG-LC along with a final LMFT step. IPL 
+
+(Iterative Pseudo-Labeling) [114] generates the initial pseudo-labels from the unsupervised i-vector method [2] instead of a standard and more complex SSL model. 
+
+4. Experimental setup 
+
+4.1. Datasets and feature extraction 
+
+Trainings are performed using the VoxCeleb2 [15] develop-ment set, which contains 1 092 009 utterances of 5994 speak-ers. During self-supervised training, speaker labels are dis-carded. Evaluation is performed on VoxCeleb1 [6] original ,
+
+extended , and hard benchmarks, denoted by ‘VoxCeleb1-O’, ‘VoxCeleb1-E’, and ‘VoxCeleb1-H’, respectively. The extracted audio frames have a duration of 2 s by default. In the case of DINO, local frames correspond to four 2 s seg-ments, while global frames consist of two 4 s segments. Audio segments are randomly extracted from an utterance with possi-ble overlap. The input features are derived from Di-dimensional log-mel spectrograms, computed using the torchaudio library with a Hamming window of 25 ms and a frame-shift of 10 ms. By default, the input dimension Di is set to 40 for all models, and to 80 for DINO-based models. Voice Activity Detection (VAD) is not employed, as training samples primarily contain continuous speech. Instance normalization is applied to nor-malize the input features. 
+
+4.2. Data-augmentation 
+
+SSL commonly uses data-augmentation to learn representa-tions that are robust against extrinsic variabilities (e.g., envi-ronmental noise, mismatching recording devices, and varying acoustic conditions). Since anchor-positive pairs are derived from the same utterance, providing di ff erent augmented ver-sions is fundamental to avoid encoding channel characteristics, ensuring that speaker identity is the main distinguishing factor. Following the standard data-augmentation pipeline from the works on SSL for SV [33, 34], two transformations are applied to the input waveforms at each training iteration: (1) reverber-ation and (2) background noise addition. First, reverberation is applied by randomly sampling an RIR from the Simulated Room Impulse Response Database [115]. Then, noises are added by randomly sampling background noises, music tracks, or speech segments from the MUSAN dataset [116]. To sim-ulate a variety of acoustic scenarios, the Signal-to-Noise Ra-tio (SNR) is randomly sampled in the ranges 0 dB to 15 dB for noise, 5 dB to 15 dB for music, and 13 dB to 20 dB for speech. For the DINO framework, which benefits from a more di-verse data-augmentation strategy, the input is either left unal-tered (no data-augmentation), augmented with reverberation or noise, or subjected to both transformations (similarly to the de-fault strategy). 
+
+4.3. SSL frameworks 
+
+The encoder f is based on the Fast ResNet-34 [12] or the ECAPA-TDNN [8] architecture. The former (1.4 M parameters) is used for hyperparameter tuning and the study of SSL components, while the latter (22.5 M parameters) is used for the final evaluation. The Fast ResNet-34 model has a base hidden dimension of 16 and generates utterance-level representations using Self-Attentive Pooling (SAP) [11]. The ECAPA-TDNN model has a hidden dimension of 1024 and re-lies on Attentive Statistics Pooling (ASP) [117]. Both encoders produce speaker representations of dimension Dr = 512. The projector g is an MLP consisting of three linear layers. Each layer, except the last one, is followed by a Batch Normal-ization and a ReLU activation function. The hidden dimension is set to 2048, and the final layer outputs embeddings of di-mension De = 512. The projector is discarded for SimCLR and MoCo contrastive frameworks, since it negatively impacts downstream performance as detailed in Section 6.4. Models are optimized during 100 epochs using Adam, a batch size of 256, no weight decay, and a learning rate of 0.001, which is reduced by 5% every 5 epochs. For DINO, the opti-mizer is SGD, the batch size is 128, the weight decay is 5 e−5,and the learning rate is warmed up linearly to 0.2 during 10 epochs before using a decreasing cosine scheduler starting at 0.2. This specific training setup for DINO is discussed in more detail in Section 5.4.1. The code is available as part of the sslsv 2 toolkit based on the PyTorch framework. Trainings are conducted on 2 × NVIDIA 
+
+> 2https://github.com/theolepage/sslsv
+
+11 Tesla V100 32 GB GPUs and 4 × NVIDIA Tesla V100 32 GB GPUs for DINO. The implementation details for all SSL frameworks, along with the supervised baseline and the fusion system, are outlined below. The following hyperparameter settings are based on ei-ther the original implementations or prior adaptations to SV found in the literature. A systematic investigation into the main SSL hyperparameters of MoCo, SwAV, VICReg, and DINO is presented in the next section. 
+
+Supervised . The supervised baseline is trained using the AAM-Softmax loss of Eq. (12) with s = 30 (scale) and m = 0.2(margin) in a supervised way with the training set labels. 
+
+CPC . The number of timesteps T is 51 (Fast ResNet-34 with-out pooling) and t0 is set to T − 4. The aggregator gϕ is a GRU with dimension 256. The predictor hψ consists of a linear layer for each timestep to be predicted. The loss temperature is set to 
+
+τ = 1.0. 
+
+SimCLR . The loss used is the symmetric NT-Xent, with a tem-perature of τ = 0.03. 
+
+MoCo . The loss temperature is τ = 0.03 and the memory queue has a length of |QMoCo | = 32 768. The coe ffi cient m for the EMA update is fixed at m = 0.999. 
+
+DeepCluster . The loss temperature is τ = 0.1. The number of clusters is set to K = 3000. 
+
+SwAV . The loss temperature is τ = 0.1. The number of pro-totypes is P = 6000. The queue of length |QSwAV | = 3840 is enabled after 15 epochs. The prototypes remain frozen during the first epoch. 
+
+W-MSE . The output dimension of the projector is set to De =
+
+64. The whitening is applied once and the window size for batch slicing is 128. 
+
+Barlow Twins . The scaling factor λ for the redundancy reduc-tion term is set to 0 .005. 
+
+VICReg . The loss scaling hyperparameters are set to λ = 1, 
+
+μ = 1, and ν = 0.1 for the invariance, variance, and covariance terms, respectively. 
+
+BYOL . The predictor hψ consists of a linear layer, followed by Batch Normalization and ReLU, and a final linear layer. The hidden dimension of the predictor is set to 4096. The coe ffi cient 
+
+m of the EMA update increases from 0.996 to 1.0 using a cosine scheduler. 
+
+SimSiam . A Batch Normalization module is added at the end of the projector. The predictor hψ is similar to BYOL except that the hidden dimension is set to 512.                           
+
+> Table 1: MoCo hyper-parameters — E ff ect of the number of negatives (|QMoCo |) and class-collisions on SV performance .The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. Class-collisions are avoided using labels from the training set. The selected configuration is highlighted .
+> Num. negs.
+> (|QMoCo |)
+> Default (SSL) No false-negs. (Sup.)
+> EER (%) minDCF 0.01 EER (%) minDCF 0.01
+> 256 9.35 0.6513 9.17 0.6426 1024 9.30 0.6604 8.69 0.6111 16 384 8.92 0.6235 8.33 0.5790
+> 32 768 8.49 0.5990 7.92 0.5904 65 536 8.71 0.6044 8.50 0.6197
+
+DINO . By default, the number of global and local views is G =
+
+2 and L = 4. The dimension of the last layer of the projector is set to 256 to create a bottleneck, and a final layer is added to map l2-normalized embeddings to De = 65 536 units. This final layer uses weight normalization and is not optimized during the first epoch. The student and teacher temperatures are fixed to 
+
+τs = 0.1 and τt = 0.04, respectively. The coe ffi cient m of the EMA update increases from 0.996 to 1.0 following a cosine scheduler. Gradients with a norm exceeding 3.0 are clipped. 
+
+Fusion . The score-level fusion is trained using a logistic re-gression model optimized with LBFGS for 50 epochs on a custom trials list generated on VoxCeleb2. It integrates Sim-CLR, MoCo, SwAV, VICReg, and DINO models based on the ECAPA-TDNN encoder. 
+
+4.4. Evaluation protocol 
+
+To evaluate the performance on SV, the final model weights are obtained by averaging those from the last 10 epochs, en-suring more consistent results. Representations are extracted by processing full-length test audio samples. The trial score is determined by computing the cosine similarity of the pair of 
+
+l2-normalized speaker representations. The performance is measured by the Equal Error Rate (EER) and minimum Detection Cost Function (minDCF), follow-ing the NIST Speaker Recognition Evaluation (SRE) proto-col [118]. Specifically, this article reports minDCF 0.01 , com-puted using Ptarget = 0.01, Cmiss = 1 and Cfa = 1. For com-parison purposes, minDCF 0.05 is also reported when methods from the literature provide results with Ptarget = 0.05 instead of 
+
+Ptarget = 0.01. 
+
+5. E ff ect of SSL hyperparameters 
+
+5.1. Contrastive learning (MoCo) 
+
+For contrastive learning frameworks, the e ff ect of MoCo hy-perparameters on SV performance is assessed, notably the num-ber of negatives, the loss temperature, and the momentum up-date coe ffi cient. 12 Table 2: MoCo hyper-parameters — E ff ect of the temperature ( τ) on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .                                  
+
+> Temperature (τ)EER (%) minDCF 0.01 Entropy
+> 0.01 8.25 0.6218 0.9 0.03 8.49 0.5990 2.2 0.05 8.44 0.6124 4.1 0.07 8.80 0.6356 6.4 0.1 9.63 0.6935 8.4 Table 3: MoCo hyper-parameters — E ff ect of the momentum coe ffi cient (m) on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .
+> Momentum (m)EER (%) minDCF 0.01
+> 0.9 24.36 0.9997 0.99 8.37 0.6050 0.996 8.20 0.6169 0.999 8.49 0.5990
+> 1.0 24.47 0.9839
+
+5.1.1. Number of negatives 
+
+Table 1 shows the e ff ect of the number of negatives, which is determined by the size of the queue used by MoCo (i.e., the 
+
+|QMoCo | hyperparameter), on SV performance. The number of negatives has a negligible impact on downstream performance, as the model achieves 9.35% and 8.71% EER with the min-imum (256) and maximum (65 536) number of negatives, re-spectively. Note that the former configuration is comparable to the SimCLR framework, which uses 255 negatives since the training batch size is set to 256. Moreover, the performance sat-urates with a larger number of negatives. The optimal configu-ration, highlighted in blue, is obtained with |QMoCo | = 32 768, yielding 8.49% EER and 0.5990 minDCF. 
+
+5.1.2. Class collisions 
+
+Table 1 also illustrates the impact of class collisions by re-porting the results obtained when discarding false-negative con-trastive pairs using the training set labels. Class collisions have a relatively small e ff ect on SV performance since canceling false-negative pairs only leads to an EER of 7.92% with the best configuration, which is a relative improvement of 6.7%. The probability of a class collision (i.e., sampling at least one false negative), assuming that classes are balanced and that negatives are sampled uniformly at random, can be expressed as Pcollision = 1 − 1 − 1
+
+> C
+
+n
+
+, where n is the number of negatives and C is the number of classes. This probability increases as the number of negatives n grows, and decreases as the num-ber of classes C grows, because a higher class count reduces the chance of randomly sampling the anchor’s class. With the present experimental setup ( C = 5994 and n = 32 768), the probability of having at least one class collision among the neg-atives is approximately 99.6%, but false-negative samples only account for approximately 0.017% of all anchor-negative pairs. These findings suggest that having a very large number of negatives is not necessary and that class collisions have a neg-ligible impact on training convergence, although several works               
+
+> Table 4: SwAV hyper-parameters — E ff ect of the number of prototypes (P) on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .
+> Num. prototypes (P)EER (%) minDCF 0.01
+> 1000 12.12 0.7200 3000 12.28 0.7292 6000 11.82 0.7177
+> 9000 12.31 0.7291 12 000 13.30 0.7379
+
+have been proposed to address this issue [34, 45]. 
+
+5.1.3. Temperature 
+
+Table 2 shows the role of the temperature τ used in the loss of Eq. (3). Tuning this hyperparameter is critical to achieving the best downstream performance, as it controls the smoothness of the similarity distribution, which is highlighted by the en-tropy values. In particular, a lower τ sharpens the distribution, making the model focus more on hard negatives (i.e., negatives that are very similar to the anchor). The best result in terms of minDCF, highlighted in blue, achieves 8.49% EER and 0.5990 minDCF with τ = 0.03. Note that this is approximately equiva-lent to the scale s = 30 commonly used in the supervised setting with the AAM-Softmax loss, as defined in Eq. (12). 
+
+5.1.4. Momentum update 
+
+Table 3 highlights the e ff ect of the momentum update coef-ficient m. The momentum update is necessary to prevent col-lapse, as it ensures that the key branch is updated gradually with respect to the query branch, while the coe ffi cient m controls the rate of this update. Notably, a higher value of m ensures that 
+
+θ′ updates slowly, providing stable negative samples for con-trastive learning by avoiding the moving target problem (i.e., where the negative samples are constantly changing). The op-timal configuration in terms of minDCF, highlighted in blue, is obtained with m = 0.999 and yields 8.49% EER and 0.5990 minDCF. 
+
+5.2. Clustering (SwAV) 
+
+Regarding frameworks based on clustering, the role of the main hyperparameter of SwAV on SV performance is evalu-ated, as shown in Table 4. Specifically, the hyperparameter con-sidered is the number of prototypes P used by the online clus-tering algorithm during the training. The best configuration, highlighted in blue, reaches 11.82% EER and 0.7177 minDCF when setting P = 6000. This value is consistent with the num-ber of actual speaker identities in the training set, as VoxCeleb2 comprises 5994 speakers. 
+
+5.3. Information maximization (VICReg) 
+
+For information maximization frameworks, the e ff ect of VI-CReg hyperparameters on SV performance is investigated, as shown in Table 5. The hyperparameters considered are the in-variance ( λ), variance ( μ), and covariance ( ν) weights of the 13 Table 5: VICReg hyper-parameters — E ff ect of the loss weights ( λ, μ, and                                                             
+
+> ν) on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .
+> Inv. (λ)Var. (μ)Cov. (ν)EER (%) minDCF 0.01
+> 11027.24 0.9941 10.5 0.1 12.75 0.6893 110.04 11.94 0.6886 110.1 11.33 0.6658
+> Table 6: DINO hyper-parameters — E ff ect of the training setup on SV per-formance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .
+> Method EER (%) minDCF 0.01
+> DINO 19.24 0.9781
+> +Weight decay (wd =5e−5)20.01 0.9456
+> +LR sched. (warmup +cosine) 10.47 0.6620
+> +Encoder pooling (ASP) 8.85 0.6160
+> +Data-aug. (clean /rir /noise /both) 7.00 0.5449
+> +Input dim. (Di=80) 5.94 0.4903
+> +Optimizer (SGD, lr =0.2) 6.04 0.4526
+
+objective function defined in Eq. (8). The weight of the invari-ance term is set to λ = 1 for all configurations, as it is essen-tial for learning representations robust to the di ff erent transfor-mations simulated with data-augmentation. Performance de-grades when reducing the weight of the variance term (second and fourth rows), which highlights the importance of this com-ponent in generating class-dependent representations and pre-venting a collapse. The covariance term also has a significant impact on the results, as it leads to a 58.4% EER improvement between the first and last configurations. The optimal configu-ration, highlighted in blue, achieves the best performance with 
+
+λ = 1, μ = 1, and ν = 0.1, which yields an EER of 11.33% and a minDCF of 0.6658. Notably, this configuration di ff ers from the hyperparameters originally proposed for CV applications [40], suggesting that domain-specific tuning is necessary. 
+
+5.4. Self-distillation (DINO) 
+
+For self-distillation frameworks, the e ff ect of DINO train-ing setup and hyperparameters on SV performance is assessed, notably the frame sampling, projector output dimension, and teacher temperature. 
+
+5.4.1. Training setup 
+
+In the di ff erent implementations from the literature, DINO relies on a distinct training setup compared to the other frame-works. Table 6 presents the incremental e ff ect of each modi-fication, starting from the initial setup (first row) to the opti-mal configuration in terms of minDCF (last row, highlighted in blue). The first row corresponds to the default experimental setup described for all SSL frameworks, while the last row cor-responds to the specific setup used for the DINO framework, both detailed in Section 4. Specifically, DINO benefits from a weight decay and learning rate scheduler, a more diversified data-augmentation strategy, an increased input dimensionality, and the use of SGD as the optimizer. Using Attentive Statistics                                                               
+
+> Table 7: DINO hyper-parameters — E ff ect of frame sampling ( G,L
+> and their respective durations) on SV performance .The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .
+> Global views (G)Local views (L)EER (%) minDCF 0.01
+> 1×2 s 1×2 s 14.53 0.7636 2×4 s 4×2 s 6.04 0.4526
+> 2×3 s 4×2 s 6.61 0.5195 2×2 s 4×2 s 8.33 0.6543 1×2 s 4×2 s 9.31 0.6793 2×4 s 2×2 s 6.43 0.4855 Table 8: DINO hyper-parameters — E ff ect of the projector output dimen-sion ( De) on SV performance . The encoder is Fast ResNet-34 and the bench-mark is VoxCeleb1-O. The selected configuration is highlighted .
+> Head output dim. (De)EER (%) minDCF 0.01
+> 2048 7.59 0.5189 16 384 6.53 0.4848 32 768 6.71 0.4921 65 536 6.04 0.4526
+
+Pooling (ASP) [117] instead of Self-Attentive Pooling (SAP) [11] also improves the convergence, which only applies to the Fast ResNet-34 encoder, since ASP is the default pooling for the ECAPA-TDNN encoder. These modifications do not yield the same improvements for other frameworks, suggesting that DINO is particularly sensitive to training conditions and that such adjustments are necessary to fully exploit its capacity for learning from bootstrapped supervisory signals. Similar adap-tations of this experimental setup are also found in DINO-based methods from the literature, indicating a broader consensus on the importance of these design choices to achieve competitive performance [48, 46]. 
+
+5.4.2. Frame sampling 
+
+Table 7 shows the impact of the frame sampling strategy, specifically the number of global and local views, G and L,and their respective duration. The first row corresponds to the default setup used in all other frameworks, consisting of 2 seg-ments of 2 s each. This configuration results in degraded per-formance, indicating the importance of the multi-crop strategy as a core component of DINO. Subsequent rows illustrate the sensitivity of the framework to both the number and duration of global views: reducing the length to 3 s or 2 s, or limiting the number to a single global view, consistently leads to perfor-mance degradation. Additionally, the last row shows that de-creasing the number of local views from 4 to 2 also negatively impacts performance. The optimal configuration, highlighted in blue, involves two global views of 4 s and four local views of 2 s, achieving the best results with an EER of 6.04% and a minDCF of 0.4526. 
+
+5.4.3. Projector output dimension 
+
+Table 8 investigates the e ff ect of the projector output dimen-sionality De. Increasing the dimension of embeddings from 14 Table 9: DINO hyper-parameters — E ff ect of the teacher temperature ( τt)on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. The selected configuration is highlighted .                         
+
+> Teacher temp. (τt)EER (%) minDCF 0.01 Entropy
+> 0.01 23.18 0.9989 0.02 0.03 7.42 0.4948 0.04 0.04 6.04 0.4526 0.07 0.05 6.38 0.4753 0.28 0.07 5.61 0.4567 3.18 0.04 →0.07 6.25 0.4858 3.90
+
+2048 to 16 384 significantly improves both the EER and the minDCF, suggesting that higher-dimensional projections are beneficial. However, further increasing the dimension to 32 768 does not lead to continued improvements, highlighting that the eff ect of this hyperparameter is not linear and that increasing the projector output dimension indiscriminately does not guarantee better results. The best configuration is obtained with an out-put dimension of 65 536, highlighted in blue, yielding an EER of 6.04% and a minDCF of 0.4526. This experiment shows that the projector output dimension plays a crucial role in the training process at the heart of self-distillation, as a larger di-mensional space facilitates the emergence of more stable and diverse target distributions. 
+
+5.4.4. Teacher temperature 
+
+Table 9 presents the role of the teacher temperature τt used in the loss of Eq. (11). Similarly to MoCo, tuning this hyper-parameter is critical to achieving the best downstream perfor-mance, as it controls the smoothness of the target distribution, as shown by the entropy values. Specifically, a low τt produces sharper, more confident predictions that can lead to training in-stability or collapse, while a high τt results in softer targets that may hinder the learning of discriminative representations. Us-ing τt = 0.01 leads to 23.18% EER, indicating a collapsing solution. Note that the bottom part of the table shows a con-figuration where the teacher temperature is linearly increased during the first 10 training epochs, which corresponds to the setup used in the original implementation of DINO for CV [27]. This warming-up strategy aims to help stabilize the early train-ing phase by avoiding overly confident targets from the teacher while progressively encouraging sharper distributions for better alignment with the student. The best result in terms of minDCF, highlighted in blue, achieves 6.04% EER and 0.4526 minDCF with τ = 0.04 fixed throughout the training. 
+
+6. Study of SSL components 
+
+To better understand the behavior and limitations of SSL frameworks on SV, the key components that influence model performance are analyzed. This includes investigating the risk of collapse, the role of data-augmentation and training data dis-tribution, the function of the projector, and the impact of posi-tive sampling. Each component is studied across multiple SSL frameworks to highlight common patterns, identify dependen-cies, and inform practical design choices for future applications. Baseline No negatives Low temp. High temp. No momentum 0 2500 5000 7500 10000 12500                      
+
+> 0.0
+> 2.5
+> 5.0
+> 7.5
+> 10.0
+> Step
+> Contrastive Entropy 02500 5000 7500 10000 12500
+> 0
+> 2
+> 4
+> Step
+> Embeddings Std.
+> (a) MoCo Baseline No centering No sharpening No momentum 05000 10000 15000 20000 25000
+> 0
+> 3
+> 6
+> 9
+> Step
+> Teacher Entropy 05000 10000 15000 20000 25000
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> Step
+> Teacher-Student KL div.
+> (b) DINO
+> Figure 4: Collapse study of MoCo (a) and DINO (b) SSL frameworks . For MoCo (a), the entropy of the contrastive distribution and the standard deviation of embeddings are reported. For DINO (b), the entropy of the teacher distribu-tion and the KL divergence of the teacher and student distributions are reported. Metrics are reported throughout training iterations of the first 3 epochs. The en-coder is Fast ResNet-34.
+
+6.1. Collapse 
+
+Collapse refers to a degeneration of the learned represen-tations, where embeddings become either indistinguishable across samples or restricted to a low-dimensional subspace. Most SSL frameworks rely on maximizing the similarity be-tween two views of the same input data, which can lead to collapse if not adequately controlled. Therefore, each SSL paradigm employs specific mechanisms to prevent this issue. In contrastive frameworks such as MoCo, collapse is pre-vented by the use of negative pairs, represented in the denom-inator of Eq. (3). Figure 4(a) illustrates the evolution of the entropy of the contrastive distribution and the standard devi-ation of embeddings using di ff erent configurations. The ef-fect of the negative sampling mechanism is reflected in the en-tropy of the contrastive distribution, which quickly converges to −log (1 /|QMoCo |) ≈ 10 .40 during the first iterations, when no negative pairs are created. This indicates a nearly uniform softmax distribution across all samples because the model pro-duces constant embeddings. The temperature parameter signif-icantly impacts the sharpness of this distribution: a low temper-ature yields more confident (lower entropy) predictions, while a high temperature results in less confident (higher entropy) predictions. The standard deviation of embeddings further re-veals that collapse-prone configurations, such as “No nega-tives” and “High temp.”, produce near-constant embeddings, as indicated by the standard deviation tending toward zero. Ad-ditionally, disabling momentum updates of the weights from the key branch leads to significant instability and collapse as the key encoder becomes unstable. This leads the model to ex-ploit inconsistencies (shortcut cues) between recent positives and stale negatives, causing the stored negatives to drift and ul-timately undermining the learning process. 15 0 25 50 75 100    
+
+> 10
+> 20
+> 30
+> % of data-augmentation
+> EER (%)
+> MoCo DINO Supervised Figure 5: Performance of SSL frameworks on SV with di ff erent probabil-ities of applying data-augmentation . The encoder is Fast ResNet-34 and the EER is reported on VoxCeleb1-O.
+
+In self-distillation frameworks such as DINO, collapse is no-tably prevented with normalization techniques, specifically cen-tering and sharpening of the output distributions. Figure 4(b) shows the evolution of the entropy of the teacher distribution and the KL divergence of the teacher and student distributions, for di ff erent configurations. Two distinct forms of collapse can occur: informational collapse, where the model output is uni-form across all embedding dimensions, and dimensional col-lapse, where the output is dominated by a single dimension or a low-dimensional subspace. When centering is disabled, the entropy converges to zero, indicating a nearly one-hot distri-bution consistent with dimensional collapse. In contrast, when sharpening is disabled, the entropy approaches the maximum value of −log (1 /De) ≈ 11 .09, indicating an almost uniform dis-tribution consistent with informational collapse. The Kullback-Leibler (KL) divergence between the teacher and student output distributions: 
+
+DKL (Pt ∥ Ps) =
+
+X
+
+> x∈X
+
+Pt(x) log Pt(x)
+
+Ps(x) , (13) where Pt is the teacher probability distribution and Ps is the stu-dent probability distribution, confirms that both ablations lead to a constant output, hence a collapse. Moreover, removing the asymmetry between the student and teacher branches results in strong instability and collapse, since momentum updates are es-sential to maintain a stable and slowly evolving teacher that pro-vides consistent targets leading to stable training signals. Note that the sudden change in values at the 8531-th training step corresponds to the unfreezing of the last layer of the projector. 
+
+6.2. Data-augmentation 
+
+Data-augmentation is a fundamental component of SSL frameworks as it determines the quality of the representations. The transformations applied independently to the anchor and the positive samples are designed to approximate the distribu-tion of samples from the same class (i.e., intra-speaker variabil-ity) by replicating various acoustic conditions, thereby helping the model learn speaker-discriminative features robust against channel-related characteristics. It is worth noting that the data-augmentation strategy employed in the current setup (e.g., background noise and reverberation) remains relatively simple, in line with common practice in many SSL approaches. This                                   
+
+> Table 10: Eff ect of data-augmentation on SV performance of SSL frame-works . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O.
+> Framework Data-augmentation EER (%) minDCF 0.01
+> SimCLR
+> ✗
+> 23.11 0.8224 MoCo 20.27 0.8084 SwAV 30.29 0.8285 VICReg 30.02 0.8362 DINO 28.91 0.8306 Supervised 2.33 0.2092 SimCLR
+> ✓
+> 9.05 0.6364 MoCo 8.49 0.5990 SwAV 11.82 0.7177 VICReg 11.33 0.6658 DINO 6.04 0.4526 Supervised 2.95 0.3122 MoCo DINO Supervised
+> 2
+> 4
+> 6
+> 8
+> 10
+> EER (%)
+> Full 50% spk. 50% utt. 25% spk. 25% utt.
+> Figure 6: Performance of SSL frameworks on SV with di ff erent distribu-tions of training samples .The encoder is Fast ResNet-34 and the EER is reported on VoxCeleb1-O.
+
+suggests a potential for further improvement through the devel-opment of more sophisticated strategies [68]. Table 10 illustrates the impact of applying data-augmentation during SSL training for major SSL frameworks, based on their performance on VoxCeleb1-O. Disabling data-augmentation leads to a substantial degradation in downstream performance, with an average relative increase of 198.8% in EER. The e ff ect is particularly pronounced for non-contrastive frameworks such as SwAV, VICReg, and DINO. In contrast, the supervised base-line performs better without augmentation, achieving 2.33% EER and 0.2092 minDCF compared to 2.95% EER and 0.3122 minDCF with augmentation. To further assess the dependency of SSL frameworks on data-augmentation, Figure 5 reports the EER on VoxCeleb1-O as a function of the proportion of data-augmentation applied dur-ing training for MoCo and DINO. Both frameworks exhibit a significant performance improvement when the augmentation ratio increases from 0% to 25%, with further gains observed as the proportion continues to increase. By comparison, the supervised baseline shows relatively stable performance across di ff erent configurations, achieving its best result without data-augmentation. 
+
+6.3. Training distribution 
+
+To gain a deeper understanding of SSL frameworks, the ef-fect of the size and distribution of training data is evaluated. 16 Table 11: Eff ect of the projector and positive sampling of SSL frameworks on SV performance . The encoder is Fast ResNet-34 and the benchmark is VoxCeleb1-O. ∆ corresponds to the di ff erence between the EER without and with a projector.                                  
+
+> Framework Pos. sampling Without proj. With proj. ∆
+> EER (%) EER (%)
+> SimCLR SSL
+> 9.05 10.91 −1.86 MoCo 8.49 12.46 −3.97 SwAV 13.07 11.82 1.25 VICReg 20.53 11.33 9.20 DINO 14.23 6.04 8.19 SimCLR Supervised
+> 3.66 6.19 −2.53 MoCo 3.73 6.72 −2.99 SwAV 9.78 8.17 1.61 VICReg 13.46 6.63 6.83 DINO 8.90 4.71 4.19
+
+Figure 6 presents the EER on VoxCeleb1-O for MoCo, DINO, and the supervised baseline when trained on the full dataset, half of the speakers (50% spk.), half of the utterances (50% utt.), a quarter of the speakers (25% spk.), and a quarter of the utterances (25% utt.). To conduct this experiment, subsets of the training set are created either by randomly sampling a per-centage of speakers and including all their utterances or by di-rectly sampling a percentage of the total utterances. Regarding the training distribution, both the MoCo frame-work and the supervised system perform better when more speaker identities are included in the training set (50% utter-ances and 25% utterances), compared to training with a similar number of samples but fewer speaker identities (50% speak-ers and 25% speakers). This outcome aligns with the nature of the underlying losses, notably NT-Xent in Eq. (3) and AAM-Softmax in Eq. (12), which benefit from numerous speaker identities to model inter-class variability. In contrast, the DINO framework achieves better performance when the training set contains more utterances per speaker (50% speakers and 25% speakers), compared to training with more speaker identities and fewer utterances per speaker (50% utterances and 25% utterances). This suggests that DINO focuses on capturing intra-speaker variability as its learning task, whereas MoCo and the supervised method primarily learn inter-speaker variability. These results confirm the study presented in [68] for DINO. This experiment aims to determine whether SSL frameworks benefit more from a larger number of speaker identities or from having more samples per speaker, potentially guiding future un-labeled data collection strategies. As an additional observation, MoCo demonstrates greater ro-bustness to training data size reduction than both DINO and the supervised baseline, as reflected by a relatively smaller increase in EER when the training data is reduced from 100% to 50% and from 100% to 25%. 
+
+6.4. Projector 
+
+The projector has a crucial role in SSL frameworks by map-ping intermediate representations, used for the downstream task, to embeddings, used for the pretext task (i.e., for loss com-putation and model optimization). Its purpose is to encourage the model to learn more generalizable representations that are not overly tailored to the pretext task, thereby mitigating poten-tial mismatches between pretext and downstream objectives and reducing overfitting to the biases of the training task [32, 119]. This strategy is widely adopted across other applications, such as in x-vector architectures where intermediate embeddings are extracted before the classification layer [4], or in transfer learn-ing where representations from earlier layers are reused across tasks [120]. In the context of SV, such discrepancies may arise when the SSL objective fails to capture speaker-discriminative information or instead emphasizes irrelevant variations. The performance of SSL frameworks with and without a pro-jector is reported in the top section of Table 11 in terms of EER on VoxCeleb1-O, where ∆ denotes the di ff erence between the EER without and with a projector. Contrastive frameworks such as SimCLR and MoCo perform best without a projector (∆ < 0), whereas SwAV, VICReg, and DINO achieve bet-ter results with a projector ( ∆ > 0). These findings suggest that contrastive-based frameworks are more naturally aligned with the downstream task, as their loss functions explicitly encourage discrimination between samples. In contrast, non-contrastive frameworks benefit from the additional abstraction introduced by the projector. The same experiment is repeated using a supervised positive sampling strategy, where ground-truth labels are used to form anchor-positive pairs. As mentioned in [119], this technique enables reducing the mismatch between the pretext and down-stream tasks by eliminating the bias caused by same-utterance anchor-positive pairs. The results, shown in the bottom sec-tion of Table 11, demonstrate a performance improvement for all frameworks. For non-contrastive frameworks (such as VI-CReg and DINO), the performance di ff erence between config-urations with and without a projector decreases ( ∆ is smaller), indicating a smaller performance gain from its use. This sug-gests that enhancing the alignment of the training objective with the evaluation task reduces the reliance on a projector. Notably, contrastive frameworks (such as SimCLR and MoCo), which perform better without a projector in the SSL setting, continue to achieve the best performance without one ( ∆ < 0). How-ever, SwAV, VICReg, and DINO frameworks still perform best with a projector, implying that their objective functions are less eff ective at capturing speaker-discriminative features and may benefit from a deeper projector architecture. 
+
+6.5. Positive sampling 
+
+Positive sampling is a fundamental aspect of SSL frame-works since it determines how anchor-positive pairs are con-structed. This is essential for guiding the model to learn speaker-discriminative features robust to extrinsic variations by generating relevant anchor-positive pairs that shape the speaker distribution in the latent space, similar to data-augmentation, which serves the same purpose. Several studies have shown that the definition of positive examples is a primary factor in-fluencing the quality of SSL representations [32]. Since the default SSL positive sampling creates anchor-positive pairs from segments extracted from the same utterance (and thus with the same recording conditions), models are prone 17 SimCLR MoCo SwAV VICReg DINO   
+
+> 0.95
+> 1.00
+> 1.05
+> 1.10
+> Speaker-to-Recording NMI Ratio
+> SSL pos. sampling Supervised pos. sampling Figure 7: Speaker-to-Recording Ratio (SRR) for SSL frameworks with SSL and Supervised positive sampling . The encoder is Fast ResNet-34, and the NMI is computed with k-means clustering assignments (1251 clusters) on rep-resentations extracted from VoxCeleb1.
+
+to encode channel-related information in the representations. This issue is further amplified given that datasets like VoxCeleb contain real-world recordings a ff ected by a variety of channel eff ects and other factors. Therefore, the limitations of same-utterance positive sampling are commonly addressed through extensive data-augmentation, which simulates diverse acoustic conditions to mitigate this bias. As shown in the bottom section of Table 11, the downstream performance of all SSL frameworks is improved when using VoxCeleb metadata to generate anchor-positive pairs from dis-tinct recordings of the same speaker. This highlights the benefit of using di ff erent recordings to form positive pairs, as it en-courages the model to associate varied acoustic conditions of the same speaker with a consistent identity, similar to the su-pervised training scenario. Specifically, this supervised posi-tive sampling results in EER reductions of approximately 60% and 56% for SimCLR and MoCo, respectively, on VoxCeleb1-O. These findings demonstrate the negative impact of the de-fault same-utterance positive sampling on the performance of SSL frameworks for SV. Furthermore, this suggests that con-ventional audio augmentation techniques are insu ffi cient to sim-ulate the diversity among samples from the same class and fully address this limitation. Let SRR denote the Speaker-to-Recording Ratio, which quantifies the alignment of the learned representations with speaker identity rather than recording characteristics. A higher SRR thus indicates better alignment with the downstream task. SRR is defined as: SRR = NMI( ˆS, Sspeakers )NMI( ˆS, Srecordings ) , (14) where ˆS denotes the k-means clustering assignments of Vox-Celeb1 representations (with 1251 clusters, matching the num-ber of speaker identities), Sspeakers are speaker labels, and 
+
+Srecordings are video labels, both derived from VoxCeleb1 meta-data. The Normalized Mutual Information (NMI) [121] quanti-fies the alignment between the predicted cluster assignments ˆS
+
+and the ground-truth labels S, and is defined as: NMI( ˆS, S) = 2 · I( ˆS; S)
+
+H( ˆS) + H(S) , (15) 0.001 0.01 0.1 0.5 1 2 5 10 20 30 40 50  
+
+> 0.1
+> 0.5
+> 1
+> 2
+> 5
+> 10
+> 20
+> 30
+> 40
+> 50
+> 80
+> False Positive Rate (%)
+> False Negative Rate (%)  Metrics
+> EER
+> minDCF
+> Models
+> SimCLR
+> MoCo
+> SwAV
+> VICReg
+> DINO
+> Supervised
+> Figure 8: DET curves of SSL frameworks on SV . The encoder is ECAPA-TDNN and the benchmark is VoxCeleb1-O.
+
+where I( ˆS; S) is the Mutual Information (MI) between the two sets, and H( ˆS) and H(S) are their respective entropies. To confirm the previous findings, Figure 7 reports the Speaker-to-Recording Ratio (SSR) for major SSL frameworks with SSL (black) and Supervised (blue) positive sampling on VoxCeleb1. Compared to SSL positive sampling, employing the supervised positive sampling yields higher SSR values, in-dicating that information related to recording source (i.e., Vox-Celeb videos) is less prevalent in the representations. This re-sults in an average relative improvement of 8% over the same-utterance positive sampling. Note that DINO is more robust to this bias as it provides the highest ratio among approaches based on the SSL positive sampling. This underscores the role of positive sampling in shaping what information is encoded in the representations. 
+
+7. Evaluation and Comparison on Speaker Verification 
+
+This section provides a comprehensive evaluation of SSL frameworks, considering multiple encoder architectures and benchmarks. The analysis includes both in-domain and out-of-domain scenarios, with performance compared to supervised baselines. Single- and multi-stage SSL methods are reviewed and evaluated on VoxCeleb benchmarks to highlight key trends and developments in the field. Finally, a label-e ffi cient evalu-ation setting is introduced to underscore the potential of SSL approaches for reducing reliance on labeled data. 
+
+7.1. Evaluation of SSL frameworks 
+
+A comprehensive comparison of SSL frameworks for SV on all VoxCeleb1 benchmarks is presented in Table 12. Two di ff erent encoder architectures are considered, namely the lightweight Fast ResNet-34 (top section) and the larger ECAPA-TDNN (bottom section). Using the Fast ResNet-34 encoder, DINO achieves the low-est EER on VoxCeleb1-O at 6.04%, followed by MoCo (8.49% EER), SimCLR (9.05% EER), VICReg (11.33% EER), and 18 Table 12: Evaluation of SSL frameworks on SV . Performance is reported on all VoxCeleb benchmarks, sorted by EER on VoxCeleb1-O ↓, with Fast ResNet-34 and ECAPA-TDNN encoders. The best method for each encoder is highlighted in light blue and the baselines are highlighted in light gray . The fusion comprises all SSL approaches trained with the ECAPA-TDNN encoder. 
+
+Framework Encoder FLOPs (G) VoxCeleb1-O VoxCeleb1-E VoxCeleb1-H EER (%) minDCF 0.01 EER (%) minDCF 0.01 EER (%) minDCF 0.01 
+
+Random 42.05 0.9969 42.38 0.9994 43.94 0.9997 CPC Fast ResNet-34 1.92 12.77 0.8033 13.75 0.8526 21.47 0.9048 SimCLR 1.80 9.05 0.6364 9.79 0.6769 15.21 0.7664 MoCo 3.66 8.49 0.5990 9.21 0.6588 14.25 0.7503 DeepCluster 1.84 15.16 0.8193 16.53 0.8941 23.40 0.9437 SwAV 1.84 11.82 0.7177 13.25 0.8301 20.19 0.9100 W-MSE 1.80 14.62 0.8506 15.98 0.9342 24.83 0.9810 Barlow Twins 1.82 13.22 0.7658 14.31 0.8424 20.54 0.9080 VICReg 1.82 11.33 0.6658 12.75 0.7581 18.92 0.8577 BYOL 3.66 13.99 0.7509 14.94 0.8498 21.85 0.9181 SimSiam 1.84 28.94 0.9984 27.80 0.9997 41.53 0.9997 DINO 10.90 6.04 0.4526 6.92 0.5272 10.54 0.6456 
+
+Supervised 0.91 2.95 0.3122 3.01 0.3475 5.45 0.4993 SimCLR ECAPA-TDNN 14.94 6.41 0.5160 6.91 0.5616 11.06 0.6708 MoCo 29.95 6.48 0.5372 6.77 0.5635 11.01 0.6700 SwAV 14.98 8.12 0.6148 9.12 0.7119 15.54 0.8282 VICReg 14.97 7.42 0.5659 8.75 0.6970 15.01 0.8518 DINO 90.87 2.82 0.3463 3.03 0.3923 5.93 0.5756 
+
+Supervised 7.48 1.34 0.1521 1.49 0.1736 2.84 0.2887 
+
+Fusion 2.60 0.2886 2.88 0.3426 5.19 0.4997 
+
+Table 13: Evaluation of SSL frameworks on out-of-domain SV bench-marks: SITW and VOiCES . Performance is reported on SITW eval core-core and VOiCES dev . The encoder is ECAPA-TDNN. The best method is highlighted in light blue and the supervised baseline is highlighted in light gray . 
+
+Framework SITW VOiCES EER (%) minDCF 0.01 EER (%) minDCF 0.01 
+
+SimCLR 10.09 0.8010 3.92 0.4172 MoCo 10.01 0.7779 3.96 0.4212 SwAV 13.68 0.8709 5.79 0.5954 VICReg 13.59 0.8453 5.59 0.5798 DINO 4.92 0.5123 1.85 0.2656 
+
+Supervised 2.05 0.2032 1.15 0.1437 
+
+SwAV (11.82% EER). For comparison, the supervised base-line reaches 2.95% EER on the same benchmark. These re-sults highlight the e ff ectiveness of the DINO framework, al-though SimCLR and MoCo remain competitive while requir-ing less computational complexity (10.90 GFLOPs compared to 1.80 GFLOPs and 3.66 GFLOPs, respectively). In contrast, W-MSE, DeepCluster, and SimSiam perform significantly worse, indicating a limited ability to learn discriminative speaker rep-resentations without supervision. Notably, SimSiam fails to prevent collapse, in contrast to BYOL, which incorporates an EMA update between student and teacher networks as an e ff ec-tive collapse-prevention mechanism. The following focuses on the five best-performing SSL frameworks, covering a diverse set of training paradigms: SimCLR and MoCo ( contrastive learning ), SwAV ( clustering ), VICReg ( information maximiza-tion ), and DINO ( self-distillation ). Switching to the ECAPA-TDNN encoder, a substantial im-SimCLR 
+
+> MoCo
+> SwAV
+> VICReg
+> DINO
+> Supervised
+> Supervised
+> DINO
+> VICReg
+> SwAV
+> MoCo
+> SimCLR
+> 0.92
+> 0.95
+> 0.94
+> 0.94
+> 0.99
+> 1.00
+> 0.92
+> 0.95
+> 0.94
+> 0.94
+> 1.00
+> 0.99
+> 0.89
+> 0.95
+> 0.99
+> 1.00
+> 0.94
+> 0.94
+> 0.91
+> 0.96
+> 1.00
+> 0.99
+> 0.94
+> 0.94
+> 0.96
+> 1.00
+> 0.96
+> 0.95
+> 0.95
+> 0.95
+> 1.00
+> 0.96
+> 0.91
+> 0.89
+> 0.92
+> 0.92
+
+Figure 9: Correlation of scores generated by SSL frameworks on SV . The encoder is ECAPA-TDNN and the benchmark is VoxCeleb1-O. 
+
+provement is observed across all frameworks. DINO achieves the best performance, with an EER of 2.82% on VoxCeleb1-O, narrowing the gap with the supervised baseline at 1.34% EER. SimCLR and MoCo achieve 6.41% and 6.48% EER, respec-tively, followed by VICReg (7.42% EER) and SwAV (8.12% EER). These results suggest that SSL frameworks benefit sig-nificantly from increased encoder capacity, as expected and consistent with prior observations in other domains. Similar trends and relative performance di ff erences can be observed on the VoxCeleb1-E and VoxCeleb1-H trials. The DET curves shown in Figure 8 further illustrate the performance di ff erences between SSL frameworks on the VoxCeleb1-O trial set, con-firming the superiority of DINO in terms of detection error trade-o ff . The combination of these systems results in 2.60% 19 EER on VoxCeleb1-O, as indicated by the last row of Table 12. While the correlation matrix in Figure 9 shows strong simi-larities between the systems, the fusion still yields measurable gains, suggesting that the frameworks provide limited but non-negligible complementarity. Despite the promising improve-ments from SSL, supervised pre-training still yields the best performance, highlighting the continued relevance of super-vised learning. As reference points, a random baseline yields an EER above 42% across all trials, underscoring the di ffi -culty of the SV task in the absence of meaningful representa-tion learning. Furthermore, human performance, as reported in [43], reaches 26.51% EER for crowd-sourced annotators (Ama-zon Mechanical Turk) and 15.77% EER for a group of SR re-searchers, highlighting the challenge even for humans under these conditions. The performance gap between DINO and alternative ap-proaches becomes more pronounced with ECAPA-TDNN, in-dicating that the e ff ectiveness of its design scales better with encoder complexity. However, SimCLR and MoCo stand out due to their competitive results combined with lower computa-tional requirements. This observation supports the hypothesis that contrastive-based objectives, such as those used in Sim-CLR and MoCo, are particularly e ff ective for SV. Finally, Table 13 reports results on out-of-domain settings us-ing SITW eval. core-core [122] and VOiCES dev. [123] bench-marks. Similarly to previous findings, DINO consistently out-performs other SSL frameworks by a considerable margin, fur-ther demonstrating its strong generalization capabilities across diverse conditions. SimCLR, MoCo, SwAV, and VICReg yield moderate performance under challenging conditions, preserv-ing the relative performance di ff erences observed on VoxCeleb. 
+
+7.2. Comparison of single and multi-stage SSL methods 
+
+A comparison of single-stage SSL methods is provided in Ta-ble 14, which details the framework category (i.e., contrastive or self-distillation), encoder architecture, and corresponding SV performance on all VoxCeleb benchmarks, sorted by de-creasing EER on VoxCeleb1-O. Note that while Disent. [73], CDDL [74], and DPP [51] rely on additional modalities during training (e.g., faces from videos), only results obtained with speech as input data are reported for a fair comparison. The encoder strongly influences downstream performance, as it determines the quality and discriminative power of the learned speaker representations. Therefore, di ff erences in en-coder architectures and their implementation should be care-fully considered when comparing SSL methods. The follow-ing are the most common architectures employed in the litera-ture: TDNN-based models [4], which rely on 1D convolutions over temporal features; ResNet-based models [12, 7], which use 2D convolutions over spectrograms, residual connections, and Squeeze-and-Excitation (SE) modules [124]; ECAPA-TDNN [8], an enhanced TDNN variant with multi-scale feature ex-traction based on the Res2Net architecture [125]; and WavLM [22], a transformer-based model pre-trained in a self-supervised manner on large amounts of unlabeled speech data. Among contrastive-based methods, a clear trend of per-formance improvement over time can be observed, primarily driven by the introduction of regularization components into the objective function and the adoption of more powerful en-coders. Early approaches, such as Disent. [73], CDDL [74], and GCL [76], exhibit significantly higher EERs, largely due to limited encoder capacity. A notable performance improve-ment is achieved with the adoption of ResNet-34 variants as encoders (i.e., “Fast” and “Thin”). Several approaches intro-duced regularization strategies to improve representation learn-ing [75, 33, 35], reduce the encoding of channel-information [43, 57], incorporate margins in the contrastive loss [44], and address class collisions [34, 45] or hard-negatives [79]. Meth-ods such as AP + AAT [43], SimCLR [33], MoCo [34], and CEL [75] achieve 8.65%, 8.28%, 8.23%, and 8.01% EER on VoxCeleb1-O, respectively, and have since served as strong baselines in the field. More recent methods leveraging the ECAPA-TDNN encoder demonstrate even better downstream performance. At the time of writing, DPP [51] and SimCLR-SSPS [52] achieve state-of-the-art results with 2.89% and 2.57% EER on VoxCeleb1-O, respectively, using sophisticated positive sampling strategies. Self-distillation methods demonstrate superior SV perfor-mance compared to contrastive-based approaches. Among them, a clear trend favors the DINO framework, which has been adopted by nearly all methods, except SSReg [53], which is based on SimSiam. Various approaches have emerged in this line of work: combining contrastive learning and self-distillation frameworks [53, 45], applying this approach to dif-ferent encoders [48, 77], introducing regularization compo-nents [58, 46], revisiting the procedure to construct prototypes [78, 83], integrating curriculum learning [49], exploring novel positive sampling strategies [47, 52], studying the e ff ect of data-augmentation and diversifying input features [68, 81], modify-ing the self-distillation architecture [80, 84], and incorporat-ing a masked modeling objective [82]. The ECAPA-TDNN encoder remains the most common backbone, largely due to its recency and e ff ectiveness, though newer architectures like RawNet3 [77] and BA-Transformer [82] have also been ex-plored. Several methods have become prominent baselines in the field, including SSReg [53], DINO [48], CA-DINO [47], RDINO [46], and C3-DINO [45], achieving 6.99%, 4.83%, 3.59%, 3.29%, and 2.50% EER on VoxCeleb1-O, respectively. Note that results can vary considerably within methods using the same encoder, as even subtle adjustments to the training setup may cause notable relative di ff erences, as demonstrated in the previous section. At the time of writing, C3-DINO [45] and SDPN [83] achieve state-of-the-art performance with 2.50% and 1.80% EER on VoxCeleb1-O, respectively. Multi-stage methods have emerged as a natural extension of single-stage methods, aiming to improve model represen-tations using iteratively refined pseudo-labels. Table 15 pro-vides a comparative overview of recent multi-stage methods for SV, detailing the underlying encoders, base models, clustering strategies, number of iterations, whether some form of pseudo-label filtering or correction is applied, and their performance on the VoxCeleb benchmarks. Note that while DKU-DukeECE  
+
+> (VoxSRC-21)
+
+[59], DPP [51], CA-DINO + DLG-LC [47], and Co-Meta [106] rely on additional modalities during training (e.g., 20 Table 14: Comparison of single-stage SSL methods on SV . Results are reported on all VoxCeleb benchmarks, sorted by EER on VoxCeleb1-O ↓. To provide a complete overview, both minDCF 0.01 (black) and minDCF 0.05 (light gray) are reported, using Ptarget = 0.01 and Ptarget = 0.05, respectively. Methods relying on other modalities for training are indicated with an asterisk (*), and only methods using speech data for evaluation are considered. Cells marked with a gray dot ( ○)indicate missing values.                                                                                                                                                                                                                                                                     
+
+> Category Method Encoder VoxCeleb1-O VoxCeleb1-E VoxCeleb1-H EER (%) minDCF 0.01 /0.05 EER (%) minDCF 0.01 /0.05 EER (%) minDCF 0.01 /0.05
+> Contrastive Disent.* [73] VGG-M-40 22.09 ○○○○○
+> CDDL* [74] VGG-M-40 17.52 ○○○○○
+> GCL [76] ResNet-18 15.26 ○○○○○
+> AP +i-mix [50] ECAPA-TDNN 10.63 ○○○○○
+> AP +l-mix [50] ECAPA-TDNN 10.49 ○○○○○
+> AP +AAT [43] Fast ResNet-34 8.65 0.4540 ○○○○
+> Contrastive +VICReg [35] Thin ResNet-34 8.47 0.6400 ○○○○
+> SimCLR +MSE loss [33] Thin ResNet-34 8.28 0.6100 ○○○○
+> MoCo +ProtoNCE [34] TDNN 8.23 0.5900 ○○○○
+> CEL [75] Fast ResNet-34 8.01 ○○○○○
+> SimCLR +Margin [44] Fast ResNet-34 7.85 0.6168 ○○○○
+> SimCLR +AAT [57] ECAPA-TDNN 7.36 ○7.90 ○12.32 ○
+> W-ACSG [79] ECAPA-TDNN 7.02 0.3900 ○○○○
+> C3-MoCo [45] ECAPA-TDNN 6.40 ○○○○○
+> DPP* [51] ECAPA-TDNN 2.89 ○3.17 ○6.27 ○
+> SimCLR-SSPS [52] ECAPA-TDNN 2.57 0.3033 3.11 0.3125 5.56 0.4638
+> Self-distillation SSReg [53] Thin ResNet-34 6.99 0.4340 ○○○○
+> DINO +Cosine loss [58] Thin-ResNet34 6.16 0.5240 ○○○○
+> DINO [77] RawNet3 5.40 0.3396 ○○○○
+> DINO [48] Fast ResNet-34 4.83 0.4630 ○○○○
+> DINO +Curriculum [49] ECAPA-TDNN 4.47 0.3057 ○○○○
+> CA-DINO [47] ECAPA-TDNN 3.59 0.3529 3.85 0.4182 6.92 0.5743 RDINO [46] ECAPA-TDNN 3.29 0.2470 ○○○○
+> MeMo [80] ECAPA-TDNN 3.10 0.2290 3.53 0.2970 7.04 0.5690 EBCA-DINO [84] ECAPA-TDNN 2.94 ○2.99 ○5.14 ○
+> RDINO +W-GVKT [81] ECAPA-TDNN 2.89 0.3330 ○○○○
+> PDC-RDINO [78] ECAPA-TDNN 2.80 0.3150 ○○○○
+> DINO +RMP [82] BA-Transformer 2.62 0.1736 2.84 0.1936 5.14 0.3036 DINO-SSPS [52] ECAPA-TDNN 2.53 0.2843 2.55 0.3150 4.93 0.4632 DINO +Aug. [68] ECAPA-TDNN 2.51 0.1626 2.47 ○4.79 ○
+> C3-DINO [45] ECAPA-TDNN 2.50 ○○○○○
+> SDPN [83] ECAPA-TDNN 1.80 0.1390 1.99 0.1310 3.62 0.2190
+
+faces from videos), only results obtained with speech as input data are reported for fair comparison. A common strategy is to discard or down-weight unreliable samples at each stage, either based on clustering confidence [55], loss-based heuristics [57], or dynamic filtering using train-ing losses [58]. Several methods incorporate Large Margin Fine-Tuning (LMFT) during the final iterations to further boost performance [56, 95]. Other works explore joint representa-tions across modalities [59, 51, 47, 106] or hierarchical training schemes to reduce the sensitivity of top layers to noisy labels [98]. The trend observed across the methods reveals a pref-erence for more sophisticated encoders, coupled with state-of-the-art single-stage methods as base models. Clustering strate-gies typically involve either k-means with 6000 or 7500 clus-ters, or k-means with 50 000 clusters followed by AHC with 7500 clusters. On average, these methods run for approxi-mately 5 iterations of pseudo-labeling. Some of these meth-ods have emerged as key baselines, including JHU (VoxSRC-21) [95], DKU-DukeECE (VoxSRC-21) [59], SNU-HIL (VoxSRC-21) 
+
+[96], LGL [57], and DLG-LC [58], with performance results of 1.89%, 1.81%, 1.66%, 1.66%, and 1.47% EER on VoxCeleb1-O, respectively. Notably, several methods were specifically pro-posed for the VoxSRC-20 [55, 56] and VoxSRC-21 [95, 59, 96] self-supervised challenges. In particular, the following ap-proaches stand out: DKU-DukeECE (VoxSRC-21) [59] deliv-ers competitive results with a relatively lightweight encoder, IPL [114] surpasses more complex methods by using i-vectors to generate the initial pseudo-labels, SSRL [101] and DINO-WavLM [112] achieve the best performance by leveraging SSL-based speech foundation models. While these multi-stage pro-cedures are computationally expensive, they have consistently improved downstream performance on VoxCeleb benchmarks, demonstrating the e ff ectiveness of using pseudo-labels to fine-tune SSL models across multiple stages. At the time of writing, IPL [114], SSRL [101], and DINO-WavLM [112] achieve state-of-the-art performance with 1.06%, 1.04% and 0.99% EER on VoxCeleb1-O, respectively. 
+
+7.3. Label-e ffi cient evaluation 
+
+To assess the label-e ffi ciency of SSL-based models, the EER on VoxCeleb1-O is reported in Figure 10, for both DINO (blue) and the supervised baseline (black), as a function of the pro-portion of labeled data provided during training. The experi-ment is conducted using subsets of the VoxCeleb2 training set, with percentages of labeled data varying from 1% to 100% out of 1 092 009 samples. The supervised baseline is initialized randomly, while the SSL model is initialized with DINO pre-trained weights and fine-tuned using the AAM-Softmax loss. The results demonstrate that the SSL approach maintains com-petitive performance even when the amount of labeled data is significantly reduced and that it consistently outperforms the supervised system for all configurations. Notably, the SSL model exhibits performance comparable to that of the super-vised counterpart when trained with 2 × (100% vs. 50%) or 21 Table 15: Comparison of multi-stage SSL methods on SV . Results are reported on all VoxCeleb benchmarks, sorted by EER on VoxCeleb1-O ↓. “K-M” refers to k-means and “AHC” to Agglomerative Hierarchical Clustering. The “LF /LC” column indicates whether methods use pseudo-label filtering (LF) or correction (LC). Methods relying on other modalities for training are indicated with an asterisk (*) and only methods using speech data for evaluation are considered. Cells marked with a gray dot ( ○) indicate missing values.                                                                                                                                                                                        
+
+> Method Encoder Base model Clustering # iters. LF /LC VoxCeleb1-O VoxCeleb1-E VoxCeleb1-H EER (%) EER (%) EER (%)
+> DKU-DukeECE (VoxSRC-20) [55] Fast ResNet-34 SimCLR K-M (6k) 2✓5.42 6.22 9.60 DukeECE [97] Fast ResNet-34 SimCLR K-M (6k) 5✓3.45 4.02 6.57 CAMSAT [109] ECAPA-TDNN i-vector CAMSAT -✗3.06 ○○
+> AdaptiveDrop [103] ECAPA-TDNN i-vector CAMSAT -✓2.41 ○○
+> IDLAB (VoxSRC-20) [56] ECAPA-TDNN MoCo K-M (50k); AHC (7.5k) 7✗2.10 ○○
+> JHU (VoxSRC-21) [95] Res2Net-50 DINO K-M (50k); AHC (7.5k) 4✗1.89 ○○
+> DKU-DukeECE* (VoxSRC-21) [59, 105] Fast ResNet-34 SimCLR K-M (6k) 4✓1.81 2.06 3.80 SNU-HIL (VoxSRC-21) [96] ECAPA-TDNN CEL K-M (50k); AHC (7.5k) 8✗1.66 ○○
+> LGL [57] ECAPA-TDNN SimCLR K-M (6k) 5✓1.66 2.18 3.76 DLG-LC [58] ECAPA-TDNN DINO K-M (7.5k) 5✓1.47 1.78 3.19 DPP* [51] ECAPA-TDNN SimCLR K-M (6k) 4✗1.44 1.77 3.27 AT +HT [98] ECAPA-TDNN DINO K-M (6k) 5✓1.35 ○○
+> BDS-BPLC [102] ECAPA-TDNN DINO K-M (7.5k) 5✓1.33 1.56 2.78 CA-DINO +DLG-LC* [47] ECAPA-TDNN CA-DINO K-M (7.5k) 2✓1.29 1.57 2.80 Co-Meta* [106] ECAPA-TDNN SimCLR K-M (6k) 7✗1.27 1.82 3.31 Sub-PTM [99] WavLM large WavLM Infomap 5✓1.25 ○○
+> IPL [114] MFA-Conformer i-vector K-M (25k); AHC (7.5k) 8✗1.06 2.16 3.61 SSRL [101] WavLM large DINO K-M (8k) 1✓1.04 ○○
+> DINO-WavLM [112] WavLM base +DINO K-M (50k); AHC (7.5k) 3✓0.99 1.21 2.35 12510 20 50 100
+> 1
+> 2
+> 4
+> 6
+> 8
+> 2x fewer
+> labels
+> 5x fewer
+> labels
+> % of labeled data
+> EER (%)
+> SSL (DINO) Supervised
+
+Figure 10: Evaluation of SSL fine-tuned with di ff erent percentage of la-beled data on SV . The model is DINO, the encoder is ECAPA-TDNN and the EER is reported on VoxCeleb1-O. 
+
+even 5 × (5% vs. 1%) fewer labels, as indicated by horizontal arrows. This experiment highlights the strong label-e ffi ciency of SSL models and underscores their potential for low-resource scenarios. By leveraging large amounts of unlabeled speech, SSL reduces the reliance on manual annotation, rea ffi rming its initial promise as a scalable and e ffi cient approach to SV. 
+
+8. Conclusions & Perspectives 
+
+This work consists of a review and study of the application of Self-Supervised Learning (SSL) to the downstream task of Speaker Verification (SV). First, the main SSL frameworks from di ff erent paradigms (i.e., contrastive learning, clustering, information maximiza-tion, and self-distillation) are presented and applied to SV. A consistent framework for training and evaluation is proposed, ensuring that the performance of each system is assessed under identical conditions. Single-stage and multi-stage SSL methods proposed in the literature and derived from these frameworks are also reviewed. Subsequently, the e ff ect of the key hyperparameters of SSL frameworks is assessed. In particular, SSL frameworks are very sensitive to hyperparameters, and some of them are fundamen-tal to avoid a collapsing solution. The findings demonstrate that the impact of false negatives (class collisions) in the con-trastive loss is negligible in MoCo, with performance improv-ing as the number of negatives increases but deteriorating when it becomes too large. In DINO, having multiple views with dif-ferent temporal lengths is beneficial, and proper tuning of the teacher temperature is crucial. Then, a study of SSL training components is conducted to provide more insight into the functioning of these approaches when applied to SV. Notably, the di ff erent types of collapse oc-curring in MoCo and DINO, along with their underlying causes, are identified. The importance of extensive data-augmentation is highlighted, as it plays a crucial role in generating appropri-ate anchor-positive pairs and simulating various channel con-ditions. Moreover, for a given number of training samples, DINO is shown to benefit from a smaller number of classes with higher intra-class variability, in contrast to MoCo and the su-pervised baseline. In addition, the critical role of the projector in mitigating the misalignment between the pretext and down-stream task objectives is demonstrated. Most importantly, the positive sampling strategy is found to be fundamental as it en-ables SSL to model the speaker distribution e ff ectively and en-code information that is most relevant to the downstream task. Specifically, the analysis highlights a clear distinction between contrastive and self-distillation paradigms: contrastive meth-ods (e.g., MoCo) predominantly encode inter-speaker variabil-ity and exhibit greater robustness to collapse and hyperparam-eter settings, whereas self-distillation frameworks (e.g., DINO) focus on modeling intra-speaker variability but are more sensi-tive to training conditions. 22 Finally, the performance of SSL frameworks is evaluated on in-domain and out-of-domain benchmarks for SV. The best re-sults are obtained with SimCLR and DINO, achieving 6.41% and 2.82% EER on VoxCeleb1-O using the ECAPA-TDNN en-coder, while the supervised baseline reaches 1.34% EER. An extensive comparison of the performance of single- and multi-stage methods from the literature is also provided. The lat-ter demonstrates that numerous methods have been proposed for combining SSL frameworks with di ff erent techniques tai-lored for SV over the last few years. State-of-the-art perfor-mance is achieved with methods based on the DINO frame-work, and multi-stage systems further improve downstream re-sults by generating pseudo-labels to optimize a larger model in a supervised fashion. To highlight the relevance of SSL, a label-effi cient evaluation is conducted, showing that using half of the labels is su ffi cient to match the performance of a supervised model, and that SSL consistently surpasses it in low-resource settings when the amount of labeled data is reduced. The key limitations of existing work in the field and potential directions for future research are outlined below. 
+
+• Scale. SSL has shown promising results when applied to vast amounts of unlabeled audio data [18, 19, 22]. There-fore, the ability of SSL to learn better speaker represen-tations with larger training sets collected “in-the-wild” [126, 127, 128] and larger encoder architectures remains to be determined. 
+
+• Training set. The field of SSL for SV has benefited greatly from the existence of VoxCeleb datasets since al-most all the existing systems are trained on VoxCeleb2. The application of SSL to other speaker-labeled datasets should be studied in detail, including the e ff ect of using training data created under di ff erent conditions and with less channel-related variability. 
+
+• Channel information. The main bottleneck of SSL is the resulting reliance on channel-related information, which is encoded as much as speaker identity in the representa-tions. This issue arises because of the inability of the data-augmentation module and the positive sampling strategy to create anchor-positive pairs that simulate the diversity of training samples among a given speaker class. Sev-eral methods were proposed in the literature to improve data-augmentation [50], the positive sampling [51, 52], or by introducing regularization techniques [43]. How-ever, these solutions should be explored in greater depth, as creating relevant anchor-positive pairs is fundamental for guiding SSL frameworks to learn the most appropriate information for the downstream task. This is considered a key factor in bridging the gap with supervised perfor-mance, enabling SSL to achieve comparable levels of ac-curacy and robustness. 
+
+• Prototypes. The other main di ff erence between super-vised and SSL systems is the ability of the former to map each training sample to a prototype of the corresponding speaker class. This training paradigm enables all samples of a class to be mapped to a single learnable representa-tion, leading to a more e ff ective training objective. Addi-tionally, it allows for the application of constraints, such as margins (e.g., AAM-Softmax loss), to further separate inter-speaker representations in the latent space, which can significantly benefit SV. 
+
+• Projector and hyperparameters. The e ff ect of enabling and disabling the projector has been investigated in this work, but a more in-depth study would be highly valuable. In particular, the impact of its architecture, the hidden and output dimensions, and the information that is discarded at the representation level. Furthermore, the role of other hyperparameters, such as the temperature and momentum coe ffi cient, remains not well understood and deserves fur-ther investigation. 
+
+• Multi-modalities. Speaker identity attributes are embed-ded across various modalities, from audio (speech) to im-age (face) domains. SSL could benefit from multi-modal learning strategies that leverage both speech and visual information to enhance representation quality and robust-ness. Several works have already explored this topic and demonstrate very promising results when relying on Vox-Celeb video data [51, 105, 47]. 
+
+• Other downstream tasks. Other information related to the speaker, such as language, emotion, age, and gender, is captured by speaker representations learned with SSL [129, 28, 48]. The research community could investigate the extent to which SSL can be tailored to each specific downstream task by disentangling the information in the representations. SSL has made tremendous progress across various fields, no-tably in the context of speech representation learning for ASR. However, further research is needed to explore its application to other speech-related downstream tasks beyond the use of a general large-scale SSL speech foundation model. SSL is con-sidered essential for learning more accurate and robust speaker representations, as it enables models to leverage vast amounts of unlabeled data, thereby improving generalization and perfor-mance across diverse real-world conditions. This article aims to serve the community by providing detailed insights into how these methods operate and highlighting key considerations for improving their performance in the future. 
+
+9. Acknowledgements 
+
+This work was performed using HPC resources from GENCI-IDRIS (Grant 2023-AD011014623) and has been par-tially funded by the French National Research Agency (project APATE - ANR-22-CE39-0016-05). 
+
+References           
+
+> [1] F. Bimbot, J.-F. Bonastre, C. Fredouille, G. Gravier, I. Magrin-Chagnolleau, S. Meignier, T. Merlin, J. Ortega-Garc´ ıa, D. Petrovska-
+
+23 Delacr´ etaz, D. A. Reynolds, A tutorial on text-independent speaker ver-ification, EURASIP Journal on Advances in Signal Processing (2004) 430–451 doi:10.1155/S1110865704310024 .[2] N. Dehak, P. J. Kenny, R. Dehak, P. Dumouchel, P. Ouellet, Front-end factor analysis for speaker verification, IEEE /ACM Transactions on Au-dio, Speech, and Language Processing (TASLP) 19 (2011) 788–798. 
+
+doi:10.1109/TASL.2010.2064307 .[3] D. Reynolds, T. Quatieri, R. Dunn, Speaker verification using adapted gaussian mixture models, Digital Signal Processing 10 (2000) 19–41. 
+
+doi:10.1006/dspr.1999.0361 .[4] D. Snyder, D. Garcia-Romero, G. Sell, D. Povey, S. Khudanpur, X-vectors: Robust dnn embeddings for speaker recognition, in: IEEE International Conference on Acoustics, Speech and Signal Process-ing (ICASSP), 2018, pp. 5329–5333. doi:10.1109/ICASSP.2018. 8461375 .[5] Z. Bai, X.-L. Zhang, Speaker recognition based on deep learning: An overview, Neural Networks 140 (2021) 65–99. doi:10.1016/j. neunet.2021.03.004 .[6] A. Nagrani, J. S. Chung, A. Zisserman, Voxceleb: A large-scale speaker identification dataset, in: Interspeech, 2017, pp. 2616–2620. doi:10. 21437/Interspeech.2017-950 .[7] J. S. Chung, J. Huh, S. Mun, Delving into voxceleb: Environment in-variant speaker recognition, in: The Speaker and Language Recognition Workshop (Odyssey), 2020, pp. 349–356. doi:10.21437/Odyssey. 2020-49 .[8] B. Desplanques, J. Thienpondt, K. Demuynck, Ecapa-tdnn: Emphasized channel attention, propagation and aggregation in tdnn based speaker verification, in: Interspeech, 2020, pp. 3830–3834. doi:10.21437/ Interspeech.2020-2650 .[9] T. Zhou, Y. Zhao, J. Wu, Resnext and res2net structures for speaker ver-ification, in: IEEE Workshop on Spoken Language Technology (SLT), 2021, pp. 301–307. doi:10.1109/SLT48900.2021.9383531 .[10] Y. Zhang, Z. Lv, H. Wu, S. Zhang, P. Hu, Z. Wu, H.-y. Lee, H. Meng, Mfa-conformer: Multi-scale feature aggregation conformer for auto-matic speaker verification, in: Interspeech, 2022, pp. 306–310. doi: 10.21437/Interspeech.2022-563 .[11] W. Cai, J. Chen, M. Li, Exploring the encoding layer and loss function in end-to-end speaker and language recognition system, in: The Speaker and Language Recognition Workshop (Odyssey), 2018, pp. 74–81. doi: 10.21437/Odyssey.2018-11 .[12] J. S. Chung, J. Huh, S. Mun, M. Lee, H.-S. Heo, S. Choe, C. Ham, S. Jung, B.-J. Lee, I. Han, In defence of metric learning for speaker recognition, in: Interspeech, 2020, pp. 2977–2981. doi:10.21437/ Interspeech.2020-1064 .[13] J. Villalba, N. Chen, D. Snyder, D. Garcia-Romero, A. McCree, G. Sell, J. Borgstrom, L. P. Garc´ ıa-Perera, F. Richardson, R. Dehak, P. A. Torres-Carrasquillo, N. Dehak, State-of-the-art speaker recognition with neural network embeddings in nist sre18 and speakers in the wild evaluations, Computer Speech & Language 60 (2020) 101026. doi:10.1016/j. csl.2019.101026 .[14] G. R. Doddington, M. A. Przybocki, A. F. Martin, D. A. Reynolds, The nist speaker recognition evaluation – overview, methodology, systems, results, perspective, Speech Communication 31 (2000) 225–254. doi: 10.1016/S0167-6393(99)00080-1 .[15] J. S. Chung, A. Nagrani, A. Zisserman, Voxceleb2: Deep speaker recognition, in: Interspeech, 2018, pp. 1086–1090. doi:10.21437/ Interspeech.2018-1929 .[16] C. Sun, A. Shrivastava, S. Singh, A. Gupta, Revisiting unreasonable ef-fectiveness of data in deep learning era, in: IEEE International Confer-ence on Computer Vision (ICCV), 2017, pp. 843–852. doi:10.1109/ ICCV.2017.97 .[17] J. Devlin, M.-W. Chang, K. Lee, K. Toutanova, Bert: Pre-training of deep bidirectional transformers for language understanding, in: Nations of the Americas Chapter of the Association for Computational Linguis-tics (NAACL), 2019, pp. 4171–4186. doi:10.18653/v1/N19-1423 .[18] A. Baevski, Y. Zhou, A. Mohamed, M. Auli, wav2vec 2.0: A framework for self-supervised learning of speech representations, in: Advances in Neural Information Processing Systems (NeurIPS), 2020, pp. 12449– 12460. URL https://proceedings.neurips.cc/paper/2020/hash/ 92d1e1eb1cd6f9fba3227870bb6d7f07-Abstract.html 
+
+[19] W.-N. Hsu, B. Bolte, Y.-H. H. Tsai, K. Lakhotia, R. Salakhutdinov, A. Mohamed, Hubert: Self-supervised speech representation learning by masked prediction of hidden units, IEEE /ACM Transactions on Au-dio, Speech, and Language Processing (TASLP) 29 (2021) 3451–3460. 
+
+doi:10.1109/TASLP.2021.3122291 .[20] C. Wang, Y. Wu, Y. Qian, K. Kumatani, S. Liu, F. Wei, M. Zeng, X. Huang, Unispeech: Unified speech representation learning with la-beled and unlabeled data, in: International Conference on Machine Learning (ICML), 2021, pp. 10937–10947. URL https://proceedings.mlr.press/v139/wang21y.html 
+
+[21] A. Baevski, W.-N. Hsu, Q. Xu, A. Babu, J. Gu, M. Auli, data2vec: A general framework for self-supervised learning in speech, vision and language, in: International Conference on Machine Learning (ICML), 2022, pp. 1298–1312. URL https://proceedings.mlr.press/v162/baevski22a. html 
+
+[22] S. Chen, C. Wang, Z. Chen, Y. Wu, S. Liu, Z. Chen, J. Li, N. Kanda, T. Yoshioka, X. Xiao, J. Wu, L. Zhou, S. Ren, Y. Qian, Y. Qian, M. Zeng, X. Yu, F. Wei, Wavlm: Large-scale self-supervised pre-training for full stack speech processing, IEEE Journal of Selected Topics in Signal Pro-cessing (JSTSP) 16 (2022) 1505–1518. doi:10.1109/JSTSP.2022. 3188113 .[23] A. van den Oord, Y. Li, O. Vinyals, Representation learning with con-trastive predictive coding, arXiv preprint library (2019). URL https://arxiv.org/abs/1807.03748 
+
+[24] S. Schneider, A. Baevski, R. Collobert, M. Auli, wav2vec: Unsupervised pre-training for speech recognition, in: Interspeech, 2019, pp. 3465– 3469. doi:10.21437/Interspeech.2019-1873 .[25] T. Chen, S. Kornblith, M. Norouzi, G. Hinton, A simple framework for contrastive learning of visual representations, in: International Confer-ence on Machine Learning (ICML), 2020, pp. 1597–1607. URL https://proceedings.mlr.press/v119/chen20j.html 
+
+[26] K. He, H. Fan, Y. Wu, S. Xie, R. Girshick, Momentum contrast for unsupervised visual representation learning, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2020, pp. 9729–9738. URL https://openaccess.thecvf.com/content_CVPR_2020/ html/He_Momentum_Contrast_for_Unsupervised_Visual_ Representation_Learning_CVPR_2020_paper.html 
+
+[27] M. Caron, H. Touvron, I. Misra, H. J´ egou, J. Mairal, P. Bojanowski, A. Joulin, Emerging properties in self-supervised vision transformers, in: IEEE International Conference on Computer Vision (ICCV), 2021, pp. 9650–9660. URL https://openaccess.thecvf.com/content/ICCV2021/ html/Caron_Emerging_Properties_in_Self-Supervised_ Vision_Transformers_ICCV_2021_paper.html 
+
+[28] Z. Fan, M. Li, S. Zhou, B. Xu, Exploring wav2vec 2.0 on speaker ver-ification and language identification, in: Interspeech, 2021, pp. 1509– 1513. doi:10.21437/Interspeech.2021-1280 .[29] S. Chen, Y. Wu, C. Wang, S. Liu, Z. Chen, P. Wang, G. Liu, J. Li, J. Wu, X. Yu, F. Wei, Why does self-supervised learning for speech recogni-tion benefit speaker recognition?, in: Interspeech, 2022, pp. 3699–3703. 
+
+doi:10.21437/Interspeech.2022-10019 .[30] Z. Chen, S. Chen, Y. Wu, Y. Qian, C. Wang, S. Liu, Y. Qian, M. Zeng, Large-scale self-supervised speech representation learning for automatic speaker verification, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2022, pp. 6147–6151. doi: 10.1109/ICASSP43922.2022.9747814 .[31] S. Novoselov, G. Lavrentyeva, A. Avdeeva, V. Volokhov, A. Gusev, Ro-bust speaker recognition with transformers using wav2vec 2.0, arXiv preprint library (2022). URL https://arxiv.org/abs/2203.15095 
+
+[32] R. Balestriero, M. Ibrahim, V. Sobal, A. Morcos, S. Shekhar, T. Gold-stein, F. Bordes, A. Bardes, G. Mialon, Y. Tian, A. Schwarzschild, A. G. Wilson, J. Geiping, Q. Garrido, P. Fernandez, A. Bar, H. Pirsiavash, Y. LeCun, M. Goldblum, A cookbook of self-supervised learning, arXiv preprint library (2023). URL https://arxiv.org/abs/2304.12210 
+
+[33] H. Zhang, Y. Zou, H. Wang, Contrastive self-supervised learning for text-independent speaker verification, in: IEEE International Confer-ence on Acoustics, Speech and Signal Processing (ICASSP), 2021, pp. 
+
+24 6713–6717. doi:10.1109/ICASSP39728.2021.9413351 .[34] W. Xia, C. Zhang, C. Weng, M. Yu, D. Yu, Self-supervised text-independent speaker verification using prototypical momentum con-trastive learning, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2021, pp. 6723–6727. doi: 10.1109/ICASSP39728.2021.9414973 .[35] T. Lepage, R. Dehak, Label-e ffi cient self-supervised speaker verification with information maximization and contrastive learning, in: Interspeech, 2022, pp. 4018–4022. doi:10.21437/Interspeech.2022-802 .[36] M. Caron, P. Bojanowski, A. Joulin, M. Douze, Deep clustering for unsupervised learning of visual features, in: IEEE European Conference on Computer Vision (ECCV), 2018, pp. 132–149. URL https://openaccess.thecvf.com/content_ECCV_2018/ html/Mathilde_Caron_Deep_Clustering_for_ECCV_2018_ paper.html 
+
+[37] M. Caron, I. Misra, J. Mairal, P. Goyal, P. Bojanowski, A. Joulin, Unsu-pervised learning of visual features by contrasting cluster assignments, in: Advances in Neural Information Processing Systems (NeurIPS), 2020, pp. 9912–9924. URL https://proceedings.neurips.cc/paper/2020/hash/ 70feb62b69f16e0238f741fab228fec2-Abstract.html 
+
+[38] A. Ermolov, A. Siarohin, E. Sangineto, N. Sebe, Whitening for self-supervised representation learning, in: International Conference on Machine Learning (ICML), 2021, pp. 3015–3024. URL https://proceedings.mlr.press/v139/ermolov21a. html 
+
+[39] J. Zbontar, L. Jing, I. Misra, Y. LeCun, S. Deny, Barlow twins: Self-supervised learning via redundancy reduction, in: International Conference on Machine Learning (ICML), 2021, pp. 12310–12320. URL https://proceedings.mlr.press/v139/zbontar21a. html 
+
+[40] A. Bardes, J. Ponce, Y. LeCun, Vicreg: Variance-invariance-covariance regularization for self-supervised learning, in: International Conference on Learning Representations (ICLR), 2022. URL https://openreview.net/forum?id=xm6YD62D1Ub 
+
+[41] J.-B. Grill, F. Strub, F. Altch´ e, C. Tallec, P. Richemond, E. Buchatskaya, C. Doersch, B. Avila Pires, Z. Guo, M. Gheshlaghi Azar, B. Piot, k. kavukcuoglu, R. Munos, M. Valko, Bootstrap your own latent -a new approach to self-supervised learning, in: Advances in Neural Information Processing Systems (NeurIPS), 2020, pp. 21271–21284. URL https://papers.nips.cc/paper/2020/hash/ f3ada80d5c4ee70142b17b8192b2958e-Abstract.html 
+
+[42] X. Chen, K. He, Exploring simple siamese representation learning, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2021, pp. 15750–15758. URL https://openaccess.thecvf.com/content/CVPR2021/ html/Chen_Exploring_Simple_Siamese_Representation_ Learning_CVPR_2021_paper.html 
+
+[43] J. Huh, H. S. Heo, J. Kang, S. Watanabe, J. S. Chung, Augmentation adversarial training for unsupervised speaker recognition, in: Advances in Neural Information Processing Systems (NeurIPS) Workshop, 2020. URL https://arxiv.org/abs/2007.12085 
+
+[44] T. Lepage, R. Dehak, Additive margin in contrastive self-supervised frameworks to learn discriminative speaker representations, in: The Speaker and Language Recognition Workshop (Odyssey), 2024, pp. 38– 42. doi:10.21437/Odyssey.2024-6 .[45] C. Zhang, D. Yu, C3-dino: Joint contrastive and non-contrastive self-supervised learning for speaker verification, IEEE Journal of Selected Topics in Signal Processing (JSTSP) 16 (2022) 1273–1283. doi:10. 1109/JSTSP.2022.3198315 .[46] Y. Chen, S. Zheng, H. Wang, L. Cheng, Q. Chen, Pushing the lim-its of self-supervised speaker verification using regularized distillation framework, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2023, pp. 1–5. doi:10.1109/ ICASSP49357.2023.10096915 .[47] B. Han, Z. Chen, Y. Qian, Self-supervised learning with cluster-aware-dino for high-performance robust speaker verification, IEEE /ACM Transactions on Audio, Speech, and Language Processing (TASLP) 32 (2024) 529–541. doi:10.1109/TASLP.2023.3331949 .[48] J. Cho, J. Villalba, L. Moro-Velazquez, N. Dehak, Non-contrastive self-supervised learning for utterance-level information extraction from speech, IEEE Journal of Selected Topics in Signal Processing (JSTSP) 16 (2022) 1284–1295. doi:10.1109/JSTSP.2022.3197315 .[49] H.-S. Heo, J.-w. Jung, J. Kang, Y. Kwon, Y. J. Kim, B.-J. Lee, J. S. Chung, Curriculum learning for self-supervised speaker verification, in: Interspeech, 2023, pp. 4693–4697. doi:10.21437/Interspeech. 2023-1202 .[50] W. H. Kang, J. Alam, A. Fathan, L-mix: A latent-level instance mixup regularization for robust self-supervised speaker representation learning, IEEE Journal of Selected Topics in Signal Processing (JSTSP) 16 (2022) 1263–1272. doi:10.1109/JSTSP.2022.3196562 .[51] R. Tao, K. A. Lee, R. K. Das, V. Hautam¨ aki, H. Li, Self-supervised training of speaker encoder with multi-modal diverse positive pairs, IEEE /ACM Transactions on Audio, Speech, and Language Process-ing (TASLP) 31 (2023) 1706–1719. doi:10.1109/TASLP.2023. 3268568 .[52] T. Lepage, R. Dehak, Ssps: Self-supervised positive sampling for robust self-supervised speaker verification, in: Interspeech, 2025, pp. 1098– 1102. doi:10.21437/Interspeech.2025-183 .[53] M. Sang, H. Li, F. Liu, A. O. Arnold, L. Wan, Self-supervised speaker verification with simple siamese network and self-supervised regular-ization, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2022, pp. 6127–6131. doi:10.1109/ ICASSP43922.2022.9747526 .[54] J. Huh, J. S. Chung, A. Nagrani, A. Brown, J.-w. Jung, D. Garcia-Romero, A. Zisserman, The voxceleb speaker recognition challenge: A retrospective, IEEE /ACM Transactions on Audio, Speech, and Lan-guage Processing (TASLP) 32 (2024) 3850–3866. doi:10.1109/ TASLP.2024.3444456 .[55] W. Wang, D. Cai, X. Qin, M. Li, The dku-dukeece systems for voxceleb speaker recognition challenge 2020, arXiv preprint library (2020). URL https://arxiv.org/abs/2010.12731 
+
+[56] J. Thienpondt, B. Desplanques, K. Demuynck, The idlab voxceleb speaker recognition challenge 2020 system description, arXiv preprint library (2020). URL https://arxiv.org/abs/2010.12468 
+
+[57] R. Tao, K. Aik Lee, R. Kumar Das, V. Hautam¨ aki, H. Li, Self-supervised speaker recognition with loss-gated learning, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2022, pp. 6142–6146. doi:10.1109/ICASSP43922.2022.9747162 .[58] B. Han, Z. Chen, Y. Qian, Self-supervised speaker verification using dynamic loss-gate and label correction, in: Interspeech, 2022, pp. 4780– 4784. doi:10.21437/Interspeech.2022-742 .[59] D. Cai, M. Li, The dku-dukeece system for the self-supervision speaker verification task of the 2021 voxceleb speaker recognition challenge, arXiv preprint library (2021). URL https://arxiv.org/abs/2109.02853 
+
+[60] L. Ericsson, H. Gouk, C. C. Loy, T. M. Hospedales, Self-supervised rep-resentation learning: Introduction, advances, and challenges, IEEE Sig-nal Processing Magazine 39 (2022) 42–62. doi:10.1109/MSP.2021. 3134634 .[61] J. Gui, T. Chen, J. Zhang, Q. Cao, Z. Sun, H. Luo, D. Tao, A sur-vey on self-supervised learning: Algorithms, applications, and future trends, IEEE Transactions on Pattern Analysis and Machine Intelli-gence (TPAMI) 46 (2024) 9052–9071. doi:10.1109/TPAMI.2024. 3415112 .[62] P. Liu, W. Yuan, J. Fu, Z. Jiang, H. Hayashi, G. Neubig, Pre-train, prompt, and predict: A systematic survey of prompting methods in nat-ural language processing, ACM Computing Surveys 55 (2023). doi: 10.1145/3560815 .[63] P. Xia, S. Wu, B. Van Durme, Which *BERT? A survey organiz-ing contextualized encoders, in: Conference on Empirical Methods in Natural Language Processing (EMNLP), 2020, pp. 7516–7533. doi: 10.18653/v1/2020.emnlp-main.608 .[64] X. Qiu, T. Sun, Y. Xu, Y. Shao, N. Dai, X. Huang, Pre-trained models for natural language processing: A survey, Science China Technological Sciences 63 (2020) 1872–1897. doi:10.1007/s11431-020-1647-3 .[65] L. Jing, Y. Tian, Self-supervised visual feature learning with deep neu-ral networks: A survey, IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI) 43 (2021) 4037–4058. doi:10.1109/ TPAMI.2020.2992393 .[66] L. Borgholt, J. D. Havtorn, J. Edin, L. Maaløe, C. Igel, A brief overview 
+
+25 of unsupervised neural speech representation learning, in: Workshop on Self-supervised Learning for Audio and Speech Processing (AAAI-SAS), 2022. URL https://arxiv.org/abs/2203.01829 
+
+[67] A. Mohamed, H.-y. Lee, L. Borgholt, J. D. Havtorn, J. Edin, C. Igel, K. Kirchho ff , S.-W. Li, K. Livescu, L. Maaløe, T. N. Sainath, S. Watan-abe, Self-supervised speech representation learning: A review, IEEE Journal of Selected Topics in Signal Processing (JSTSP) 16 (2022) 1179–1210. doi:10.1109/JSTSP.2022.3207050 .[68] Z. Chen, Y. Qian, B. Han, Y. Qian, M. Zeng, A comprehensive study on self-supervised distillation for speaker representation learning, in: IEEE Workshop on Spoken Language Technology (SLT), 2022, pp. 599–604. 
+
+doi:10.1109/SLT54892.2023.10022470 .[69] O. J. H´ ena ff , A. Srinivas, J. De Fauw, A. Razavi, C. Doersch, S. M. A. Eslami, A. van den Oord, Data-e ffi cient image recognition with con-trastive predictive coding, in: International Conference on Machine Learning (ICML), 2020, pp. 4182–4192. URL http://proceedings.mlr.press/v119/henaff20a.html 
+
+[70] T. Chen, S. Kornblith, K. Swersky, M. Norouzi, G. Hinton, Big self-supervised models are strong semi-supervised learners, in: Ad-vances in Neural Information Processing Systems (NeurIPS), 2020, pp. 22243–22255. URL https://proceedings.neurips.cc/paper/2020/hash/ fcbc95ccdd551da181207c0c1400c655-Abstract.html 
+
+[71] X. Chen, H. Fan, R. Girshick, K. He, Improved baselines with momen-tum contrastive learning, arXiv preprint library (2020). URL https://arxiv.org/abs/2003.04297 
+
+[72] M. Cuturi, Sinkhorn distances: Lightspeed computation of optimal transport, in: Advances in Neural Information Processing Systems, 2013. URL https://papers.nips.cc/paper_files/paper/2013/ hash/af21d0c97db2e27e13572cbf59eb343d-Abstract.html 
+
+[73] A. Nagrani, J. S. Chung, S. Albanie, A. Zisserman, Disentangled speech embeddings using cross-modal self-supervision, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2020, pp. 6829–6833. doi:10.1109/ICASSP40776.2020.9054057 .[74] S.-W. Chung, H.-G. Kang, J. S. Chung, Seeing voices and hearing voices: Learning discriminative embeddings using cross-modal self-supervision, in: Interspeech, 2020, pp. 3486–3490. doi:10.21437/ Interspeech.2020-1113 .[75] S. H. Mun, W. H. Kang, M. H. Han, N. S. Kim, Unsupervised represen-tation learning for speaker recognition via contrastive equilibrium learn-ing, arXiv preprint library (2020). URL https://arxiv.org/abs/2010.11433 
+
+[76] N. Inoue, K. Goto, Semi-supervised contrastive learning with general-ized contrastive loss and its application to speaker recognition, in: AP-SIPA ASC, 2020, pp. 1641–1646. URL https://ieeexplore.ieee.org/document/9306368 
+
+[77] J.-w. Jung, Y. Kim, H.-S. Heo, B.-J. Lee, Y. Kwon, J. S. Chung, Pushing the limits of raw waveform speaker recognition, in: Interspeech, 2022, pp. 2228–2232. doi:10.21437/Interspeech.2022-126 .[78] Z. Zhao, Z. Li, X. Zhang, W. Wang, P. Zhang, Prototype division for self-supervised speaker verification, IEEE Signal Processing Letters 31 (2024) 880–884. doi:10.1109/LSP.2024.3377593 .[79] C.-X. Gan, M.-W. Mak, W. Lin, J.-T. Chien, Asymmetric clean segments-guided self-supervised learning for robust speaker verifica-tion, in: IEEE International Conference on Acoustics, Speech and Sig-nal Processing (ICASSP), 2024, pp. 11081–11085. doi:10.1109/ ICASSP48485.2024.10446161 .[80] Z. Jin, Y. Tu, M.-W. Mak, Self-supervised learning with multi-head multi-mode knowledge distillation for speaker verification, in: In-terspeech, 2024, pp. 4723–4727. doi:10.21437/Interspeech. 2024-360 .[81] Z. Jin, Y. Tu, M.-W. Mak, W-gvkt: Within-global-view knowledge transfer for speaker verification, in: Interspeech, 2024, pp. 3779–3783. 
+
+doi:10.21437/Interspeech.2024-354 .[82] J.-h. Kim, H.-S. Heo, B.-J. Lee, Y. Kwon, M. Lee, H.-J. Yu, Self-supervised speaker verification with relational mask prediction, in: Interspeech, 2024, pp. 2655–2659. doi:10.21437/Interspeech. 2024-362 .[83] Y. Chen, S. Zheng, H. Wang, L. Cheng, Q. Chen, S. Zhang, W. Wang, Self-distillation prototypes network: Learning robust speaker repre-sentations without supervision, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2025, pp. 1–5. 
+
+doi:10.1109/ICASSP49660.2025.10890786 .[84] Y. Hao, C. Hu, C. Bian, J. Feng, Y. Gao, S. Zhang, Energy-based model guided self-supervised learning for speaker verification, in: IEEE International Conference on Acoustics, Speech and Signal Process-ing (ICASSP), 2025, pp. 1–5. doi:10.1109/ICASSP49660.2025. 10888116 .[85] H. Zhang, M. Cisse, Y. N. Dauphin, D. Lopez-Paz, mixup: Beyond em-pirical risk minimization, in: International Conference on Learning Rep-resentations (ICLR), 2018. URL https://openreview.net/forum?id=r1Ddp1-Rb 
+
+[86] T. Lepage, R. Dehak, Experimenting with additive margins for con-trastive self-supervised speaker verification, in: Interspeech, 2023, pp. 4708–4712. doi:10.21437/Interspeech.2023-1479 .[87] H. Wang, Y. Wang, Z. Zhou, X. Ji, D. Gong, J. Zhou, Z. Li, W. Liu, Cosface: Large margin cosine loss for deep face recognition, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2018, pp. 5265–5274. URL https://openaccess.thecvf.com/content_cvpr_2018/ html/Wang_CosFace_Large_Margin_CVPR_2018_paper.html 
+
+[88] J. Deng, J. Guo, N. Xue, S. Zafeiriou, Arcface: Additive angular margin loss for deep face recognition, in: IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2019, pp. 4690–4699. URL https://openaccess.thecvf.com/content_CVPR_2019/ html/Deng_ArcFace_Additive_Angular_Margin_Loss_for_ Deep_Face_Recognition_CVPR_2019_paper.html 
+
+[89] T. Lepage, R. Dehak, Self-supervised frameworks for speaker verifica-tion via bootstrapped positive sampling, IEEE /ACM Transactions on Audio, Speech, and Language Processing (TASLP) 33 (2025) 2932– 2945. doi:10.1109/TASLPRO.2025.3587462 .[90] J. Cho, R. Pappagari, P. ˙ Zelasko, L. Moro-Velazquez, J. Villalba, N. De-hak, Non-contrastive self-supervised learning of utterance-level speech representations, in: Interspeech, 2022, pp. 4028–4032. doi:10.21437/ Interspeech.2022-11141 .[91] H. Tak, J. Patino, M. Todisco, A. Nautsch, N. Evans, A. Larcher, End-to-end anti-spoofing with rawnet2, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2021, pp. 6369– 6373. doi:10.1109/ICASSP39728.2021.9414234 .[92] D. S. Park, W. Chan, Y. Zhang, C.-C. Chiu, B. Zoph, E. D. Cubuk, Q. V. Le, Specaugment: A simple data augmentation method for automatic speech recognition, in: Interspeech, 2019, pp. 2613–2617. doi:10. 21437/Interspeech.2019-2680 .[93] M. Assran, M. Caron, I. Misra, P. Bojanowski, A. Joulin, N. Bal-las, M. Rabbat, Semi-supervised learning of visual features by non-parametrically predicting view assignments with support samples, in: IEEE International Conference on Computer Vision (ICCV), 2021, pp. 8423–8432. doi:10.1109/ICCV48922.2021.00833 .[94] J. Deng, J. Guo, T. Liu, M. Gong, S. Zafeiriou, Sub-center arcface: Boosting face recognition by large-scale noisy web faces, in: IEEE Eu-ropean Conference on Computer Vision (ECCV), 2020, pp. 741–757. 
+
+doi:10.1007/978-3-030-58621-8_43 .[95] J. Cho, J. Villalba, N. Dehak, The jhu submission to voxsrc-21: Track 3, arXiv preprint library (2021). URL https://arxiv.org/abs/2109.13425 
+
+[96] S. H. Mun, M. H. Han, N. S. Kim, Snu-hil system for the voxceleb speaker recognition challenge 2021, VoxCeleb Speaker Recognition Challenge (VoxSRC) Workshop (2021). URL https://www.robots.ox.ac.uk/~vgg/data/voxceleb/ data_workshop_2021/reports/SNU-HIL_verification.pdf 
+
+[97] D. Cai, W. Wang, M. Li, An iterative framework for self-supervised deep speaker representation learning, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2021, pp. 6728– 6732. doi:10.1109/ICASSP39728.2021.9414713 .[98] Z. Zhou, H. Yang, T. Shinozaki, Self-supervised speaker verifica-tion with adaptive threshold and hierarchical training, in: IEEE In-ternational Conference on Acoustics, Speech and Signal Processing (ICASSP), 2024, pp. 12141–12145. doi:10.1109/ICASSP48485. 2024.10448455 .[99] Z. Chen, J. Wang, W. Hu, L. Li, Q. Hong, Unsupervised speaker verifica-
+
+26 tion using pre-trained model and label correction, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2023, pp. 1–5. doi:10.1109/ICASSP49357.2023.10094610 .[100] M. Rosvall, C. T. Bergstrom, Maps of random walks on com-plex networks reveal community structure, Proceedings of the Na-tional Academy of Sciences (2008) 1118–1123 doi:10.1073/pnas. 0706851105 .[101] D. Cai, Z. Cai, Z. Li, M. Li, Self-supervised reflective learning through self-distillation and online clustering for speaker representation learn-ing, IEEE /ACM Transactions on Audio, Speech, and Language Process-ing (TASLP) 33 (2025) 1535–1550. doi:10.1109/TASLPRO.2025. 3555132 .[102] J. Wang, Z. Fang, L. He, Self-supervised speaker verification with batch-scale pseudo-labels correction, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2025, pp. 1–5. 
+
+doi:10.1109/ICASSP49660.2025.10888615 .[103] A. Fathan, X. Zhu, J. Alam, Adaptivedrop: A simple adaptive label noise filtering scheme for enhanced self-supervised speaker verification, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2025, pp. 1–5. doi:10.1109/ICASSP49660. 2025.10888609 .[104] S. Wu, X. Gong, Boundaryface: A mining framework with noise la-bel self-correction for face recognition, in: IEEE European Confer-ence on Computer Vision (ECCV), 2022, pp. 91–106. doi:10.1007/ 978-3-031-19778-9_6 .[105] D. Cai, W. Wang, M. Li, Incorporating visual information in audio based self-supervised speaker recognition, IEEE /ACM Transactions on Audio, Speech, and Language Processing (TASLP) 30 (2022) 1422–1435. doi: 10.1109/TASLP.2022.3162078 .[106] H. Chen, H. Zhang, L. Wang, K. A. Lee, M. Liu, J. Dang, Self-supervised audio-visual speaker representation with co-meta learning, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2023, pp. 1–5. doi:10.1109/ICASSP49357. 2023.10096925 .[107] X. Yu, B. Han, J. Yao, G. Niu, I. Tsang, M. Sugiyama, How does disagreement help generalization against label corruption?, in: Interna-tional Conference on Machine Learning (ICML), 2019, pp. 7164–7173. URL https://proceedings.mlr.press/v97/yu19b.html 
+
+[108] C. Finn, P. Abbeel, S. Levine, Model-agnostic meta-learning for fast adaptation of deep networks, in: International Conference on Machine Learning (ICML), 2017, pp. 1126–1135. URL https://proceedings.mlr.press/v70/finn17a.html 
+
+[109] A. Fathan, J. Alam, Self-supervised speaker verification employing a novel clustering algorithm, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2024, pp. 12597– 12601. doi:10.1109/ICASSP48485.2024.10447101 .[110] W. Hu, T. Miyato, S. Tokui, E. Matsumoto, M. Sugiyamaz, Learning dis-crete representations via information maximizing self-augmented train-ing, in: International Conference on Machine Learning (ICML), 2017, pp. 1558—-1567. URL https://dl.acm.org/doi/10.5555/3305381.3305542 
+
+[111] D. Hendrycks, N. Mu, E. D. Cubuk, B. Zoph, J. Gilmer, B. Lakshmi-narayanan, Augmix: A simple data processing method to improve ro-bustness and uncertainty, in: International Conference on Learning Rep-resentations (ICLR), 2020. URL https://openreview.net/forum?id=S1gmrxHFvB 
+
+[112] V. Miara, T. Lepage, R. Dehak, Towards supervised performance on speaker verification with self-supervised learning by leveraging large-scale asr models, in: Interspeech, 2024, pp. 2660–2664. doi:10. 21437/Interspeech.2024-486 .[113] J. Peng, O. Plchot, T. Stafylakis, L. Moˇ sner, L. Burget, J. ˇ Cernock´ y, An attention-based backend allowing e ffi cient fine-tuning of trans-former models for speaker verification, in: IEEE Workshop on Spo-ken Language Technology (SLT), 2022, pp. 555–562. doi:10.1109/ SLT54892.2023.10022775 .[114] Z. Aldeneh, T. Higuchi, J.-w. Jung, L.-W. Chen, S. Shum, A. H. Ab-delaziz, S. Watanabe, T. Likhomanenko, B.-J. Theobald, Speaker-ipl: Unsupervised learning of speaker characteristics with i-vector based pseudo-labels, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2025, pp. 1–5. doi:10.1109/ ICASSP49660.2025.10887848 .[115] T. Ko, V. Peddinti, D. Povey, M. L. Seltzer, S. Khudanpur, A study on data augmentation of reverberant speech for robust speech recogni-tion, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2017, pp. 5220–5224. doi:10.1109/ICASSP. 2017.7953152 .[116] D. Snyder, G. Chen, D. Povey, Musan: A music, speech, and noise cor-pus, arXiv preprint library (2015). URL https://arxiv.org/abs/1510.08484 
+
+[117] K. Okabe, T. Koshinaka, K. Shinoda, Attentive statistics pooling for deep speaker embedding, in: Interspeech, 2018, pp. 2252–2256. doi: 10.21437/Interspeech.2018-993 .[118] S. O. Sadjadi, T. Kheyrkhah, A. Tong, C. Greenberg, D. Reynolds, E. Singer, L. Mason, J. Hernandez-Cordero, The 2016 nist speaker recognition evaluation, in: Interspeech, 2017, pp. 1353–1357. doi: 10.21437/Interspeech.2017-458 .[119] F. Bordes, R. Balestriero, Q. Garrido, A. Bardes, P. Vincent, Guillotine regularization: Why removing layers is needed to improve generaliza-tion in self-supervised learning, Transactions on Machine Learning Re-search (2023). URL https://openreview.net/forum?id=ZgXfXSz51n 
+
+[120] J. Yosinski, J. Clune, Y. Bengio, H. Lipson, How transferable are features in deep neural networks?, in: Advances in Neural Information Processing Systems (NeurIPS), 2014, pp. 3320–3328. URL https://papers.nips.cc/paper_files/paper/2014/ hash/532a2f85b6977104bc93f8580abbb330-Abstract.html 
+
+[121] A. Strehl, J. Ghosh, Cluster ensembles – a knowledge reuse frame-work for combining multiple partitions, Journal of Machine Learning Research (2002). URL https://www.jmlr.org/papers/v3/strehl02a.html 
+
+[122] M. McLaren, L. Ferrer, D. Castan, A. Lawson, The speakers in the wild (sitw) speaker recognition database, in: Interspeech, 2016, pp. 818–822. 
+
+doi:10.21437/Interspeech.2016-1129 .[123] M. K. Nandwana, J. v. Hout, C. Richey, M. McLaren, M. A. Barrios, A. Lawson, The voices from a distance challenge 2019, in: Interspeech, 2019, pp. 2438–2442. doi:10.21437/Interspeech.2019-1837 .[124] J. Hu, L. Shen, G. Sun, Squeeze-and-excitation networks, in: IEEE Con-ference on Computer Vision and Pattern Recognition (CVPR), 2018, pp. 7132–7141. doi:10.1109/CVPR.2018.00745 .[125] S.-H. Gao, M.-M. Cheng, K. Zhao, X.-Y. Zhang, M.-H. Yang, P. Torr, Res2net: A new multi-scale backbone architecture, IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI) 43 (2021) 652– 662. doi:10.1109/TPAMI.2019.2938758 .[126] I. Yakovlev, A. Okhotnikov, N. Torgashov, R. Makarov, Y. Voevodin, K. Simonchik, Voxtube: a multilingual speaker recognition dataset, in: Interspeech, 2023, pp. 2238–2242. doi:10.21437/Interspeech. 2023-1083 .[127] Y. Lin, X. Qin, G. Zhao, M. Cheng, N. Jiang, H. Wu, M. Li, Voxblink: A large scale speaker verification dataset on camera, in: IEEE In-ternational Conference on Acoustics, Speech and Signal Processing (ICASSP), 2024, pp. 10271–10275. doi:10.1109/ICASSP48485. 2024.10446780 .[128] Y. Lin, M. Cheng, F. Zhang, Y. Gao, S. Zhang, M. Li, Voxblink2: A 100k + speaker recognition corpus and the open-set speaker-identification benchmark, in: Interspeech, 2024, pp. 4263–4267. doi: 10.21437/Interspeech.2024-1490 .[129] M. Ravanelli, J. Zhong, S. Pascual, P. Swietojanski, J. Monteiro, J. Tr-mal, Y. Bengio, Multi-task self-supervised learning for robust speech recognition, in: IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), 2020, pp. 6989–6993. doi:10.1109/ ICASSP40776.2020.9053569 .
+
+27

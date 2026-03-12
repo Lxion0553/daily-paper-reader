@@ -1,0 +1,336 @@
+Title: DMP-3DAD: Cross-Category 3D Anomaly Detection via Realistic Depth Map Projection with Few Normal Samples
+
+URL Source: https://arxiv.org/pdf/2602.10806v1
+
+Published Time: Thu, 12 Feb 2026 01:54:48 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+> 1
+
+## PAPER 
+
+# DMP-3DAD: Cross-Category 3D Anomaly Detection via Realistic Depth Map Projection with Few Normal Samples 
+
+Zi WANG †, Katsuya HOTTA †† , Koichiro KAMIDE ††† , Yawen ZOU ††† , Jianjian QIN †††† , Nonmembers ,Chao ZHANG ††† , Member , and Jun YU †, Nonmember     
+
+> SUMMARY Cross-category anomaly detection for 3D point clouds aims to determine whether an unseen object belongs to a target category us-ing only a few normal examples. Most existing methods rely on category-specific training, which limits their flexibility in few-shot scenarios. In this paper, we propose DMP-3DAD, a training-free framework for cross-category 3D anomaly detection based on multi-view realistic depth map projection. Specifically, by converting point clouds into a fixed set of realistic depth images, our method leverages a frozen CLIP visual en-coder to extract multi-view representations and performs anomaly detec-tion via weighted feature similarity, which does not require any fine-tuning or category-dependent adaptation. Extensive experiments on the ShapeNet-Part dataset demonstrate that DMP-3DAD achieves state-of-the-art perfor-mance under few-shot setting. The results show that the proposed approach provides a simple yet effective solution for practical cross-category 3D anomaly detection.
+> key words: 3D Point Cloud, Cross-Category Anomaly Detection, Multi-view Projection
+
+1. Introduction 
+
+Cross-category anomaly detection for 3D point clouds [1, 2] is an important but sparsely studied problem in 3D vi-sion. In many practical settings, one may only have access to a few normal exemples of a target category, yet the system must identify whether an unseen sample belongs to the same category or a different/unknown category. Unlike category-specific anomaly detection [3, 4] (e.g., surface defect de-tection on a known category), cross-category anomaly de-tection requires distinguishing semantic differences across object classes. Moreover, point clouds present challenges such as sparsity, irregular sampling, and viewpoint varia-tions, which make robust anomaly scoring challenging. Existing 3D anomaly detection methods are generally built upon training mechanisms that require training normal examples for model optimization. Reconstruction-based ap-proaches such as variational autoencoders aim to learn a compact representation of normal data and identify devia-tions at test time [2]. Similarly, teacher–student and distilla-tion frameworks model the normal feature distribution [1]. However, these training-based methods must be retrained or fine-tuned when the normal category changes, which lim-its their flexibility in few-shot scenarios. Recently, CLIP-
+
+> †
+
+Niigata University 
+
+> †††
+
+University of Toyama 
+
+> ††
+
+Iwate University 
+
+> ††††
+
+NingboTech University 
+
+based multi-view frameworks have been explored for zero-shot 3D anomaly detection using auxiliary supervision or prompt constructs [5], but such methods typically depart from the strict one-class setting because of introducing ad-ditional training components with external data. A possible strategy to address cross-category anomaly detection is to leverage the power of large pretrained 2D visual models via multi-view representations of 3D data. Multi-view projection techniques [6, 7] convert point clouds into sets of 2D images, enabling the use of strong 2D back-bones without designing specialized 3D networks. In par-ticular, realistic depth map projection has been introduced to produce depth renders that better match the distribution of images seen by 2D vision models [6]. When combined with a pretrained CLIP visual encoder, such multi-view rep-resentations provide rich, semantically meaningful embed-dings that can support cross-category discrimination without retraining. Inspired by this, in this paper, we propose DMP-3DAD, a training-free framework for cross-category 3D point cloud anomaly detection. Given only a few normal reference point clouds from a target category, our approach does not require any training data preparation, optimization, or category-specific adaptation. We first project point clouds into a fixed set of multi-view realistic depth maps based on an established rendering strategy [6], extract feature embed-dings using a frozen CLIP visual encoder [8], and then com-pute weighted view-wise similarities between the test sam-ple and the normal references. At last, by aggregating view-specific scores, our method yields a robust anomaly score that can distinguish unseen categories under few-shot con-ditions. Our contributions can be concluded threefold: • We introduce a training-free solution for cross-category 3D anomaly detection on point clouds, enabling anomaly scoring without model training or category-wise adaptation when the normal class changes. • We leverage multi-view realistic depth map projection and a frozen CLIP visual encoder to obtain robust rep-resentations from sparse 3D point clouds, forming a simple yet effective pipeline that generalizes across cat-egories. • We demonstrate that the proposed approach achieves state-of-the-art performance under a few-shot setting, outperforming prior training-based methods. 
+
+> arXiv:2602.10806v1 [cs.CV] 11 Feb 2026 2
+
+2. Related Work 
+
+2.1 3D Point Cloud Anomaly Detection 
+
+Category-specific 3D anomaly detection. Category-specific 3D anomaly detection is mainly studied in indus-trial inspection scenarios, where anomalies are defined as local defects under a fixed object category. Two represen-tative benchmarks have largely developed this research di-rection. MVTec 3D-AD [3] extends the widely used 2D anomaly detection benchmark to 3D by providing depth-based data with fine-grained defect annotations [3]. More recently, Real3D-AD [4] further extend this line by in-troducing high-resolution point cloud data and systematic evaluations, highlighting challenges such as precise geom-etry modeling and subtle defect patterns [4]. Motivated by these benchmarks, most existing methods focus on recon-structing or modeling normal geometry and detecting devia-tions in feature or reconstruction spaces, often incorporating geometry-aware designs, distillation mechanisms, or multi-modal cues [9–13]. Overall, category-specific 3D anomaly detection mainly focus on defect-level abnormality and fine-grained localization on fixed categories, which is fundamen-tally different from the cross-category setting considered in our work. Interested readers are referred to recent survey articles for a comprehensive overview [14–16]. 
+
+Cross-category 3D anomaly detection. Cross-category 3D anomaly detection aims to distinguish normal samples of a target category from anomalous samples originating from unseen categories, which is commonly formulated as one-class and few-shot anomaly detection at the object level. In this setting, only normal samples (often very few) are avail-able for the target category during training or reference con-struction, and the detector must reject out-of-category sam-ples at test time. Representative approaches typically model the distribution of normal point clouds and identify anoma-lies as deviations in reconstruction or feature space. Ma-suda et al. propose a variational autoencoder to learn com-pact normal representations and detect anomalies via recon-struction errors [2]. Qin et al. propose a teacher-student framework in which the teacher and student networks ex-hibit different sensitivities to normal feature patterns, and anomalies are detected by measuring the discrepancy be-tween their feature representations [1]. While effective, these methods rely on category-dependent training proce-dures and usually require re-training or fine-tuning when the normal category changes, which limits their flexibility in practical cross-category scenarios. 2.2 CLIP-based Anomaly Detection CLIP [8] has demonstrated strong generalization abil-ity and has recently been adopted for anomaly detection. In 2D, several works adapt CLIP via prompt learning or anomaly-aware alignment to distinguish normal and abnor-mal patterns without task-specific training [17, 18]. These methods typically enhance anomaly sensitivity through learnable prompts or lightweight adaptation modules. For 3D anomaly detection, CLIP is mainly employed through multi-view projection frameworks that convert point clouds into depth images and reuse the CLIP visual encoder. Also, recent studies investigate zero-shot point cloud anomaly de-tection by combining multi-view projection with prompting strategies or auxiliary supervised data to improve general-ization across categories [5]. In few-shot settings, CLIP-based 3D methods may further introduce adapter training or synthetic anomaly generation to enhance anomaly discrimi-nation [7]. 
+
+Positioning of our work. Different from prompt-driven or training-based CLIP adaptations [17, 18], and also differ-ent from conventional reconstruction/distillation pipelines requiring training on normal training data [1, 2], our method focuses on a training-free cross-category setting : it di-rectly uses multi-view realistic depth map projection [6] and frozen CLIP visual features to compute anomaly scores from a few normal references, without any category-wise fine-tuning or additional training data preparation. 
+
+3. Method 
+
+3.1 Problem Definition We study the problem of cross-category 3D anomaly detection for point clouds under a one-class and few-shot setting. Let X ⊂ RN ×3 denote the space of 3D point clouds, where each sample X ∈ X consists of N 3D points. We assume that point clouds are drawn from an unknown distri-bution associated with an object category. Let C denote the set of all object categories, and let c∗ ∈ C be a target (nor-mal) category. Point clouds belonging to c∗ are regarded as normal samples, while point clouds from any other cate-gory c ∈ C \ { c∗} are treated as anomalies. This definition captures the cross-category nature of the problem, where anomalies correspond to samples from unseen categories. During reference construction, we are given only a small set of normal point clouds from the target category: 
+
+R = {Xri | Xri ∼ p(X | c∗), i = 1 , . . . , N r }, (1) where Nr is small (e.g., Nr ∈ { 1, 3, 5}). No anomalous samples and category label information from C are available during reference construction. At test time, the model receives an unseen point cloud 
+
+Xt ∈ X drawn from an unknown category. The goal is to determine whether Xt belongs to the target category c∗
+
+or should be rejected as an anomaly. Formally, we seek an anomaly scoring function s : X → R, such that sam-ples from the target category yield lower anomaly scores than samples from unseen categories. For decision, given a threshold τ , a test sample Xt is classified as anomalous if s(Xt) > τ . The threshold τ can be determined using the normal reference set R. Importantly, the anomaly scor-ing function s(·) is constructed without any training or op-WANG et al.: DMP-3DAD: CROSS-CATEGORY 3D ANOMALY DETECTION VIA REALISTIC DEPTH MAP PROJECTION WITH FEW NORMAL SAMPLES         
+
+> 3Input Reference Point Cloud with
+> 3D Grid (#Views=10) Realistic Projection Input Test Point Cloud with
+> 3D Grid (#Views=10) Realistic Projection
+> Visual
+> Encoder
+> View -wise Weighted Similarity Calculation with Global Features
+> CLIP Textual
+> Encoder
+> Airplane Rocke t
+
+Fig. 1 Overview of proposed DMP-3DAD. Given reference point clouds and a test point cloud, we generate realistic multi-view projections using a fixed 3D view grid. The projected images are encoded by the CLIP visual encoder only. View-wise weighted similarities between reference and test features are computed and aggregated to produce the final anomaly score. timization procedure and does not depend on the specific choice of the target category. 3.2 Multi-view Realistic Projection Directly applying pretrained 2D visual models to raw 3D point clouds is non-trivial due to the large domain gap between irregular 3D geometry and natural images. A com-mon strategy to bridge this gap is to project point clouds into multiple 2D views and reuse powerful 2D backbones. However, naive projection methods often produce sparse and noisy depth maps that differ significantly from the vi-sual statistics of natural images, which limits the effective-ness of pretrained models such as CLIP. To address this is-sue, PointCLIP V2 introduces a realistic projection scheme that generates dense and visually coherent depth maps from point clouds [6]. Instead of directly projecting points onto image planes, the method first voxelizes the point cloud into a 3D grid and then applies densification and smoothing op-erations. By preserving occlusion-aware depth ordering and enforcing local spatial continuity, the resulting depth maps exhibit smoother surfaces and more realistic point distribu-tions, significantly narrowing the domain gap between pro-jected 3D data and natural images. In this work, we adopt the realistic projection strategy from PointCLIP V2 as a core component of our framework. For each input point cloud, we render a fixed number of depth maps from predefined viewpoints, forming a multi-view representation that captures complementary geometric information. These depth maps serve as CLIP-compatible visual inputs and enable robust feature extraction without introducing any learnable projection parameters. 3.3 CLIP-based Visual Feature Extraction As shown in Fig. 1, given the projected multi-view realistic depth maps, we extract visual representations using a pretrained CLIP visual encoder. Specifically, we employ the vision backbone of CLIP (e.g., ViT-B/16) and discard the text encoder entirely. The CLIP model is kept frozen throughout the entire process, ensuring that no training or fine-tuning is required for different object categories. For each input point cloud, the multi-view projection module produces V depth images from predefined viewpoints. Each depth image is resized to match the input resolution of the CLIP visual encoder and processed independently. Let ϕ(·)
+
+denote the CLIP visual encoder. For the v-th view of a point cloud X, we obtain a view-level feature vector 
+
+fv = ϕ(Iv ) ∈ RC , (2) where Iv is the projected depth image of view v, and C de-notes the feature dimension determined by the CLIP back-bone. Each view-level feature is ℓ2-normalized to ensure scale consistency across views. To form a global representa-tion for a point cloud, we concatenate the normalized view-level features from all views: 
+
+f (X) = [ f1, f2, . . . , fV ] ∈ RV ×C . (3) We intentionally do not employ the CLIP textual en-coder in our framework. In cross-category 3D anomaly de-tection, anomalies correspond to samples from unseen cate-gories rather than semantic irregularities that can be reliably described by language. Introducing text prompts or cate-gory names would implicitly inject category-level supervi-sion and fundamentally alter the problem setting. Instead, we rely solely on the pretrained CLIP visual encoder as a generic and robust feature extractor, whose representations capture object-level shape and structural consistency across viewpoints. This design preserves the training-free nature of our approach and avoids any form of category or prompt leakage. 3.4 View Reliability Weighting Not all projected views contribute equally to anomaly detection, as some views may contain sparse or partially oc-cluded depth information. To account for this, we estimate a view reliability weight based on the proportion of valid depth pixels in each projected image. Let Ii,v ∈ [0 , 1] H×W denote the normalized depth im-age of the v-th view projected from the i-th reference point 4#Views=5 #Views=10  
+
+> #Views=20 #Views=30
+
+Fig. 2 Multi-view camera configurations for point cloud projection with different numbers of views (5, 10, 20, and 30). Camera frustums indicate both viewpoint locations and viewing directions toward the object center. cloud, where pixel intensity values are scaled to [0 , 1] . Since background regions are rendered as pure white, we define a pixel as valid if its intensity is smaller than a threshold 
+
+γ ∈ (0 , 1) . Accordingly, we construct a binary validity mask Mi,v ∈ { 0, 1}H×W as 
+
+Mi,v (x, y ) = 
+
+(
+
+1, Ii,v (x, y ) < γ, 
+
+0, otherwise . (4) The reliability score of view v for reference sample i is then computed as the ratio of valid pixels: 
+
+ri,v = 1
+
+HW 
+
+> H
+
+X
+
+> x=1
+> W
+
+X
+
+> y=1
+
+Mi,v (x, y ). (5) We obtain a global view reliability weight by averaging across the reference set: 
+
+wv = 1
+
+|R| 
+
+> |R|
+
+X
+
+> i=1
+
+ri,v , (6) where wv ∈ [0 , 1] reflects the reliability of the v-th view. These view weights are used to modulate the contribu-tion of each view during similarity computation, reducing the influence of unreliable projections. The entire feature extraction pipeline relies solely on pretrained CLIP visual representations and deterministic geometric projections. No learnable parameters, auxiliary data, or category-specific adaptation are introduced. The multi-view camera configurations are predefined and deterministic. As illustrated in Fig. 2, viewpoints are uniformly distributed around the object center and oriented toward the centroid. Different numbers of views (5, 10, 20, and 30) correspond to increasingly dense angular cov-erage, realized by combining horizontal ring views with ad-ditional elevated and polar viewpoints. This design enables scalable and consistent multi-view projection across all cate-gories without introducing any learnable parameters or data-dependent view selection. 3.5 Anomaly Scoring via Feature Similarity Given the multi-view visual features extracted by the CLIP visual encoder, we perform anomaly detection by measuring feature dissimilarity between a test sample and the normal reference set. Let fv (X) ∈ RC denote the ℓ2-normalized feature of the v-th view of point cloud X, as de-fined in Sec. 3.3. For a test point cloud Xt and a reference point cloud Xri ∈ R , we compute a view-wise weighted distance as 
+
+d(Xt, X ri ) = 
+
+> V
+
+X
+
+> v=1
+
+wv fv (Xt) − fv (Xri ) 2, (7) where wv denotes the reliability weight of the v-th view in-troduced in Sec. 3.3. This formulation emphasizes reliable views while suppressing noisy or sparsely projected ones. To aggregate distances across multiple reference sam-ples, we define the anomaly score of a test point cloud Xt
+
+as 
+
+s(Xt) = X 
+
+> Xri∈R
+
+d(Xt, X ri ). (8) A higher anomaly score indicates larger deviation from the normal reference set and thus a higher likelihood of being anomalous. In practice, alternative aggregation strategies such as minimum or average distance can also be applied, but we adopt summation for its robustness in few-shot set-tings. The resulting anomaly score s(·) directly corresponds to the decision rule defined in Sec. 3.1. 3.6 Discussion: Difference from Zero-shot CLIP-based Methods Recent works explore zero-shot anomaly detection by leveraging CLIP with multi-view projection for 3D data [5, 7]. Although sharing the goal of avoiding category-specific training, these methods rely on different assump-tions from the training-free cross-category setting consid-ered in this work. However, zero-shot CLIP-based ap-proaches introduce textual supervision, prompt engineering, or auxiliary anomaly datasets, often combined with adapter training, to align visual features with semantic cues. Such designs implicitly inject semantic priors and require addi-tional data preparation or optimization. In contrast, our method operates under a stricter for-mulation of one-class classification. We assume access only to a small set of normal reference point clouds and do not employ the CLIP textual encoder, prompts, or auxiliary anomaly data. Anomaly detection is performed purely via feature similarity in the CLIP visual embedding space. The anomaly scoring function is fully deterministic, category-agnostic, and remains unchanged when the target cate-gory varies. As a result, our approach provides a simple WANG et al.: DMP-3DAD: CROSS-CATEGORY 3D ANOMALY DETECTION VIA REALISTIC DEPTH MAP PROJECTION WITH FEW NORMAL SAMPLES 
+
+> 5
+
+and robust alternative for practical few-shot cross-category 3D anomaly detection, complementing existing zero-shot CLIP-based methods. 
+
+4. Experiment 
+
+4.1 Experimental Setup 
+
+Datasets. Following the previous works [1, 2], we evalu-ate the proposed method on the ShapeNetPart dataset [19]. ShapeNetPart is a subset of ShapeNet that provides object-level point clouds across multiple semantic categories. Fol-lowing the official dataset protocol, we adopt the prede-fined training and test splits, which contain 12,137 training samples and 2,874 test samples, respectively. Each object is represented as a point cloud consisting of 2,048 points, which are randomly sampled from the underlying 3D shape surface. All point clouds are normalized and consistently oriented, enabling fair comparison across categories. The dataset includes 16 object categories, such as airplane, chair, table, and lamp, covering diverse global geometries and structural variations. 
+
+Few-shot reference setting. To simulate realistic few-shot scenarios, we randomly sample a small number of normal point clouds from the target category as reference samples. Unless otherwise specified, we consider Nr ∈ { 1, 3, 5} nor-mal references. No anomalous samples are used during ref-erence construction, and labels are all unavailable for scor-ing. 
+
+Multi-view projection. Each point cloud is projected into a fixed number of realistic depth maps using the multi-view projection strategy described in Sec. 3.2. We evaluate differ-ent numbers of views ( V = 5 , 10 , 20 , 30 ) to study the effect of view number. Unless otherwise stated, we use V = 10 
+
+views as a trade-off between computational efficiency and performance. 
+
+Evaluation protocol and metric. We use the area under the receiver operating characteristic curve (AUROC) as the pri-mary evaluation metric following [1,2], where higher scores indicate a higher likelihood of being anomalous. For robust-ness, all experiments are repeated with 10 different random seeds for reference sample selection, and the average AU-ROC is reported. AUROC is computed for each target cat-egory independently, and the mean AUROC across all cate-gories is used as the final performance measure. 4.2 Comparison with State-of-the-Art Methods Tab. 1 reports the category-wise AUC-ROC com-parison between the proposed method and representative state-of-the-art approaches for few-shot cross-category 3D anomaly detection. We compare against a reconstruction-based method [2] and a knowledge-distillation-based method [1], both of which require category-wise training using normal reference samples. In contrast, our approach is entirely training-free and does not involve any optimiza-tion or category-specific adaptation. Overall, the proposed method achieves the best average performance across all few-shot settings. In particular, our method attains mean AUC-ROC scores of 92.49%, 96.08%, and 96.44% with 1, 3, and 5 reference samples, respectively, outperforming the compared methods in all three settings. The perfor-mance becomes better as the number of reference samples increases, indicating that our similarity-based formulation can effectively exploit additional normal exemples without retraining. At the category level, our method consistently achieves strong results on most object classes, especially those with complex global geometries such as airplane ,
+
+earphone and guitar . While knowledge-distillation-based methods can achieve competitive performance on certain categories, they rely on category-specific training to explic-itly adapt the feature space to the normal data distribution. Such adaptation can contribute to reduced variance across different reference selections. In contrast, our method oper-ates in a fully training-free manner and does not modify the underlying feature space according to the available normal samples. As a result, the anomaly scores are directly de-termined by the similarity relationships in the frozen CLIP embedding space, which naturally leads to relatively higher variance across different reference sets. Nevertheless, this behavior is expected and acceptable, as it reflects the ab-sence of optimization or category-dependent fitting, while still maintaining strong average performance across cate-gories. 4.3 Ablation Studies 
+
+Effect of View Weighting. We first analyze the impact of the view reliability weighting threshold γ, which determines whether a pixel is considered valid based on its depth inten-sity. Tab. 2 shows that the proposed method is insensitive to the exact choice of γ. Across a wide range of thresholds, the average AUC-ROC remains stable for all few-shot settings. Slightly better performance and lower variance are consis-tently observed when γ is set between 0.2 and 0.3. Based on this observation, we set γ = 0 .2 in all experiments. These results indicate that view weighting provides a robust mech-anism for suppressing unreliable projections without requir-ing careful parameter tuning. 
+
+Effect of Distance Metrics. We evaluate different distance metrics for feature similarity computation, including cosine distance, Euclidean distance, and Manhattan distance. As reported in Tab. 3, all three metrics yield comparable per-formance, confirming that the learned CLIP visual features are well-structured in the embedding space. Among them, Euclidean distance achieves the best overall performance, especially in the 3- and 5-shot settings, and is therefore adopted as the default choice in our framework. 
+
+Effect of CLIP Backbones. Tab. 4 compares different CLIP visual backbones under the same experimental protocol. Vi-sion Transformer backbones consistently outperform convo-lutional architectures, indicating their stronger capacity for capturing global geometric patterns from multi-view depth images. In particular, ViT-B/32 achieves the best trade-6
+
+Table 1 Category-wise AUC-ROC (%) comparison for few-shot anomaly detec-tion. The target category (normal class) is used for reference, and all other cate-gories are regarded as anomalies. Results are reported with 1, 3, and 5 reference samples. The reconstruction-based and knowledge-distillation-based methods require category-wise reference, whereas our method does not require train-ing. Mean and standard deviation are computed over 10 random runs. ↑ (↓) indi-cates that higher (lower) values are better. Best results are shown in bold.                                                                                                                                                                                                                                                                                                                                                                                
+
+> Reconstruction-based [2] Knowledge-distillation-based [1] DMP-3DAD (ours) Category (#tests) 1 sample 3 samples 5 samples 1 sample 3 samples 5 samples 1 sample 3 samples 5 samples Airplane (341) 87.60 ±5.99 96.07 ±1.07 97.39 ±0.48 97.41 ±1.01 98.59 ±0.18 98.29 ±0.53 98.73 ±2.22 99.71 ±0.11 99.75 ±0.08
+> Bag (14) 47.09 ±8.73 52.41 ±5.86 58.70 ±5.79 96.88 ±3.73 98.23 ±2.13 99.94 ±0.08 90.26 ±6.57 94.18 ±3.98 94.85 ±3.51 Cap (11) 38.71 ±5.70 45.22 ±3.82 46.31 ±6.38 90.96 ±5.54 94.96 ±3.05 94.13 ±2.94 97.85 ±1.30 98.35 ±1.35 98.18 ±2.20
+> Car (158) 62.28 ±3.27 64.12 ±2.06 65.14 ±1.81 99.33 ±0.27 99.36 ±0.26 99.31 ±0.29 99.32 ±0.69 99.69 ±0.14 99.75 ±0.09
+> Chair (704) 49.20 ±4.27 53.38 ±2.96 55.38 ±1.29 95.16 ±2.20 98.54 ±0.64 98.72 ±0.18 84.34 ±7.56 93.10 ±3.52 93.33 ±2.30 Earphone (14) 38.78 ±7.61 45.36 ±7.26 43.64 ±3.21 81.97 ±23.45 91.31 ±3.07 90.19 ±2.22 89.08 ±21.45 99.95 ±0.16 100.00 ±0.00
+> Guitar (159) 71.75 ±3.45 76.13 ±3.74 77.59 ±2.57 98.65 ±0.54 97.66 ±1.13 98.39 ±0.69 97.53 ±1.93 98.99 ±0.86 99.22 ±0.30
+> Knife (80) 66.46 ±4.20 70.49 ±2.31 71.79 ±0.91 95.18 ±1.75 95.33 ±2.22 96.72 ±1.08 88.09 ±15.13 91.84 ±4.18 93.74 ±2.69 Lamp (286) 53.09 ±5.02 58.68 ±2.55 62.20 ±3.68 56.13 ±6.16 60.76 ±8.34 61.22 ±5.84 68.48 ±11.70 82.65 ±5.95 83.20 ±2.90
+> Laptop (83) 67.36 ±4.52 69.08 ±2.24 70.24 ±2.58 98.89 ±0.16 98.78 ±0.32 98.69 ±0.29 98.88 ±0.05 98.89 ±0.06 98.90 ±0.05
+> Motorbike (51) 82.55 ±2.75 87.66 ±1.28 88.09 ±2.56 90.63 ±26.57 99.27 ±0.72 99.35 ±0.60 98.19 ±3.11 99.62 ±0.66 99.68 ±0.52
+> Mug (38) 44.04 ±5.67 46.94 ±2.44 48.55 ±3.82 99.60 ±0.49 99.73 ±0.37 99.35 ±0.57 99.68 ±0.50 99.96 ±0.06 99.96 ±0.06
+> Pistol (44) 64.85 ±4.70 71.77 ±4.41 78.57 ±4.44 99.08 ±0.66 98.86 ±0.51 98.80 ±0.48 98.67 ±1.43 99.41 ±1.14 99.53 ±0.65 Rocket (12) 55.25 ±2.97 55.95 ±5.69 59.67 ±5.05 96.63 ±1.44 95.73 ±2.01 96.23 ±2.93 89.38 ±6.94 93.68 ±4.98 94.24 ±4.10 Skateboard (31) 47.84 ±5.19 57.56 ±5.08 57.29 ±6.62 96.16 ±1.20 95.64 ±1.06 96.07 ±1.11 94.59 ±3.66 97.17 ±2.42 98.11 ±1.37 Table (848) 47.39 ±14.48 61.97 ±14.66 78.78 ±4.56 83.46 ±8.17 89.77 ±2.34 90.40 ±1.05 86.82 ±5.98 90.03 ±1.90 90.65 ±2.00
+> Avg. AUC-ROC ↑57.77 63.30 66.21 92.26 94.53 94.74 92.49 96.08 96.44
+> Avg. Std. Dev. ↓5.53 4.21 3.48 5.21 1.77 1.30 5.64 1.97 1.43
+
+off between accuracy and stability across all few-shot set-tings. Unless otherwise stated, ViT-B/32 is used in all ex-periments. 
+
+Effect of the Number of Views. We further study the influ-ence of the number of projected views in Tab. 5. Using only 5 views leads to a noticeable performance drop due to in-sufficient coverage of object geometry. Increasing the num-ber of views from 10 to 20 yields marginal improvements, while further increasing to 30 views does not bring addi-tional gains and may slightly degrade performance due to redundant or less informative projections. Considering both accuracy and computational efficiency, we use 10 views as the default setting. 
+
+Effect of the Number of References. We analyze the influence of the number of normal reference samples on anomaly detection performance. Fig. 3 reports the category-wise AUC-ROC as the reference size increases, while Fig. 4 shows the corresponding standard deviation over 10 ran-dom runs. With only a single reference sample, the pro-posed method already achieves strong performance across most categories, demonstrating its effectiveness in extreme few-shot scenarios. As more reference samples are in-troduced, the AUC-ROC consistently improves and grad-ually saturates, indicating that the CLIP-based visual em-beddings provide a stable representation for cross-category similarity comparison. Meanwhile, the standard deviation decreases significantly with increasing reference size, espe-cially for categories with larger intra-class variability. These results suggest that additional normal references mainly contribute to stabilizing the similarity estimation rather than 0 5 10 15 20 25 30 
+
+> Number of Reference Samples
+> 70
+> 75
+> 80
+> 85
+> 90
+> 95
+> 100
+> AUC-ROC (%)
+> airplane
+> bag
+> cap
+> car
+> chair
+> earphone
+> guitar
+> knife
+> lamp
+> laptop
+> motorbike
+> mug
+> pistol
+> rocket
+> skateboard
+> table
+> MEAN
+
+Fig. 3 Category-wise AUC-ROC (%) with varying num-bers of reference samples. Thin dashed curves correspond to individual object categories, while the bold solid curve shows the mean performance averaged over all categories. fundamentally altering the decision boundary. Overall, the proposed training-free framework exhibits robust and pre-dictable behavior with respect to the number of reference samples. 
+
+Component Analysis. Finally, Tab. 6 presents an ablation study on the main components of the proposed framework. Removing multi-view projection (MP) leads to a substan-tial performance degradation, highlighting its necessity. In-troducing view-wise similarity (VS) significantly improves performance, and incorporating view weighting (VW) fur-ther enhances robustness and reduces variance. The full WANG et al.: DMP-3DAD: CROSS-CATEGORY 3D ANOMALY DETECTION VIA REALISTIC DEPTH MAP PROJECTION WITH FEW NORMAL SAMPLES       
+
+> 70510 15 20 25 30
+> Number of Reference Samples
+> 0
+> 5
+> 10
+> 15
+> 20
+> Standard Deviation
+> airplane
+> bag
+> cap
+> car
+> chair
+> earphone
+> guitar
+> knife
+> lamp
+> laptop
+> motorbike
+> mug
+> pistol
+> rocket
+> skateboard
+> table
+> MEAN
+
+Fig. 4 Category-wise standard deviation with varying numbers of reference samples. Thin dashed curves corre-spond to individual object categories, while the bold solid curve shows the mean performance averaged over all cate-gories. model consistently achieves the best overall performance, demonstrating the complementary roles of all components. 
+
+5. Analysis of Failure Cases 
+
+Fig. 5 shows representative failure cases of the pro-posed method, where anomalous samples from unseen cate-gories are incorrectly classified as normal. A typical failure occurs when anomalous objects share strong global geomet-ric similarity with the target category. For example, objects such as rocket or guitar may resemble airplane under cer-tain viewpoints due to their elongated shapes, while laptop 
+
+samples can be confused with chair or table because of sim-ilar planar structures. In such cases, multi-view depth pro-jections yield visually similar silhouettes, resulting in small feature distances in the CLIP visual embedding space. Another source of error stems from view-dependent ambiguity. Although multi-view projection reduces view-point sensitivity, discriminative cues may only appear in a limited number of views. When most views exhibit high similarity to normal references, the aggregated similarity score may still favor normality, especially for structurally simple or symmetric categories such as table and chair .These failure cases reflect an inherent limitation of training-free, similarity-based detection, which does not explicitly model fine-grained local geometry or category-specific semantics. Nevertheless, our method enables strong generalization without category-wise training. Incorporat-ing additional local geometric cues or adaptive view strate-gies may further improve discrimination in such challenging cases, which we leave for future work. 
+
+6. Conclusion 
+
+This paper presented DMP-3DAD, a training-free framework for cross-category 3D anomaly detection under few-shot settings. By combining realistic multi-view depth 
+
+Table 2 Effect of weighting threshold on anomaly detec-tion performance. Results are reported in terms of average AUC-ROC (%) and average standard deviation over 10 ran-dom runs with 1, 3, and 5 reference samples. 
+
+Number of reference samples Weighting 1 sample 3 samples 5 samples Mean Std Mean Std Mean Std 
+
+γ < 0.1 92.48 5.48 96.01 1.98 96.47 1.43 
+
+γ < 0.2 92.63 5.34 96.07 1.89 96.42 1.39 
+
+γ < 0.3 92.59 5.46 96.05 1.83 96.39 1.34 
+
+γ < 0.4 92.61 5.41 95.99 1.88 96.33 1.36 
+
+γ < 0.5 92.61 5.40 95.92 1.92 96.28 1.38 
+
+γ < 0.6 92.52 5.57 95.89 1.92 96.26 1.37 
+
+γ < 0.7 92.47 5.64 95.90 1.89 96.24 1.35 
+
+γ < 0.8 92.48 5.63 95.87 1.91 96.25 1.36 
+
+γ < 0.9 92.49 5.61 95.86 1.92 96.24 1.36 
+
+γ < 1.0 92.49 5.61 95.84 1.86 96.32 1.54 
+
+Table 3 Effect of distance metrics on anomaly detection performance. Results are reported in terms of average AUC-ROC (%) and average standard deviation over 10 random runs with 1, 3, and 5 reference samples. 
+
+Number of reference samples Metric 1 sample 3 samples 5 samples Mean Std Mean Std Mean Std Cosine 92.61 5.32 95.75 1.93 96.10 1.35 
+
+Euclidean 92.63 5.34 96.07 1.89 96.42 1.39 Manhattan 92.64 5.25 96.05 1.95 96.42 1.40 
+
+Table 4 Effect of backbone architectures on anomaly de-tection performance. Results are reported in terms of aver-age AUC-ROC (%) and standard deviation over 10 random runs with 1, 3, and 5 reference samples. 
+
+Number of reference samples Backbone 1 sample 3 samples 5 samples Mean Std Mean Std Mean Std ViT-B/16 92.10 5.59 95.64 1.96 96.06 1.61 ViT-B/32 92.63 5.34 96.07 1.89 96.42 1.39 
+
+RN50 88.34 7.47 93.03 3.42 93.70 2.63 RN101 89.68 7.05 94.81 2.94 95.31 2.20 RN50 ×4 90.30 7.15 94.56 3.15 95.14 2.38 RN50 ×16 89.46 8.79 93.55 3.82 93.89 2.94 
+
+map projection with a frozen CLIP visual encoder, anomaly detection is formulated as a feature similarity problem with-out requiring category-specific training or optimization. The proposed view reliability weighting improves robustness while keeping the entire pipeline fully deterministic. Ex-periments on the ShapeNetPart benchmark demonstrate that DMP-3DAD achieves state-of-the-art performance with sta-ble behavior across different numbers of reference samples. These results indicate that leveraging realistic projection and 8Airplane Guitar Chair Laptop 
+
+Rocket Table 
+
+Knife Pistol 
+
+Car 
+
+Lamp Laptop Table 
+
+Pistol Chair Skateboard 
+
+Laptop Chair Table 
+
+Fig. 5 Failure cases of the proposed anomaly detection method. Green boxes in-dicate reference samples from the normal class, while red boxes denote anomalous samples from different classes that are incorrectly classified as normal. 
+
+Table 5 Effect of the number of views on anomaly detec-tion performance. Results are reported in terms of average AUC-ROC (%) and standard deviation over 10 random runs with 1, 3, and 5 reference samples. 
+
+Number of reference samples #Views 1 sample 3 samples 5 samples Mean Std Mean Std Mean Std 5 90.34 6.54 94.50 2.23 94.95 1.64 10 92.63 5.34 96.07 1.89 96.42 1.39 
+
+20 92.49 5.64 96.08 1.97 96.44 1.43 30 91.78 5.88 95.33 2.21 95.60 1.52 
+
+Table 6 Ablation study of different components in the proposed framework. MP, VS, and VW denote Multiview Projection, View-wise Similarity, and View Weighing, re-spectively. Results are reported in terms of average AUC-ROC (%) and standard deviation over 10 random runs with 1, 3, and 5 reference samples. 
+
+Components Number of reference samples MP VS VW 1 sample 3 samples 5 samples Mean Std Mean Std Mean Std 
+
+× × × 86.84 7.34 91.26 3.01 91.67 2.49 
+
+✓ × × 90.75 5.77 94.31 2.51 94.74 1.68 
+
+✓ ✓ × 92.64 5.35 95.87 1.89 96.23 1.32 
+
+✓ ✓ ✓ 92.63 5.34 96.07 1.89 96.42 1.39 
+
+large pretrained visual models is an effective and practical direction for training-free 3D anomaly detection, and future work may further enhance discrimination by incorporating local geometric cues or adaptive view strategies. 
+
+References 
+
+[1] J. Qin, C. Gu, J. Yu, and C. Zhang, “Teacher–student network for 3d point cloud anomaly detection with few normal samples,” Expert Systems with Applications, vol.228, p.120371, 2023. [2] M. Masuda, R. Hachiuma, R. Fujii, H. Saito, and Y. Sekikawa, “To-ward unsupervised 3d point cloud anomaly detection using varia-tional autoencoder,” 2021 IEEE International Conference on Image Processing (ICIP), pp.3118–3122, IEEE, 2021. [3] P. Bergmann, X. Jin, D. Sattlegger, and C. Steger, “The mvtec 3d-ad dataset for unsupervised 3d anomaly detection and localization,” arXiv preprint arXiv:2112.09045, 2021. [4] J. Liu, G. Xie, R. Chen, X. Li, J. Wang, Y. Liu, C. Wang, and F. Zheng, “Real3d-ad: A dataset of point cloud anomaly detec-tion,” Advances in Neural Information Processing Systems, vol.36, pp.30402–30415, 2023. [5] Y. Cheng, Y. Cao, G. Xie, Z. Lu, and W. Shen, “Towards zero-shot point cloud anomaly detection: A multi-view projection frame-work,” arXiv preprint arXiv:2409.13162, 2024. [6] X. Zhu, R. Zhang, B. He, Z. Guo, Z. Zeng, Z. Qin, S. Zhang, and P. Gao, “Pointclip v2: Prompting clip and gpt for powerful 3d open-world learning,” Proceedings of the IEEE/CVF international confer-ence on computer vision, pp.2639–2650, 2023. [7] Z. Zuo, J. Dong, Y. Wu, Y. Qu, and Z. Wu, “Clip3d-ad: Extend-ing clip for 3d few-shot anomaly detection with multi-view images generation,” arXiv preprint arXiv:2406.18941, 2024. [8] A. Radford, J.W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, et al. , “Learning transfer-able visual models from natural language supervision,” International conference on machine learning, pp.8748–8763, PmLR, 2021. [9] J. Cheng, C. Gao, J. Zhou, J. Wen, T. Dai, and J. Wang, “Mc3d-ad: A unified geometry-aware reconstruction model for multi-category 3d anomaly detection,” arXiv preprint arXiv:2505.01969, 2025. [10] Y. Wang, J. Peng, J. Zhang, R. Yi, Y. Wang, and C. Wang, “Mul-timodal industrial anomaly detection via hybrid fusion,” Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp.8032–8041, 2023. [11] E. Horwitz and Y. Hoshen, “Back to the feature: classical 3d features are (almost) all you need for 3d anomaly detection,” Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recog-nition, pp.2968–2977, 2023. [12] Z. Wang, K. Hotta, K. Kamide, Y. Zou, C. Zhang, and J. Yu, “3dkeyad: High-resolution 3d point cloud anomaly detection via keypoint-guided point clustering,” arXiv preprint arXiv:2507.13110, 2025. [13] Z. Wang, K. Hotta, Y. Zou, Y. Ding, C. Zhang, and J. Yu, “Boost-ing high-resolution 3d point cloud anomaly detection with geometric WANG et al.: DMP-3DAD: CROSS-CATEGORY 3D ANOMALY DETECTION VIA REALISTIC DEPTH MAP PROJECTION WITH FEW NORMAL SAMPLES 
+
+9constraints,” International Conference on Machine Vision, 2025. [14] J. Du, C. Tao, X. Cao, and F. Tsung, “3d vision-based anomaly de-tection in manufacturing: A survey,” Frontiers of Engineering Man-agement, pp.1–18, 2025. [15] J. Liu, G. Xie, J. Wang, S. Li, C. Wang, F. Zheng, and Y. Jin, “Deep industrial image anomaly detection: A survey,” Machine In-telligence Research, vol.21, no.1, pp.104–135, 2024. [16] Y. Lin, Y. Chang, X. Tong, J. Yu, A. Liotta, G. Huang, W. Song, D. Zeng, Z. Wu, Y. Wang, et al. , “A survey on rgb, 3d, and multi-modal approaches for unsupervised industrial image anomaly detec-tion,” Information Fusion, p.103139, 2025. [17] Q. Zhou, G. Pang, Y. Tian, S. He, and J. Chen, “Anomalyclip: Object-agnostic prompt learning for zero-shot anomaly detection,” arXiv preprint arXiv:2310.18961, 2023. [18] W. Ma, X. Zhang, Q. Yao, F. Tang, C. Wu, Y. Li, R. Yan, Z. Jiang, and S.K. Zhou, “Aa-clip: Enhancing zero-shot anomaly detection via anomaly-aware clip,” Proceedings of the Computer Vision and Pattern Recognition Conference, pp.4744–4754, 2025. [19] L. Yi, L. Shao, M. Savva, H. Huang, Y. Zhou, Q. Wang, B. Gra-ham, M. Engelcke, R. Klokov, V. Lempitsky, et al. , “Large-scale 3d shape reconstruction and segmentation from shapenet core55,” arXiv preprint arXiv:1710.06104, 2017.

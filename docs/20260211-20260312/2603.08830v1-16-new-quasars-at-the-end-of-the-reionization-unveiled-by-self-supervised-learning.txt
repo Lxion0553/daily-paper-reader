@@ -1,0 +1,1413 @@
+Title: 16 new quasars at the end of the reionization unveiled by self-supervised learning
+
+URL Source: https://arxiv.org/pdf/2603.08830v1
+
+Published Time: Wed, 11 Mar 2026 00:06:55 GMT
+
+Number of Pages: 29
+
+Markdown Content:
+Astronomy & Astrophysics manuscript no. aanda ©ESO 2026 March 11, 2026 
+
+# 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+L.N. Martínez-Ramírez 1, 2, 3, 4 , Julien Wolf 1, 10 , Silvia Belladitta 1, 5, 10 , Eduardo Bañados 1 F. E. Bauer 6 ,Raphael E. Hviding 1 , Daniel Stern 7 , Chiara Mazzucchelli 8 , Romain A. Meyer 9 , Ezequiel Treister 6 , and Federica Loiacono 5 
+
+> 1
+
+Max Planck Institut für Astronomie, Königstuhl 17, D-69117, Heidelberg, Germany e-mail: lmartinez@mpia.de  
+
+> 2
+
+Instituto de Astrofísica, Facultad de Física, Pontificia Universidad Católica de Chile Av. Vicuña Mackenna 4860, 7820436 Macul, Santiago, Chile  
+
+> 3
+
+Fakultät für Physik und Astronomie, Universität Heidelberg Im Neuenheimer Feld 226, 69115 Heidelberg, Germany  
+
+> 4
+
+Millennium Institute of Astrophysics (MAS), Nuncio Monseñor Sótero Sanz 100, Providencia, Santiago, Chile  
+
+> 5
+
+INAF – Osservatorio di Astrofisica e Scienza dello Spazio, Via Gobetti 93 /3, I-40129, Bologna, Italy  
+
+> 6
+
+Instituto de Alta Investigación, Universidad de Tarapacá, Casilla 7D, Arica, Chile  
+
+> 7
+
+Jet Propulsion Laboratory, California Institute of Technology, 4800 Oak Grove Drive, Pasadena, CA, 91109, USA  
+
+> 8
+
+Instituto de Estudios Astrofísicos, Facultad de Ingeniería y Ciencias, Universidad Diego Portales, Avenida Ejercito Libertador 441, Santiago, Chile.  
+
+> 9
+
+Department of Astronomy, University of Geneva, Chemin Pegasi 51, 1290 Versoix, Switzerland Received ; accepted 
+
+ABSTRACT 
+
+Luminous quasars at z > 6 are key probes of early supermassive black hole (SMBH) growth, massive galaxy evolution, and intergalac-tic medium properties during cosmic reionization. However, their discovery is very challenging due to their scarcity and overwhelming contamination. Foreground ultracool dwarfs (UCDs) outnumber z > 6 quasars by 2-4 orders of magnitude. In this work, we leveraged the extensive coverage of DESI Legacy Survey DR10 to conduct a self-supervised search for quasars at z > 6, directly analyzing multiband optical images and minimizing the biases of the traditional catalog-driven color-color selection criteria. By applying a con-trastive learning (CL) method followed by spectral energy distribution (SED) fitting prioritization, we identified 1139 high-priority quasar candidates, for which we expect a competitive 1:1 quasar-to-UCD ratio based on the literature samples. We spectroscopically confirm 16 new quasars at z = 5.94 − 6.45, achieving a 45% success rate. Remarkably, all 16 objects are relatively bright (M 1450 <
+
+−25 .5) quasars, including several with unusual properties such as narrow Ly α emission (FWHM ≲ 2600 km s −1), strong Ly α+N v
+
+emission with an equivalent width > 100 Å, and a mild observed-frame red near-infrared (NIR) continua ( z − J > 0.4). Notably, three of them would have been missed by traditional color–color selections. These results highlight the power of self-supervised machine learning, combined with SED fitting prioritization, to uncover rare, distant sources beyond the limitations of conventional techniques. Our approach o ff ers a scalable and robust framework for data mining and can be readily extended to forthcoming wide-field surveys such as Rubin /LSST, 4MOST, Euclid , and Roman. These applications will advance the census of high-redshift quasars, potentially extend the redshift frontier, and improve constraints on SMBH formation and evolution in the first billion years of the Universe. 
+
+Key words. quasar – high-redshift– machine learning – imaging surveys 
+
+1. Introduction 
+
+The accretion process in quasars makes them the most lumi-nous non-transient sources in the Universe, outshining their host galaxies and dominating across the electromagnetic spectrum. The energy and momentum released by quasars strongly interact with the surrounding gas, influencing the evolution of their host galaxies and the environment (Fabian 2012). This process, re-ferred to as active galactic nucleus (AGN) feedback, is crucial in cosmological simulations to reproduce realistic galaxy popula-tion properties (e.g., Kau ff mann & Haehnelt 2000; Granato et al. 2004; Di Matteo et al. 2005; Springel et al. 2005; Kaviraj et al. 2017; Bustamante & Springel 2019). Empirical correlations be-tween supermassive black hole (SMBH) mass and galaxy prop- 
+
+> 10
+
+The second and the third authors contributed equally to the manuscript. 
+
+erties, such as stellar bulge mass, velocity dispersion, and lumi-nosity, support a coevolutionary scenario between quasars and their hosts (e.g., Tremaine et al. 2002; Marconi & Hunt 2003; Häring & Rix 2004; McConnell & Ma 2013; Kormendy & Ho 2013). However, observations of ≳ 100 high-redshift quasars (z ≳ 6; i.e., ∼ 1 Gyr after the Big Bang) suggest that this re-lation may evolve with redshift, although the nature and extent of this evolution remain uncertain. A subset of SMBHs at early cosmic times seems to be more massive than expected from the local SMBH mass and host galaxy total stellar mass (M •–M ∗)correlation (e.g., Wang et al. 2016; Decarli et al. 2018; Neeleman et al. 2021; Harikane et al. 2023), potentially suggesting a faster growth of black holes relative to their host galaxies, or the ex-istence of more massive black hole seeds. Expanding the quasar population at z > 5 and pushing the magnitude frontier to fainter sources, along with a comprehensive physical characterization 
+
+Article number, page 1 of 29  
+
+> arXiv:2603.08830v1 [astro-ph.GA] 9 Mar 2026 A&A proofs: manuscript no. aanda
+
+are essential to test these coevolution scenarios at early cosmic times. Neutral intergalactic medium (IGM) absorbs photons blue-ward of Ly α, producing the distinctive Ly α break in the quasars’ spectra at rest frame ∼ 1216 Å. Quasars at high red-shift appear undetectable or faint in photometric filters covering wavelengths below Ly α, creating a red color in photometric in-dices involving the dropout band: this is the basis of the dropout selection technique (e.g., Warren et al. 1987). However, fore-ground ultracool M, L, and T dwarfs also exhibit red spectra that can mimic the dropout signature and a point-like morphology re-sembling that of quasars. Moreover, while the number density of quasars declines exponentially at z > 5 (Jiang et al. 2016), drop-ping to fewer than one with M 1450 < −26 per comoving Gpc 3 at z
+
+∼ 6 (Schindler et al. 2023); ultracool dwarfs (UCDs) associated with the thin and thick disk of the Milky Way remain 2–4 orders of magnitude more numerous (e.g., Euclid Collaboration et al. 2019), making them the primary astrophysical contaminants in high-redshift quasar searches. Therefore, it is necessary to an-alyze a large area of the sky in order to identify high-redshift quasar candidates. The advent of wide-field optical surveys in the early 2000s led by the Sloan Digital Sky Survey (SDSS; York et al. 2000), opened the way to quasar discoveries at z > 5 (e.g., Fan et al. 1999, 2001) via color drop-out selection. Then surveys, such as the Canada-France-Hawaii Telescope Legacy Survey (CFHTLS), Pan-STARRS1 (PS1, Chambers et al. 2016), and Dark Energy Survey (DES, Abbott et al. 2018), significantly ex-panded the sample (e.g., Bañados et al. 2016, 2023; Reed et al. 2017; Mazzucchelli et al. 2017; Wolf et al. 2024; Belladitta et al. 2019, 2020, 2025). The vast majority of these quasars have been selected by conservative color criteria to minimize contamina-tion. As a consequence, most known quasars at z > 5 exhibit sim-ilar properties: typically unobscured, with massive black holes (∼ 4 × 10 7M⊙ to ∼ 10 10 M⊙; Fan et al. 2023) and moderate-to-high accretion rates (median L Bol /LEdd = 0.79 and 0.72, respec-tively; Fan et al. 2023; Mazzucchelli et al. 2023), leaving po-tentially important populations underrepresented, such as red or obscured quasars, and objects with unusual emission line prop-erties. Machine learning, particularly traditional supervised meth-ods such as Random Forests and XGBoost, has increasingly been applied to quasar selection, demonstrating strong perfor-mance up to intermediate redshifts ( z ∼ 5; e.g., Nakoneczny et al. 2019; Yèche et al. 2020; Jin et al. 2019; Schindler et al. 2019). Even unsupervised clustering approaches (e.g., Logan & Fotopoulou 2020) and comparative studies of unsupervised, semi-supervised, and fully supervised methods (e.g., Clarke et al. 2020) have been explored for the common star-galaxy-quasar classification in large surveys. More recently, machine-learning techniques have been extended to a higher redshift regime ( z ≳ 5). For example, Wenzl et al. (2021) applied a Ran-dom Forest classifier to Pan-STARRS1 and WISE data to iden-tify z > 4.7 quasars, achieving successful spectroscopic con-firmations. However, these e ff orts heavily rely on catalog-level photometric measurements and flux ratios, which are sensitive to contamination from artifacts and systematics in the source ex-traction process. Furthermore, supervised methods are often con-strained by the availability of balanced and representative train-ing samples; rare populations such as red high-redshift quasars are typically underrepresented, limiting classification reliability in these regimes. Recent e ff orts to apply multiband imaging to the discovery of strongly lensed quasars have identified dozens of candidates using deep learning and spectral energy distribution (SED) mod-eling that successfully passed visual inspection. These systems, however, remain at the candidate stage pending spectroscopic confirmation (Andika et al. 2023). The work by Byrne et al. (2024) marks the first application of contrastive learning (CL), a fully self-supervised representation-learning method, to opti-cal imaging (DES DR2, Abbott et al. 2021), leading to the dis-covery of three quasars at z = 5.94 − 6.07. Unlike conventional supervised methods, which require labeled training sets and can su ff er from bias, CL learns by contrasting data samples against each other without any prior labels, making it well-suited to un-cover rare or atypical quasar populations. Empirical studies show that CL can perform as well as, or even better than, supervised training, producing representations that transfer more e ff ectively and remain robust across di ff erent datasets (Chen et al. 2020; Karthik et al. 2021). Also, the work by Sarmiento et al. (2021) demonstrated that CL is more robust against nonphysical cor-relations led by observational e ff ects in astronomical data than unsupervised dimensionality reduction algorithms such as prin-cipal component analysis (PCA; Pearson 1901). Building on this promise, we extend CL-based quasar selection to test whether it enables the recovery of diverse high-redshift quasars with lower contamination and fewer selection biases than supervised alter-natives. In this paper, we apply a self-supervised CL approach to imaging data from the DESI Legacy Survey DR10 (hereafter LS DR10; Dey et al. 2019) to identify z ≳ 5.5 quasar candi-dates. We demonstrate the e ff ectiveness of our method with the spectroscopic confirmation of 15 new quasars, along with the reidentification of 3 previously published quasars, out of 40 ob-served candidates, corresponding to a 45% success rate. Several of these quasars exhibit narrow Ly α emission lines, red near-infrared (NIR) continua, and high Ly α EWs, and thus they are part of populations typically underrepresented. Section 2 de-scribes the catalog-based preselection of i-dropout candidates used for training. Section 3 outlines the CL framework and its implementation, and presents the resulting low-dimensional em-bedded space. In Section 4, we detail the candidate prioritiza-tion strategy and follow-up observations, and in Section 5, we present the newly spectroscopically confirmed quasars and UCD contaminants. Throughout this paper we adopt ΛCDM cosmology with H0 = 67 .4 km s −1Mpc −1, Ωm = 0.315 and ΩΛ = 0.685 (Planck Collaboration et al. 2020). We report magnitudes in the AB sys-tem. 
+
+2. Preselection of i-dropout candidates 
+
+To ensure e ff ective training of our CL model, we first apply a preselection to the input dataset. Although larger batch sizes typ-ically improve CL performance (Chen et al. 2020), the underly-ing neural network can easily get sidetracked by the most domi-nant features, such as sizes or extended morphology, if the train-ing set is not properly delimited. To mitigate this and encourage the learning of the most fundamentally relevant features, we re-strict the input to red and nearly point-like sources. This pres-election filters out contaminants such as extended galaxies, as-teroids, satellites, and di ff raction spikes in the photometry while minimizing the impact of irrelevant features. The procedure to select z > 5.5 quasar candidates is divided in three major steps: (1) The selection of a preliminary set of candidates from photometric optical catalogs by applying loose morphological and color constraints; (2) the training of the CL algorithm with g, r, i, and z band optical images to produce an  
+
+> Article number, page 2 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning
+
+embedded low-dimensional representation of i-dropout sources, and the subsequent identification of candidates and contaminants guided by labeled data; (3) SED fitting procedure using quasar, galaxy and UCD templates to prioritize for follow up observa-tions the sources with reliable photometry and SEDs more con-sistent with a quasar model. 
+
+2.1. Photometric catalog 
+
+We selected our candidates from LS DR10, which o ff ers deep optical imaging over > 20 000 deg 2 of sky, including substan-tial coverage of the underexplored southern hemisphere, where high-redshift quasar discoveries remain sparse (e.g., Reed et al. 2017; Belladitta et al. 2019, 2025; Wolf et al. 2024; Onken et al. 2022) and next generation facilities are being built (e.g., The Extreme Large Telescope (ELT) and The square kilome-ter array (SKA) radio telescope, respectively; Padovani & Cira-suolo 2023; Hall et al. 2008). The DR10 release combines imag-ing of: the southern sky from the DECam Legacy Survey (DE-CaLS, Dey et al. 2019) using the Dark Energy Camera (DE-Cam, Flaugher et al. 2015) on the Blanco 4m telescope and other programs using DECam such as the DECam eROSITAS sur-vey (DeROSITAS, Zenteno et al. 2025), the DECam Local Vol-ume Exploration Survey (DELVE, Drlica-Wagner et al. 2021), the Blanco Imaging of the Southern Sky Survey (BLISS; PI: Soares-Santos Mau et al. 2019), and the Dark Energy Survey (DES, Abbott et al. 2018); the northern sky from the Mayall z-band Legacy Survey (MzLS, Silva et al. 2016) and the Beijing-Arizona Sky Survey (BASS, Zou et al. 2017); and full-sky mid-infrared (MIR) photometry from the Wide-field Infrared Survey Explorer (WISE, Wright et al. 2010): the unblurred coadds of WISE (unWISE, Mainzer et al. 2014) and Near-Earth Object Wide-field Infrared Survey Explorer Reactivation Mission (NE-OWISE, Mainzer et al. 2014). LS DR10 photometry reaches me-dian 5 σ point-source depths of gDECam = 24 .7, rDECam = 23 .9, 
+
+iDECam = 23 .6, zDECam = 23 .0 AB magnitudes in the southern hemisphere. Similar but slightly shallower depths are achieved in the northern hemisphere. Since machine-learning algorithms face problems when dealing with the lack of data, we requested valid observations in all optical bands (n obs > 0), limiting the selection of targets to an area of 15,342 deg 2 and declinations < 30 ◦ (due to the limited 
+
+i-band coverage). We focused on candidates for which the SED fitting refinement step is possible and informative, thus requiring detection in at least one NIR band from the VISTA Hemisphere Survey DR7 (VHS, McMahon 2012), UKIRT Infrared Deep Sky Surveys DR11 (UKIDSS, Lang 2014) or UKIRT Hemisphere Survey DR2 (UHS, Dye et al. 2018) surveys and a signal-to-noise ratio (S /N) > 3 in WISE W1. While WISE bands are al-ready included in the LS DR10 catalog, NIR bands were added by cross-matching our catalog with the previously mentioned surveys within a 1.5 ′′ radius. Due to the previous criteria, the catalog is limited to 5 σ depths of VHS DR7 J = 21.7-22.3 and 
+
+Ks = 21.8-22.1 mag, UKIDSS DR11 depth of H= 20.2 mag, UHS DR2 depth of J=20.5 and Ks =20.0 mag, and unWISE depth of W1 = 20.72 mag. Besides, the low spatial resolution (2.75 ′′ /pixel) of WISE W1 renders this band prone to source blending and, therefore, potential flux overestimation. The constraints accounting for the i-dropout sources are as follow: (S /N) z > 7 (1) ( ( iPSF − zPSF > 1.5 and (S /N) i > 3) or (2) (ilimPSF − zPSF > 1.5 and (S /N) i < 3) ) (S /N) g,r < 3 (3) 
+
+iflux_ivar ̸ = 0, (4) where iPSF and zPSF are i and z band magnitudes, and iflux_ivar the inverse variance of the flux in the i band. All of them are products from The Tractor algorithm (Lang et al. 2016) used in LS DR10 for the source extraction, based on the convolution of the images to a PSF model. The magnitude limit for the i-band ( ilimPSF ) is computed as 
+
+ilimPSF = 22 .5 − 2.5 log 
+
+ 3
+
+piflux_ivar 
+
+ . (5) We set the color threshold at 1 .5, which is 0.5 mag lower than in previous selections (e.g., Reed et al. 2017; Bañados et al. 2016). This choice enabled us to recover 127 out of the 166 known quasars at z > 5.3 from the literature (Fan et al. 2023) that lie within the LS DR10 footprint, have complete optical coverage, and satisfy conditions (1)–(5). Among the 39 missed sources, only 15 lie at z > 6, the redshift range on which this work is focused. The recovery rate decreased when imposing infrared con-straints: from 127 to 106 when requiring a significant detec-tion in WISE W1, and further to 69 when requiring both NIR and WISE W1 detections. In other words, the NIR +W1 criterion removed ∼ 46% of known quasars. However, without any IR constraints, the candidate list would swell to 3,254,837 sources, which is beyond the computational scope of this work. More-over, such a large sample would have far less reliable prioriti-zation for follow-up, as most sources would have too few pho-tometric points for meaningful SED fitting. Even requiring only the W1 requirement (losing only ∼ 17% of known quasars) still results in 1,850,912 candidates, a size that remains challenging to process and likely to have a high contamination rate. We also adopted maskbits that select clean sources (includ-ing masked point-like and /or unsaturated sources). 1 We explic-itly did not select objects by source type nor by morphology fea-tures. We note that adopting the type "PSF" to focus on the most point-like objects would only reduce the catalog by 17%, but ex-clude 11 known z ∼ 6 quasars from the literature. The resulting sample consists of 165 253 objects. 
+
+2.2. Multiband imaging tensor 
+
+We compiled 10 ′′ × 10 ′′ sized cutouts from the g, r, i, and z
+
+band images for each of the 165 253 targets from the LS DR10 archive. Given the native DECam pixel scale of 0 ′′ . 262 per pixel, this resulted in 38 × 38 pixel 2 images and a tensor dimension of 165253 × 4 × 38 × 38. During our inspection of tensor slices, we discovered clear artifacts, mainly cosmic rays and di ff raction spikes (see Fig. 1 for examples), that the maskbits conditions at the catalog level did not filter out. To identify and remove these extended sources, we calculated the ratio of flux within a 1 ′′ radius aperture to the              
+
+> 1i.e., maskbits <2 or =32, 64, 96, 128, 160, 256, 512, 768, 2048, 2176. Article number, page 3 of 29 A&A proofs: manuscript no. aanda
+> Fig. 1. z-band 10 ′′ ×10 ′′ sized stamps illustrating examples of the arti-facts identified in the photometry through visual inspection of the ten-sor. Light blue circles indicate the 1 ′′ and 3 ′′ radius apertures used in the compactness criteria calculation. The C 1′′ /3′′ values are presented above the corresponding postage stamp.
+
+flux within a 3 ′′ radius aperture (C 1′′ /3′′ ). If this ratio exceeded 0.3, the source was considered compact. Conversely, we rejected sources where 30% or less of the total flux within the 3 ′′ aperture was confined to the inner 1 ′′ aperture, as this indicated an ex-tended structure. This flexible 30% threshold was calibrated on a sample of known quasars at z > 5.3 (Fan et al. 2023), all with ratios above 45%, except for the quasar pair J2037–4537 (Yue et al. 2021) with a 32% ratio, prompting us to lower our limit to avoid excluding similar systems. This step reduced the train-ing sample used as input to the CL pipeline to 130472 sources by removing these extended unphysical sources in line with the literature. 
+
+3. Contrastive learning for the selection of quasars candidates 
+
+The selection method reported in this paper is based on CL, a self-supervised machine-learning algorithm mapping high-dimensional data sets into a low-dimensional feature space rep-resentation. This method learns the most informative correla-tions in the data by measuring the similarity between data points (Chopra et al. 2005; Hadsell et al. 2006) without any labels and taking advantage of data augmentation methods (Huertas-Company et al. 2023). As described in section 2.2, the data for this application of the CL consists of multiband image chan-nels containing two-dimensional spatial information. This input is similar to that used in previous successful astronomical appli-cations of CL (e.g., Sarmiento et al. 2021; Byrne et al. 2024). With the imaging tensor input of the CL set, a preprocessing was carried out consisting of: 1) masking nan-value pixels, if present, with zeros, given that the pixel flux distributions across all bands are dominated by background noise and peak at zero. 2) normalizing the tensor using a single global factor derived from the 99th percentile of the brightest band across all sources, which in our case corresponds to the z-band. To compute this factor, we first built per-band distributions of pixel flux values (within a 1 ′′ radius from the center) across the full sample. We then determined the 99th percentile of each band’s distribution and identified the brightest among them. This value was adopted as the normalization factor and applied uniformly to all sources in the tensor. By using one global factor rather than source-by-source scaling, we pre-served both the relative brightness distribution of the targets and the intrinsic SED shape across bands. 3) random shu ffl ing of the source indexes in the tensor to pre-vent any potential spatial or data quality bias, as the original tensor was generated in increasing right ascension order, and the training sample is divided into batches. We trained a modified version of the self-supervised model simCLR (a simple framework for contrastive learning of visual representations, Chen et al. 2020) built on Keras 2.15.0 . We im-plemented the following data augmentations: horizontal and ver-tical flips, and random rotation within ±90°, to produce trans-formed versions of each image. In principle, Gaussian noise per-turbations can be included as an additional data augmentation, motivated by realistic calibration uncertainties and background fluctuations (e.g., zeropoint variations and sky noise). Such per-turbations introduce mild pixel-level variations while preserving the physical interpretability of the encoded SED. In this work, we did not adopt this augmentation in order to keep the training scheme minimal and limit survey-dependent hyperparameters; its inclusion is left to future extensions explicitly modeling pho-tometric uncertainties. Two augmented views of the same input source are referred to as positive pairs, while negative pairs are augmented views of di ff erent input sources. These pairs drive the training, en-couraging the network to cluster similar sources in the latent space while pushing away dissimilar ones. The encoder produc-ing this low-dimensional representation of the images consisted of four convolutional neural network (CNN) layers that progres-sively reduced the spatial dimensions of the four channels to a 128-length feature vector. This was followed by a Flatten layer and a Dense layer, which applied a transformation to the vec-tor, combining the local spatial information into a more compact and complex embedded representation. The stacked layers al-low the network to capture increasingly complex visual features: from basic edges and shapes to higher-level structures such as smudges and PSF-like features. All convolutional and dense lay-ers used a ReLU activation function to introduce nonlinearity and emphasize informative patterns. The projection head mapped the 128-dimensional vectors resulting from the encoder into a 10-dimensional latent space, where the contrastive loss was computed by comparing the sim-ilarity between random pairs of sources. This small multilayer perceptron (MLP), composed of four dense layers, is designed to prevent overfitting of trivial features and enhance the separa-tion between positive and negative pairs in the embedded space. Fig. 2 shows the architecture of our CL implementation. The combination of hyperparameters achieving the best results was: temperature of 0.1 for the normalized temperature-scaled cross entropy contrastive loss; width of 128 for the latent space; maxi-mum batch size given by the limits of our GPU resources, 10000; and 3000 epochs. Other architecture choices, such as the number of CNN and Dense layers in the encoder and MLP, were selected to balance representation power and overfitting, following sim-ilar astronomy applications (e.g., 3 CNN + 3 Dense layers in Sarmiento et al. 2021; 4 CNN + 3 Dense layers in Byrne et al. 2024). All the training experiments were carried out on one of the two GPU nodes of the Astronodes cluster at the Max Planck Institute für Astronomie . Each node is equipped with NVIDIA Tesla V100S GPUs (32 GB HBM2 memory), and runs CUDA 12.4 (driver version 550.90.07). The runtime was usually be-tween ∼ 4.2 hours for the optimized hyperparameter values, and 
+
+∼ 8 hours for tests with more epochs, higher temperatures, batch sizes, or widths of the latent space. 
+
+> 3.1. Embedded space
+
+We applied the unsupervised dimensionality reduction algo-rithm known as Uniform Manifold Approximation and Projec-tion (UMAP, McInnes et al. 2018) to reduce the representation   
+
+> Article number, page 4 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning
+> Fig. 2. Architecture of the self-supervised CL framework used in this work. The top and left sections illustrate the image preprocessing and the tensor assembly steps. The structure of the network is shown sequentially from left to right, starting with data augmentation, then the encoder block, and lastly the projection head. Red and green arrows indicate the contrastive loss computation, which measures similarity between random pairs of augmented images.
+
+dimensions from 128 to 2 in the embedded space generated by simCLR. As part of the downstream analysis, we crossmatched spec-troscopically classified data within a 1 .5′′ radius to facili-tate a comprehensive interpretation of the latent space, which helped us identify potential clusters of high-z quasar candidates and contaminants. This included spectroscopically confirmed quasars at z > 5.3 from Fan et al. (2023), M dwarfs from West et al. (2011), a compilation of LT dwarfs from the literature (Al-bert et al. 2011; Burningham et al. 2008; Burningham et al. 2010, 2013; Chiu et al. 2008; Day-Jones et al. 2013; Deacon et al. 2011; Kendall et al. 2007; Kirkpatrick et al. 2010, 2011; Knapp et al. 2004; Liu et al. 2002; Lodieu et al. 2007, 2009, 2012; Mace et al. 2013; Matsuoka et al. 2011; Pinfield et al. 2008; Thomp-son et al. 2013; Radigan et al. 2013; Schmidt et al. 2010; Scholz 2010a,b; Best et al. 2015; Cardoso et al. 2015; Marocco et al. 2015; Tinney et al. 2018) and stars from Gaia DR3 (Gaia Col-laboration et al. 2023) with a high probability of being a sin-gle star (PSS > 0.99) and statistically significant proper mo-tion (pm /e_pm > 3). UMAP was tailored in order to optimize the 2D-separation between labeled quasars and contaminants, adopting the following parameters: n_neighbors = 30, min_dist 
+
+= 0.02, metric = euclidean. While UMAP was used here for 2-dimensional visualization, the learned contrastive embeddings remain high-dimensional. Replacing UMAP with clustering al-gorithms operating directly in latent space is a natural path to further improve robustness in the candidate selection. Figure 3 shows the resulting two-dimensional embedded space representation of the i-dropout candidates, alongside known populations of stars, quasars, and MLT dwarfs. The mul-tiple tests we performed to find the optimal UMAP parameters revealed that, regardless of their values, the embedded space naturally separated into two prominent regions: the right "is-land," dominated by stars and M and L dwarfs, and the left is-land, primarily populated by T dwarfs and high-redshift quasars. Notably, we identified a concentration of quasars at redshifts 
+
+z = 6–6 .4 near the bottom of the left island, while more sparsely distributed z > 6.8 quasars appear toward the top. 
+
+3.2. Interpretation of the embedded space 
+
+In this section, we search for the main drivers of the embedded space representation. We first started by color-coding the data points in the embedded space by catalog features such as magni-tudes, color indices, depth, and PSF size. Here we summarize the most important results, but we are presenting additional details in the appendix section A. The catalog information (see Fig. A.1) reveals a strong z-magnitude gradient, a mild systematic e ff ect due to the image quality, and that z–J color is a strong separator of the embedded space into two distinct regions. This is puz-zling, as the J-band imaging was not included in the CL input. Therefore, some other feature present in the optical images must be driving this separation. To investigate further, we proceeded to inspect the image cutouts. We divided the embedded space into 15 × 15 bins, computed the mean pixel-by-pixel flux for each band for sources within each bin, and plotted the resulting mean z, r, and g band channels (RGB mapped) at the location of each bin in the latent space (see Fig. 4). Since the LS DR10 images are weighted coadds of mul-tiple epochs, temporal e ff ects such as source motion or transient events may introduce spurious morphological features. These could influence the CL algorithm, potentially driving some of the trends observed in the embedded space. To assess this pos-     
+
+> Article number, page 5 of 29 A&A proofs: manuscript no. aanda
+> Fig. 3. Embedded Euclidean space generated by UMAP for LS DR10 i-dropout sources after training the CL algorithm. All sources are represented as gray countours given by the number density; known M, L and T dwarfs are: brown, black and red crosses, respectively; and Gaia DR3 stars are yellow crosses. Spectroscopically confirmed quasars from the literature and the new quasars from this work are represented by filled circles and stars, respectively, all of them color-coded by their redshift. Quasar candidates are selected from the lower part of the left island where the source density is low and the contamination ratio with UCDs is ∼1:1. The two regions with the highest concentration of quasars are presented as zoom-in panels and highlighted with black squares.
+
+sibility, we inspected single-epoch cutouts of random sources in the subsequent analysis to validate our interpretations based on the coadded data. The requirements of our catalog-based preselection are aimed at targeting sources with non-detections in the g and r
+
+bands but detectable emission in z, without imposing any mor-phological constraints. When mapping the z, r, and g bands into RGB colors, we noticed that the stacked-average images exhibit extended emission (red shadows) and contribution from the r-band (yellow shadows). The red structures populate the island on the right side of the embedded space and appear as faint rings or arcs around the central bright source, as well as elongated bright sources. Gaia DR3 revealed that the elongated sources are primarily stars with high proper motions (see Fig. B.1). Inspection of in-dividual epochs showed that these stars are, in fact, point-like, but appear duplicated in the Legacy Survey DR10 catalog due to positional shifts across observing epochs. In these cases, the catalog erroneously lists two nearby sources: one faint object, centered in our stamps and detected only in z, mimicking the color signature of a high-redshift quasar; and a second, brighter source detected in all bands but o ff set in position. Because LS DR10 performs forced photometry anchored to the z-band detec-tions, this positional mismatch leads to underestimation or loss of flux in the bluer bands, artificially producing a spectral break in otherwise stellar SEDs. This explains why some of these high proper motion stars were selected by our i-dropout preselection. The apparent elongation seen in Fig. 4 is not intrinsic to in-dividual sources but a result of our visualization method. Each pixel in the figure represents a stack-averaged cutout of all sources within a given bin in the embedded space. In regions dominated by high proper motion stars, these small positional shifts accumulate in the averaging process, producing blurred or elongated structures. While some individual exposures show mild extension, likely due to motion, variability, or poor seeing, the dominant e ff ect in the averaged images stems from the col-lective misalignment. Other moving objects, such as satellites and asteroids, can also produce real elongation in coadds, but their motion occurs on much shorter timescales (minutes). Moving to the left side of the right island, we identified bi-nary systems where the central target, detected in the z band or both i and z bands, is the source selected in our analysis, while 
+
+> Article number, page 6 of 29
+
+L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 5.0 2.5 0.0 2.5 5.0 7.5 10.0 12.5 15.0 
+
+Embedded Euclidean x 
+
+4
+
+2
+
+0
+
+2
+
+4
+
+6
+
+8
+
+10 
+
+> Embedded Euclidean y
+> 41
+> 455
+> 1134
+> 930
+> 1031
+> 1226
+> 1503
+> 961
+> 451
+> 208
+> 943
+> 1269
+> 1132
+> 1064
+> 821
+> 720
+> 1378
+> 1475
+> 1350
+> 706
+> 18
+> 125
+> 600
+> 1248
+> 1466
+> 1336
+> 963
+> 800
+> 820
+> 1163
+> 1240
+> 1120
+> 1291
+> 1023
+> 135
+> 978
+> 1260
+> 1588
+> 1484
+> 1221
+> 1700
+> 957
+> 772
+> 959
+> 1263
+> 1067
+> 1093
+> 1538
+> 506
+> 828
+> 1272
+> 1542
+> 1295
+> 1288
+> 1125
+> 997
+> 983
+> 861
+> 979
+> 929
+> 900
+> 522
+> 282
+> 1226
+> 1130
+> 1074
+> 1201
+> 1029
+> 931
+> 1050
+> 810
+> 1108
+> 1084
+> 746
+> 435
+> 4
+> 519
+> 1403
+> 1030
+> 974
+> 862
+> 649
+> 850
+> 943
+> 878
+> 1211
+> 674
+> 16
+> 1244
+> 1231
+> 991
+> 763
+> 738
+> 576
+> 526
+> 861
+> 893
+> 510
+> 1449
+> 847
+> 449
+> 575
+> 472
+> 468
+> 581
+> 753
+> 857
+> 24
+> 594
+> 424
+> 70
+> 268
+> 422
+> 688
+> 604
+> 413
+> 99
+> 20
+> 192
+> 221
+> 552
+> 429
+> 181
+> 22
+> 11
+> 9
+> 12
+> 125
+> 246
+> 198
+> 1092
+> 1003
+> 22
+> 901
+> 1211
+> 1025
+> 218
+> 1437
+> 1399
+> 1096
+> 16
+> 340
+> 1739
+> 1372
+> 1021
+> 18
+> 1189
+> 1626
+> 871
+> 458
+> 1089
+> 1141
+> 68
+> 51
+> 1075
+> 1121
+> 698
+> 30
+> 242
+> 459
+> 783
+> 881
+> Known QSOs at z > 6
+
+Stars with high 
+
+proper motions 
+
+Sources with companions 
+
+Faint r-band 
+
+detections 
+
+Undetected 
+
+r-band 
+
+Mean z,r,g images (RGB mapped) 
+
+> 251
+> 1
+> 67
+> 2
+> 146
+> 2
+> 179
+> 12
+> 1
+> 0
+> 94
+> 3
+> 25
+> 0
+> 9
+> 0
+> 22
+> 3
+> 92
+> 3
+> 159
+> 0
+
+Fig. 4. Mean pixel-by-pixel z, r, and g band fluxes (RGB mapped) within 15 × 15 binned embedded space. The number of sources within each bin contributing to the mean is shown in white in the upper left side of each image. The red dashed lines highlight a region with the highest number of known quasars, with a zoom-in binned embedded space on the right side. The number of known quasars in each bin at the zoom-in plot is shown in orange, below the number of sources in white. 
+
+its companion is visible in all bands. In this region, the source density increases significantly, and the overlapping light from multiple companions creates a ring-like e ff ect on average. Cross-matching with our labeled sources revealed the existence of one of the quasars from the pair at z = 5.66 (Yue et al. 2021) with a spatial separation of 1 ′′ . 24 (7 .3 kpc at z = 5.66), along with stars exhibiting low proper motions, perhaps in binary systems or by chance alignment with a companion. We do not rule out the presence of additional quasar pairs or even gravitationally lensed sources in this region. However, given the high density of sources-over 2000 within a small 1 × 1 latent-space unit re-gion centered on the quasar pair and the significant contamina-tion from stars (about 50%, with ∼ 10% spectroscopically con-firmed and the remaining having > 90% probability of being stars), it is challenging to reliably identify quasars here. Conse-quently, we excluded candidates from this region for the time being. This demonstrates how environmental e ff ects influence the latent space representation, even within a small 5 ′′ radius. Since the large island on the left appears relatively homo-geneous in the RGB map, we examined intensity maps of each band individually. We found that the left side of this island is dominated by faint central flux in the r-band (comparable to the noise), and a clear detection in the i-band. In contrast, the right side exhibits undetected r-band, and fainter or nonexistent cen-tral emission in the i-band. Given that the known quasars located there are at z ∼ 6−6.4, it is possible that a non-negligible Lyman-
+
+α forest can contribute to the i-band below the Ly-α break. Based on the labels and the high source density in the center, we also anticipate significantly higher contamination from unlabeled T dwarfs in this region, yet to be confirmed. We identified multiple isolated regions with high concentra-tions of known quasars and moderate contamination by UCDs. The explored latent space is large and rather poorly covered by labeled data, highlighting strong potential biases among cur-rently confirmed objects. A comprehensive strategy would re-quire spectroscopic confirmation of > 30000 objects across the parameter space populated by quasars, given that the region with 
+
+euclidean_y < 0 alone already exceeds this number of candi-dates. As this is not currently feasible, we instead propose a more immediate, quantitative criterion that can be employed to find potentially similar objects to the existing labels by computing a 2D Gaussian Kernel Density Estimation (KDE) of quasars and UCDs based on the spectroscopically confirmed labels and nor-malized by the total number of labels. We iteratively adjusted the thresholds in quasar density ( ρQSO ) and density ratio ( ρQSO /ρ BD )to define a quasar-candidate region that maximized the recov-
+
+Article number, page 7 of 29 A&A proofs: manuscript no. aanda 10 0 10 1      
+
+> obs [m]
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> f [10  19  erg/s/cm 2]
+> Best QSO model at z =6.1 ( 2= 92.34)
+> Best brown dwarf model ( 2= 542.21):
+> Teff_850.0_logg_3.5_logZ_-2.0
+> Observed photometry
+> Predicted photometry
+
+Fig. 5. Example of an SED fitting result and the photometric redshift probability distribution function ( top panels ). LS DR10, VHS DR7, and WISE postage stamps of the photometry used ( bottom panel ) for the source LS J000-79. Top left : The blue curve represents the best-fit model given by the QSO1 template (see Salvato et al. 2022 for details) at redshift 6.096, while the red curve shows the best-fit brown dwarf template from Meisner et al. (2021). The observed photometry represented by black squares with error bars corresponds to the DECam, VHS, and WISE catalogs and their uncertainties, while the yellow circles are the expected flux densities assuming the best quasar model. Top right : photometric redshift probability distribution function. Despite the distribution extending over z = [0 , 12], we limited the plot to the range z = [4 , 9] for better visualization. 
+
+ery of known quasars while limiting the number of candidates. The final selection, ρQSO > 0.0002 per latent-space-unit 2 and 
+
+ρQSO /ρ BD > 0.65, included 54 of the 69 known quasars and re-sulted in 24,212 candidates. The quasar and brown dwarf KDE density maps, along with the density ratio map, are presented in Fig. C.1. While our initial candidate selection focused on the lower region of the embedded space, densely populated by known quasars, a more relaxed threshold (e.g., ρQSO > 0.0001) would extend the search toward the upper region, where z > 6.6 quasars are more scattered, and the contamination from T dwarfs is lower. This part of the space, however, is itself densely populated (source density > 0.01) by faint i-dropout sources. Confirm-ing them would require highly competitive observations with large-aperture ground-based telescopes and NIR spectrographs, making such targets more challenging and risky to pursue. Fur-thermore, the previously discussed approaches have largely been guided by existing spectroscopic samples and thus inevitably in-herit their selection biases. A fully unbiased search will require probing less-explored regions of the latent space where spectro-scopic labels are scarce or absent. In this context, the analysis of Fig. A.1 becomes essential: by revealing trends in catalog-based features such as red NIR slopes or z–W1 colors, it o ff ers a pathway to identify promising regions even in the absence of spectroscopic labels. This paves the way for a more complete and less label-dependent quasar census in future work. 
+
+4. Assessment of the quasar nature of promising candidates 
+
+4.1. Prioritization of quasar candidates through SED fitting 
+
+To demonstrate the e ff ectiveness of our CL approach and opti-mize the usage of valuable telescope time, we aimed to target candidates most likely to yield successful spectroscopic confir-mations. This led us to implement an additional prioritization step to select the most promising sources from the high-density quasar regions in the embedded space. We performed SED fit-ting on the 24212 candidates with eazy-py (Brammer et al. 2008) version 0.6.9 2 using quasar templates along with templates for common contaminants such as UCDs, stars, and galaxies. De-tailed information about the contaminant population templates is presented in the appendix section D. The set of quasar and AGN emission models to fit was com-posed of a compilation of 35 individual and combined templates of the host galaxy and AGN emission with di ff erent contribu-tions (Salvato et al. 2022, see their Appendix B for more details and references). To be more inclusive, we also considered less traditional objects such as the "little red dot" J0647-1045, whose NIRSpec spectrum is reproduced by templates of an obscured AGN at z = 4.50 hosted by a star-forming galaxy (Killi et al. 2024). For all the targets, we included the following filters in the 
+
+eazy-py translate file: DECam g, r, i, and z bands; WISE bands 
+
+W1 and W2; and UKIDSS or VHS Y, J, H, and Ks bands, the  
+
+> 2
+
+See https://github.com/gbrammer/eazy-py 
+
+Article number, page 8 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+latter subject to data availability. The setup parameters used are: the maximum photometric redshift Z_MAX = 12, and the redshift grid interval Z_STEP = 0.01. We ran the main fit-ting function in multiprocessing mode to fit galaxy and quasar templates, one template at a time, with a simultaneous pho-tometric redshift estimation. To fit the stellar templates, red-shift estimation is not required, and we simply ran the function 
+
+fit_phoenix_stars with our customized templates mentioned above. The output contains χ2 and coe ffi cients representing the contribution to the observed SED for all the templates in the set, the photometric redshift probability distribution (including the maximum-likelihood value zml ), rest-frame U, B, V and J band-magnitudes, luminosities, stellar masses, star formation rates, and other physical parameters associated to parametric FSPS and CORR_SFHZ galaxy templates. To calibrate our SED-fitting criterion, we tested the recovery of the 56 and 205 known quasars and UCDs, respectively, avail-able in our catalog. While candidate selection was restricted to a smaller latent-space region, we used the full labeled set for calibration to ensure su ffi cient statistics. Recovery was quanti-fied based on the ratio of the χ2 values obtained from quasar or AGN (quasar +host galaxy) templates, χ2quasar , compared to those from stellar contaminant templates (UCDs or stars), χ2BD . Apply-ing a threshold of χ2BD /χ 2quasars > 1 yielded a precision of 0.72, a recall 3 of 0.86, and a contamination rate of 28%, successfully recovering 48 quasars. In the opposite case, we selected UCDs with a precision of 0.96, a recall of 0.91 and a contamination rate of 4%, recovering 185 objects. To optimize our available resources for the follow-up obser-vations, we focused our search on candidates with χ2BD /χ 2quasars >
+
+1, maximum-likelihood photometric redshifts zml > 5.5, and sin-gle narrow peaked redshift distribution given by z 84 -z 16 < 1, where z 84 and z 16 are the 84th and 16th percentiles. These con-straints reduced the initial set of 24212 candidates from the high-density quasar loci in the embedded space to 1438 targets. To assess priorities, we evaluated the observability of our targets at the time and location of the spectroscopic follow-up observing runs available to us in past semesters. We also con-ducted visual inspection of the g, r, i, z, J, K s , and W1 stamps and SED fitting results of the 1438 targets, sorted by decreasing 
+
+χ2quasars . Fig. 5 shows an example of the SED fitting, the photo-metric redshift probability distribution function, and the stamps of a high-priority candidate that ended up being confirmed as a quasar at z = 6.21 (see Section 5). In this stage, we performed visual inspection of the stamps and removed 299 sources with spurious detections caused by cosmic rays, di ff raction spikes, or luminous streaks (e.g., satellite trails). These artifacts are char-acterized by sharp and irregular shapes that usually show up in one band (the z-band in our case). Table 1 summarizes the main steps for the selection and prioritization of candidates. We evaluated the performance of our full selection pipeline, CL coupled with SED fitting prioritization, in terms of preci-sion and completeness, and compared it to representative liter-ature color–color selections. The analysis was restricted to the 130472-size training sample, which defines the domain of appli-cability of the CL model, and used spectroscopically confirmed quasars and UCDs as reference samples. At each selection stage, only a very small fraction of the sample has spectroscopic clas-sifications ( ≲5%; see Table 1), which limits the statistical ro-bustness of these metrics. Precision quantifies the fraction of re-                             
+
+> 3Precision =TP /(TP +FP) and Recall =TP /(TP +FN), where TP are the true positives, FP the false positives, and FN the false negatives. They are metrics to evaluate the performance in a classification task.
+> Table 1. Downselection of candidates.
+> Condition Size Spec. C.
+> (1) (2) (3) All LS DR10 sources 2,827,055,986 0% Color cut, maskbits conditions, and 165,253 0% VHS, UKIDSS, or UHS, and W1 detection Compactness criteria 130,472 0% Density threshold in the embedded space 24,212 1% SED fiting χ2ratio, zml and 1,438 4% photometric redshift distribution No artifacts in optical stamps 1,139 5%
+> Notes: Col (1): Condition defining the sample; Col (2): Number of sources in the sample; Col (3): Spectroscopic completeness: frac-tion of the sample with spectroscopic classification as quasar or UCD. The 0% represents percentages <0.5%.
+
+covered quasars relative to all objects classified as quasar can-didates, while completeness is the recovery fraction of known quasars that satisfy the selection criteria. Under these definitions, our pipeline achieves a purity of 84% and a completeness of 75%. Because most literature high-redshift quasar searches do not report precision or completeness in a form directly comparable to our work, we quantified these metrics by applying the pub-lished color-color selection criteria to our catalog. We emphasize that this comparison isolates only the color-based component of each pipeline while several studies apply additional selection steps such as X-ray detections (e.g., Wolf et al. 2024), morpho-logical filtering, proper-motion cuts, or stringent signal-to-noise requirements (e.g., Bañados et al. 2016), which e ff ectively re-strict their samples to specific quasar subpopulations and were not reproduced here. Due to heterogeneous photometric cover-age, the color cuts can only be evaluated on subsets of our cat-alog with the required bands. Using PS1 data, we tested the se-lections of Bañados et al. (2016), Wang et al. (2019), Yang et al. (2023), and the DELS +PS1 selection described in Section 2.3 of Belladitta et al. (2025), which rely on yP1 photometry and, in some cases, J-band data. Applied in this restricted form, these selections yield purities of 100%, 38%, 80%, and 5%, with cor-responding completenesses of 18%, 50%, 48%, and 20%, re-spectively. We also tested the DES DR2 selection of Wolf et al. (2024), obtaining a purity of 43% and a completeness of 54%. The low completeness arises from comparing narrow and highly targeted selections to our broader selection framework. Then, to enable a consistent comparison across di ff erent pho-tometric systems, we computed synthetic colors and adapted the literature color cuts to match the quasar color evolution in our photometric system. The adapted selections from Bañados et al. (2016), Wang et al. (2019), Yang et al. (2023), and Wolf et al. (2024) achieve purities of 42%, 40%, 88%, and 25%, with corre-sponding completenesses of 90%, 11%, 74%, and 58%, respec-tively. In particular, the adapted selection of Yang et al. (2023) reaches precision and completeness comparable to those of our pipeline, but at the cost of producing candidate lists more than an order of magnitude larger, implying substantial UCD con-tamination (e.g., compared to the expected number counts of 
+
+z ≳ 5.5 quasars). This comparison highlights a key result of our approach: although the CL model was trained exclusively on op-tical imaging, the resulting representation naturally reproduces selection behavior similar to optical–NIR color criteria, while enabling a substantially more compact and e ffi cient candidate  
+
+> Article number, page 9 of 29 A&A proofs: manuscript no. aanda
+
+prioritization for spectroscopic follow-up. Further details about the implementation and results are provided in Appendix E. In addition to providing high purity and completeness, SED fitting prioritization exploits all available photometric bands to reduce the candidate list while retaining sources consistent with quasars at 5 .7 < z < 7 and providing photometric redshift esti-mates that directly inform follow-up strategies. Color-based pri-oritization is limited by incomplete photometry. For instance, 
+
+z–J cuts, using J band with the most complete NIR coverage, cannot be applied to all candidates, and even among detected sources, a flexible threshold ( z–J < 1.5) yields excessively large samples, while tighter cuts exclude known quasars at z > 6.5. Strengthening optical colors (e.g., i–z > 2) similarly reduces numbers but narrows the accessible redshift range. SED fitting is particularly e ff ective at removing contaminants in the range 1 < z–J < 2, where quasars overlap with UCDs and the most in-teresting high-redshift and red quasar populations are expected to reside. 
+
+> 4.2. Follow-up observations
+
+We carried out spectroscopic follow-up observations between October 2024 and July 2025 with di ff erent telescopes and instru-ments: the Double Spectrograph (DBSP; Oke & Gunn 1982 and the Next Generation Palomar Spectrograph (NGPS; Jiang et al. 2018) mounted at the 200-inch Hale telescope at the Palomar Observatory, the ESO Faint Object Spectrograph and Camera (EFOSC2; Buzzoni et al. 1984) at the New Technology Tele-scope at La Silla Observatory, the Multi-object Double Spec-trograph (MODS; Pogge et al. 2010) at the Large Binocular Telescope (LBT); and the Low Dispersion Survey Spectrograph (LDSS3) at the Magellan II Clay Telescope. All observations employed long-slit spectroscopy with slit widths of 1 ′′ , 1 ′′ . 2, or 1′′ . 5. Standard calibrations such as bias subtraction, flat fielding, arc lamps for wavelength calibrations, and fluxing with spec-trophotometric standard stars were included in the data reduction process with the Python package PypeIt (Prochaska et al. 2020) and the Image Reduction and Analysis Facility ( IRAF ; Tody 1986, 1993). The resulting spectra were produced by combin-ing individual science exposures after the background subtrac-tion and calibration process, and before the spectra extraction, as an unweighted coadd. The final 1-D spectra were normalized to the LSDR10 z-band magnitude. The wavelength coverage of the optical spectra allowed us to identify the presence of the Lyman-α break, confirming the nature of the quasar candidates and assessing their redshift. We performed follow-up observations for 40 candidates, 22 of them turned out to be contaminants, likely UCDs (see Table F.1). We discovered 15 new quasars and 3 quasars that were already re-ported in the literature 4. Additionally, one of our candidates was confirmed by DESI as a quasar at z = 6.03 in its first data release (Abdul-Karim et al. 2025). Since this source is not reported in the literature and is part of our selection, we included it and its spectrum in the following sections. The details of the follow-up campaigns where the new quasars were discovered are presented in Table 2. 
+
+5. New z > 6 quasars 
+
+During our spectroscopic follow-up campaign, we confirmed 15 new quasars at z ≥ 6, and included one additional object from DESI DR1 public data that is part of our selection, for a total of 16. The photometric catalog properties, along with the main results from the eazy-py run for the new quasars are presented in Table 3. In Fig. 6 we show the compilation of optical discov-ery spectra (observed frame), exhibiting a wide range of Ly-α
+
+line profiles and continuum slopes. For redshift estimation, we extended the approach presented in Bañados et al. (2023). We fitted the spectra with a set of diverse quasar templates, but now including the SMC reddening law (Prevot et al. 1984) to account for obscuration. The free parameters of the χ2 minimization al-gorithm were the redshift, the normalization, and the color ex-cess (E B−V). The template set was composed of the following: 
+
+– median Ly-α, which is the median spectrum of 117 z ∼ 6quasars from the Panoramic Survey Telescope & Rapid Re-sponse System 1 (PS1; Kaiser et al. 2002, 2010) presented in Bañados et al. (2016). 
+
+– strong Ly-α, which is the median PS1 spectrum of z ∼ 6quasars with the 10% largest rest-frame Ly α + NV equiv-alent width from Bañados et al. (2016). 
+
+– weak Ly-α, which is the median PS1 spectrum of the z ∼ 6quasars with the 10% smallest rest-frame Ly α + NV equiv-alent width from Bañados et al. (2016). 
+
+– onorato2025, which is the weighted mean of 33 z > 6.5 spec-tra presented in Onorato et al. (2025). 
+
+– xqr-30, which is the median of 42 z ∼ 6 high quality quasars spectra observed with X-Shooter and reported in D’Odorico et al. (2023). We selected the combination of parameters and template pro-ducing the lowest χ2 for each source in the wavelength range between 8000 − 8800 Å, depending on the Ly-α location, and 
+
+∼ 9600 Å, avoiding the highly noisy regions blueward of Ly-α
+
+and the red extreme of the spectra. The resulting redshift, χ2, and name of the best template are presented in Table 4. We do not include E B−V as all the values are < 0.04, indicating that none of the sources seems to be significantly reddened. We assumed a median uncertainty on the spectral redshift estimate with the fitting method of 0.03 as presented by Bañados et al. (2023). The sample of quasars spans a redshift range z = [5 .94 , 6.45] and displays diverse types of Ly-α emission, from weak to strong lines. Four quasars (LS J010-68, LS J203-51, LS J020-66, and LS J133-40) exhibit prominent and relatively narrow, high EW Ly-α lines. The reduced χ2 values indicate that some models un-derfit the data, notably for LS J0208-6647, where the fit fails redward of the Ly-α line, and for LS J1035-0515, which has the noisiest spectrum in the sample. Conversely, nine sources exhibit very low reduced χ2 values (below 0.2), suggesting uncertainties or degeneracies in the fitted parameters, likely due to low S /Nand poor spectral quality. 
+
+> 5.1. Physical properties of the newly discovered quasars
+
+The availability of optical, NIR, and MIR broadband photometry allowed us to carry out a first diagnostic on the quasar parameter space that we are exploring. We started with widely used phys-ical quantities, such as the bolometric luminosity and the mag-nitudes at rest frame wavelength 1450 Å, which are useful for  
+
+> 4DESI J011553.41 +031829.3 discovered by Yang et al. 2023, and J1111 +0640 and J1257 +1033 by Yang et al. 2024 Article number, page 10 of 29
+
+L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 0
+
+1 LS J2155-5111 (z = 6.45) 
+
+Best model: Onorato2025 
+
+0
+
+5 LS J0104 6857 (z = 6.38) 
+
+Best model: strong Ly-
+
+0
+
+2
+
+LS J2223 3815 (z = 6.36) 
+
+Best model: weak Ly-
+
+0
+
+1
+
+LS J2301 1530 (z = 6.32) 
+
+Best model: median Ly-
+
+0
+
+1 LS J1130+1420 (z = 6.28) 
+
+Best model: median Ly-
+
+0
+
+5
+
+LS J2037-5152 (z = 6.25) 
+
+Best model: strong Ly-
+
+0
+
+2 LS J0006 7935 (z = 6.21) 
+
+Best model: xqr-30 
+
+0
+
+2 LS J1451-0445 (z = 6.16) 
+
+Best model: xqr-30 
+
+DESI DR1 spectra 
+
+6500 7000 7500 8000 8500 9000 9500 
+
+0
+
+1 LS J1435-1053 (z = 6.13) 
+
+Best model: xqr-30 
+
+0
+
+1 LS J1332+1102 (z = 6.11) 
+
+Best model: weak Ly-
+
+0
+
+10 
+
+LS J0208 6647 (z = 6.09) 
+
+Best model: strong Ly-
+
+0
+
+5
+
+LS J1035-0515 (z = 6.09) 
+
+Best model: weak Ly-
+
+0
+
+2
+
+LS J2011-4436 (z = 6.08) 
+
+Best model: weak Ly-
+
+0
+
+10 LS J1330-4025 (z = 6.07) 
+
+Best model: strong Ly-
+
+0.0 
+
+2.5 LS J0139-5209 (z = 6.05) 
+
+Best model: Onorato2025 
+
+6500 7000 7500 8000 8500 9000 9500 
+
+Observed wavelength obs (Å)
+
+0
+
+1 LS J1141+1006 (z = 5.94) 
+
+Best model: weak Ly-
+
+> F (10  17  erg/ cm 2/ s/  Å)
+
+Fig. 6. Optical discovery spectra of the 16 new quasars reported in this work, including the quasar LS J1451-0445 from the DESI data release (Abdul-Karim et al. 2025). The black curves show the observed spectra, the red curves the best-fit quasar templates used for redshift estimation, and blue dashed lines indicate the adopted best-fit position of Ly-α. Each panel lists the source name, spectroscopic redshift, and the best-fit template in the upper left corner. The typical redshift uncertainty is 0 .03 (see Section 5). Quasars are sorted from top to bottom by decreasing redshift. Article number, page 11 of 29 A&A proofs: manuscript no. aanda 
+
+Table 2. Spectroscopic follow-up observations of the 16 new quasars. 
+
+Name RA Dec Date Telescope /Instrument Exp. time z
+
+deg deg seconds (1) (2) (3) (4) (5) (6) (7) LS J145109.79-044542.12 222.79078 -4.76170 2022 May. 31 a Mayall /DESI 3363 6.16 LS J230129.72-153020.4 345.37384 -15.50566 2024 Oct. 4 Hale /DBSP 1200 6.32 LS J020801.31-664713.7 32.00547 -66.78714 2024 Oct. 25 NTT /EFOSC2 5400 6.09 LS J222343.78-381526.8 335.93243 -38.25753 2024 Oct. 25 NTT /EFOSC2 4800 6.36 LS J000622.24-793548.1 1.55765 79.59670 2024 Oct. 28 NTT /EFOSC2 3600 6.21 LS J010449.12-685756.8 16.20466 -68.96577 2024 Oct. 28 NTT /EFOSC2 3000 6.38 LS J103511.29-051537.9 158.79705 -5.26053 2025 Feb. 16 LBT /MODS2 b 3000 6.09 LS J113000.56 +142043.97 172.50233 14.34555 2025 Feb. 21 Hale /NGPS 2700 6.28 LS J133204.89 +110208.94 203.02036 11.03582 2025 Apr. 20 LBT /MODS 3600 6.11 LS J143510.65-105325.11 218.79436 -10.89031 2025 Apr. 23 LBT /MODS 2700 6.13 LS J114156.14 +100636.90 175.48392 10.11025 2025 Apr. 23 LBT /MODS 2700 5.94 LS J133014.01-402508.92 202.55836 -40.41915 2025 May. 1 Clay /LDSS3 1800 6.07 LS J201119.04-443609.39 302.82931 -44.60261 2025 May. 1 Clay /LDSS3 1800 6.08 LS J203704.37-515240.27 309.26819 -51.87785 2025 May. 1 Clay /LDSS3 2800 6.25 LS J215501.13-511151.11 328.75473 -51.19753 2025 May. 1 Clay /LDSS3 1200 6.45 LS J013938.24-520945.73 14.90935 -52.16270 2025 Jul. 28 NTT /EFOSC2 3600 6.05  
+
+> a
+
+This source was confirmed as a quasar with DESI DR1 data release.  
+
+> b
+
+Note that although MODS is composed of two identical two-channel spectrographs, at the time of this observing run only MODS2 was available. 
+
+Notes: Col (1): Quasar name with convention: "LS" for DESI Legacy Survey DR10, and then the coordinates in HMS and DMS format. Col (2) and Col (3): coordinates in degrees, Col (4): Date of the observations; Col (5): Telescope and instrument used for the optical spectroscopic follow-up; Col (6) Total exposure time; Col (7) spectroscopic redshift estimated with the spectrum fitting with an uncertainty of 0.03 (see Section 5). 
+
+Table 3. Photometric properties of the new 16 quasars.                                                                                                                                                                                                                                                                                                                                                                   
+
+> Name izYJHKs W1 W2 zml χ2BD /χ 2quasars
+> LS J1451-0445 23.69 ±0.17 20.83 ±0.01 20.94 ±0.23 20.63 ±0.17 20.21 ±0.19 20.02 ±0.06 20.02 ±0.14 6.1 4.37 LS J2301-1530 24.75 ±0.80 20.65 ±0.03 20.16 ±0.08 20.07 ±0.10 19.74 ±0.18 19.78 ±0.05 19.91 ±0.13 6.37 2.89 LS J0208-6647 23.44 ±0.14 20.17 ±0.01 20.72 ±0.10 19.85 ±0.14 19.18 ±0.02 18.82 ±0.03 6.11 5.53 LS J2223-3815 23.56 ±0.20 20.57 ±0.03 19.84 ±0.04 19.77 ±0.12 19.92 ±0.05 19.92 ±0.11 6.30 2.25 LS J0006-7935 23.60 ±0.09 20.57 ±0.02 20.58 ±0.16 20.56 ±0.17 20.21 ±0.27 19.95 ±0.04 19.92 ±0.08 6.10 5.87 LS J0104-6857 23.75 ±0.21 20.50 ±0.02 20.83 ±0.19 20.89 ±0.22 19.81 ±0.19 19.90 ±0.04 19.33 ±0.05 6.11 3.71 LS J1035-0515 23.34 ±0.22 20.14 ±0.01 20.51 ±0.15 19.68 ±0.07 19.14 ±0.07 18.55 ±0.05 18.32 ±0.01 18.19 ±0.03 6.43 2.16 LS J1130 +1420 24.66 ±0.39 21.05 ±0.03 21.13 ±0.21 20.61 ±0.20 20.48 ±0.24 20.31 ±0.08 20.20 ±0.16 6.20 21.09 LS J1332 +1102 24.17 ±0.36 20.80 ±0.04 20.50 ±0.13 20.29 ±0.11 20.03 ±0.13 19.85 ±0.12 19.95 ±0.05 20.38 ±0.18 6.22 2.92 LS J1435-1053 24.64 ±0.53 21.27 ±0.04 20.49 ±0.21 20.51 ±0.09 21.22 ±0.42 6.21 1.24 LS J1141 +1006 24.08 ±0.31 21.14 ±0.02 21.19 ±0.22 20.95 ±0.27 20.58 ±0.22 20.93 ±0.14 21.50 ±0.56 6.07 2.70 LS J1330-4025 22.80 ±0.08 20.13 ±0.01 20.58 ±0.25 19.94 ±0.25 19.72 ±0.04 19.46 ±0.07 6.03 11.61 LS J2011-4436 23.90 ±0.26 20.95 ±0.03 20.44 ±0.10 19.59 ±0.10 19.32 ±0.03 19.26 ±0.06 6.31 2.90 LS J2037-5152 25.55 ±0.70 21.08 ±0.04 21.00 ±0.17 20.32 ±0.21 20.40 ±0.08 19.75 ±0.09 6.18 1.30 LS J2155-5111 25.45 ±0.34 21.35 ±0.03 21.05 ±0.22 20.65 ±0.09 20.41 ±0.16 6.24 2.51 LS J0139-5209 23.24 ±0.08 20.65 ±0.01 20.71 ±0.12 20.27 ±0.23 20.35 ±0.07 20.64 ±0.19 6.05 1.83
+
+Notes: Col (1): Abbreviated quasar name; Col (2)-Col (3): optical magnitudes from LS DR10, Col (4)- Col (7): NIR magnitudes from UKIDSS DR11, VHS DR5 or UHS DR2; Col (8) -Col (9): MIR magnitudes from WISE; Col (10): maximum-likelihood photometric redshift estimated by eazy-py ; Col (11): stellar contaminant-to-quasar χ2 ratio used for the prioritization of the candidates. 
+
+bolometric corrections and quasar characterization. However, we did not derive these quantities directly from the best-fit spectral templates due to several limitations. First, the spectra are gen-erally noisy, and our fits exclude data at observed wavelengths 
+
+> 9600 Å (corresponding to rest-frame wavelengths > 1385 Å), which a ff ects the reliability of continuum slope estimates. Con-sequently, flux predictions in these regions are not robust. Fur-thermore, our current templates did not reproduce the sharp Ly-α
+
+emission features along with the underlying continuum success-fully, often leading to underestimated fluxes in the rest-frame UV regime for the peaky Ly-α systems. Besides, we wanted to use a method that would be consistent for all the quasars, regard-less of the quality of the single spectrum, and consistent with the literature for fair comparisons. We followed the approach presented in Bañados et al. (2016), Mazzucchelli et al. (2017) and Belladitta et al. (2025), model-ing the quasar continuum as a power-law with slope α = 0.44 (Vanden Berk et al. 2001). Since all our sources have reliable 
+
+z-band photometry, we used this magnitude at the pivot wave-length 9168.85 Å (for DECam) to extrapolate the apparent mag-nitude at 1450 Å ( m1450 ) and the monochromatic luminosity at 1350 Å ( λLλ(1350 Å)). While m1450 traces the accretion disk out-put, λLλ(1350 Å) provides a basis for estimating the bolomet-ric luminosity. To compute the absolute magnitude M 1450 , we adopted the redshifts derived from our spectral fitting. To es-timate the total radiative output due to SMBH accretion, we 
+
+Article number, page 12 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning  
+
+> Table 4. Redshift and physical properties of the new quasars.
+
+Name z χ2/dof Template log λLλ(1350 Å) log Lbol m1450 M1450 FWHM (Ly-α) EW Ly α+NV 
+
+erg s −1 erg s −1 km /s Å(1) (2) (3) (4) (5) (6) (7) (8) (9) (10) LS J2155-5111 6.45 0.11 Onorato25 45.31 45.89 21.27 −25.53 82 LS J0104-6857 6.38 0.43 strong Ly-α 45.65 46.22 20.43 −26.36 1613 90 LS J2223-3815 6.36 0.12 weak Ly-α 45.62 46.20 20.49 −26.29 15 LS J2301-1530 6.32 0.04 median Ly-α 45.59 46.17 20.58 −26.20 160 LS J1130 +1420 6.28 0.04 median Ly-α 45.42 46.00 20.98 −25.78 87 LS J2037-5152 6.25 0.14 strong Ly-α 45.41 45.99 21.01 −25.74 2656 212 LS J0006-7935 6.21 0.28 xqr-30 45.61 46.19 20.51 −26.24 32 LS J1451-0445 6.16 0.22 xqr-30 45.60 46.19 20.51 −26.22 153 LS J1435-1053 6.13 0.03 xqr-30 45.32 45.91 21.21 −25.52 247 LS J1332 +1102 6.11 0.08 weak Ly-α 45.51 46.09 20.74 −25.98 22 LS J0208-6647 6.09 2.82 strong Ly-α 45.76 46.34 20.12 −26.60 1146 170 LS J1035-0515 6.09 3.51 weak Ly-α 45.77 46.35 20.08 −26.63 8LS J2011-4436 6.08 0.09 weak Ly-α 45.45 46.03 20.90 −25.82 45 LS J1330-4025 6.07 0.38 strong Ly-α 45.78 46.36 20.08 −26.63 1713 149 LS J0139-5209 6.05 0.49 Onorato25 45.41 45.99 21.00 −25.71 167 LS J1141 +1006 5.94 0.04 weak Ly-α 45.36 45.94 21.10 −25.58 25    
+
+> Notes: Col (1): Abbreviated quasar name; Col (2): spectroscopic redshift estimated with the spectrum fitting with an uncertainty of 0.03 (see Section 5), Col (3): reduced χ2of the best-fitted template; Col (4): Name of the best-fit template; Col (5): monochromatic luminosity at rest frame 1350 Å; Col (6): bolometric luminosity, Col (7-8): apparent and absolute magnitudes at rest frame 1450 Å.
+
+adopted a bolometric correction based on the monochromatic lu-minosity at 1350 Å following Shen et al. (2008): 
+
+Lbol = (3 .81 ± 0.38) × λLλ(1350 Å) . (6) All these quantities are listed in Table 4. For the sources exhibiting prominent Ly α emission (LS J0104–6857, LS J2037–5152, LS J0208–6647, and LS J1330–4025), we estimated the full width at half maximum (FWHM) of the Ly α line. First, we shifted the spectra to the rest frame. Then, we modeled the continuum emission follow-ing the approach of Diamond-Stanic et al. (2009), fitting a power law of the form fλ = Cλβ, where β = α − 2, to spectral re-gions free of strong emission lines (at rest-frame wavelengths 1285–1295, 1315–1325, 1340–1375, 1425–1470, 1680–1710, 1975–2050, and 2150–2250 Å). However, because our spectra are noisy at rest frame > 1385 Å, we cannot reliably constrain the continuum slope. Therefore, we fixed the power-law index to 
+
+β = −1.56, consistent with the quasar slope we adopted to es-timate m 1450 and λLλ(1350 Å). After subtracting the continuum component, we located the peak of the Ly α emission and fit a single Gaussian profile to the red side of the line. The blue side is strongly a ff ected by IGM absorption and resonant scattering, which distorts the line profile and makes it unsuitable for fitting. Fitting only the red wing provides a more reliable estimate of the line width. The resulting FWHM values are in the range 1147 −2657 km s−1. According to the classification of Matsuoka et al. (2018), which defines narrow Ly α quasars as those with FWHM < 500 km s −1, these sources do not meet the criterion. However, the prominent Ly α emitters represent 25% of our sample and dis-play significantly narrower line widths compared to the rest. As virial black hole mass estimates scale with the square of the broad emission line width, narrower lines may indicate lower black hole masses. Near-infrared spectroscopy will be essen-tial to confirm this interpretation by providing measurements of other broad emission lines and estimates of the black hole mass. In order to systematically investigate the emission-line prop-erties of our quasar sample, we computed the equivalent width (EW) of the blended emission from Ly α λ 1216 Å, N v λ1240 Å and Si ii λ1263 Å, following the approach by Diamond-Stanic et al. (2009) and Bañados et al. (2016) applied to SDSS DR5 and PS1 high-redshift quasars. We first determined the contin-uum using the same power-law model described earlier and then computed the EW by integrating the flux excess over the contin-uum in the rest-frame wavelength range 1160–1290 Å. We found that only two of our quasars meet the definition of weak emission-line quasars (WLQs), with EW < 15.4 Å as set by Diamond-Stanic et al. (2009). This represents 12 .5% of our sample, a fraction comparable to the 13 .7% reported by Bañados et al. (2016) for 124 PS1 quasars at 5 .6 ≲ z ≲ 6.7. Although the size of our quasar sample prevents a robust statistical analysis, we compared our EW distribution of Ly α+ N v+ Si ii to the log-normal fits derived for SDSS DR5 quasars at 3 < z < 5 and PS1 quasars. Fig. 7 presents the normalized EW distribution of our 16 quasars, along with the SDSS and PS1 log-normal models from Diamond-Stanic et al. (2009) and Bañados et al. (2016), respec-tively. While 56 .25% of our sample with log(EW /Å) < 2 closely follows the PS1 distribution, a significant fraction (43 .75%) ex-hibits enhanced line strengths, occupying the high-EW tails of both reference distributions. This fraction is notably higher than the 17% and 12% predicted by the SDSS and PS1 fits, respec-tively. Diamond-Stanic et al. (2009) reported an increasing frac-tion of WLQs with redshift, which implies that our sample would be expected to show overall lower EW values than SDSS and be broadly consistent with PS1. We performed an Ander-son–Darling test comparing our sample to the PS1 EW distribu-tion, obtaining a statistic of 56 .92 and a p-value of 0 .001. This in-dicates a substantial di ff erence between the two distributions and a very low probability of obtaining such a statistic if our sam-ple were drawn from the PS1 distribution, leading us to reject the null hypothesis. The EW measurements therefore suggest 
+
+> Article number, page 13 of 29
+
+A&A proofs: manuscript no. aanda 0.0 0.5 1.0 1.5 2.0 2.5  
+
+> log EW Ly + NV (Å)
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> Normalized counts
+> Weak emission-line
+> quasars
+> Bañados et al. (2016)
+> Diamond-Stanic et al. (2009)
+> Martinez-Ramirez+25
+
+Fig. 7. Normalized EW(Ly α+ N v) distribution for the 16 quasars at 
+
+z = 5.93 − 6.45 identified through our CL selection. The solid green and dashed red curves show the best-fit log-normal distributions for PS1 quasars (Bañados et al. 2016) and SDSS quasars (Diamond-Stanic et al. 2009), with mean values of log(EW /Å) = 1.542 and 1.803, and standard deviations of 0.391 and 0.205 Å, respectively. The vertical dashed gray line marks the limit for WLQs (EW < 15.4 Å; Diamond-Stanic et al. 2009). While most of our sample overlaps with the PS1 distribution at log(EW /Å) < 2, a substantial excess appears in the high-EW tail, potentially revealing a distinct population of strong-line quasars. 
+
+that our selection method is recovering a population of quasars with systematically stronger Ly α+N v+ Si ii emission than typ-ically found in previous surveys. The EW values, along with the other physical quantities derived in this section, are summa-rized in Table 4. A sample with at least several dozen quasars (≳ 50) within this selection framework will be crucial to deter-mine whether our selection is probing a di ff erent, less-explored region of quasar parameter space, or if the current results arise from small-number statistics. 
+
+5.2. Comparison with the literature quasars 
+
+To place our newly discovered sources in context, we examined color–color diagrams to assess the parameter space occupied by them (see Fig. 8). Table 3 shows that all the sources from our sample have valid i, z, W1 and W2 band magnitudes, while J
+
+is available for 14 of the sources. We therefore computed colors using these bands to enable a more homogeneous comparison. 13 of the 16 quasars exhibit strong spectral breaks with 
+
+i − z > 3 and z − W1 > 0.5, overlapping entirely with the region populated by T dwarfs. While a significant fraction of known 
+
+z ∼ 6–6.7 quasars occupy the same region of color space, pre-vious selections typically rely on additional data or strict con-straints to separate them from contaminants. In contrast, our method successfully identifies quasars in regions heavily con-taminated by UCDs by leveraging the i and z band imaging as input. This demonstrates the e ff ectiveness of our CL approach in isolating quasars without requiring extensive multiwavelength information. The z − J colors indicate that ∼ 38% of the newly dis-covered quasars exhibit mildly red NIR slopes ( z − J > 0.4), though still consistent with the colors of known quasars at sim-ilar redshifts. We noticed a strong concentration of sources with 0.4 < z − J < 0.8. For quasars within this color range, we com-puted an average redshift of z = 6.27 for the known sample from the literature, compared to z = 6.18 for our discoveries. This o ff -set may suggest that our selection is recovering a population of 1 2 3 4 5 6     
+
+> i-z
+> 0
+> 1
+> 2
+> 3
+> 4
+> z-W1
+> 101234
+> z-J
+> 1
+> 0
+> 1
+> 2
+> 3
+> 4
+> W1-W2
+> QSOs (literature compilation)
+> L dwarfs (literature compilation)
+> T dwarfs (literature compilation)
+> New QSOs (Martinez-Ramirez+25)
+> 6.0
+> 6.1
+> 6.2
+> 6.3
+> 6.4
+> Redshift
+
+Fig. 8. Color–color diagrams showing the positions of the newly dis-covered quasars (stars) and the known high-redshift quasars at the same redshift range of our discoveries 5 .94 ≤ z ≤ 6.45 (filled circles), both color-coded by redshift; and L and T dwarfs (black and red crosses, re-spectively) used as labels in the embedded space. Top: i − z vs. z − W1. Bottom: z − J vs. W1 − W2. While i − z vs. z − W1 shows a total overlap of the new quasars with the T dwarf population, the z − J color shows a clear distinction. 
+
+quasars with slightly redder NIR colors. While this is not a di-rect outcome of the CL approach itself, it likely reflects the more flexible constraints adopted during our catalog-based preselec-tion. Quasars with redder NIR slopes are more likely to overlap with the locus of UCD in traditional color–color diagrams, and are therefore often excluded or deprioritized by traditional se-lections that require flat or blue continua redward of Ly α to minimize contamination (e.g., Bañados et al. 2016; Wang et al. 2017; Findlay et al. 2012). Physically, redder slopes can arise from several e ff ects: modest dust extinction in the quasar host galaxy, an intrinsically softer continuum from the accretion disk, or strong line contributions in the J band (e.g., from C iv λ1549 or C iii ]λ1909 depending on redshift). Previous studies have suggested that red quasars may represent either dust-obscured young transitional phases of SMBHs growth (e.g., Glikman et al. 2024) or quasars viewed at larger inclinations (e.g., Villar Martín et al. 2020). Thus, the concentration of our new discoveries in this color regime may be pointing toward a less-explored popu-lation systematically missed by past color-cut selections. To understand why our newly discovered quasars were overlooked by previous selections, we investigated the survey coverage and selection criteria applied to these sources. None of 
+
+Article number, page 14 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+the 16 newly confirmed quasars have X-ray or radio detections 5,excluding them from selections relying on these bands. Also, of the 16, only three overlap with the DES footprint, three with PS1, and none with SDSS DR12, making incomplete spatial overlap a primary factor. All of our sources are classified as PSF-like, indicating that traditional selection methods based on point-source morphology would not discard them. Beyond coverage, color, and S /N requirements, along with prioritization strategies, also explain the missing sources. In the following, we provide a breakdown of the di ff erent selections from the literature:  
+
+> PS1-based selections:
+
+The DESI selection by Yang et al. (2023) relied on PS1 i-band imaging, which immediately excludes 13 of our quasars due to lack of PS1 coverage. Of the remaining three, LS J1332 +1102 failed their W1 − W2 > −0.14 color cut, and LS J2301-1530 and LS J1035–0515 were excluded by the flat continuum criterion ( zP1 − yP1 < 1). Similarly, the PS1-based selection of Bañados et al. (2016) included only three of our quasars. LS J1332 +1102 failed their 
+
+−0.2 < W1 − W2 < 0.85 color prioritization criterion. Although LS J2301-1530 and LS J1035–0515 meet the selection thresh-olds, they may have been deprioritized due to low S /N or other quality cuts. The selection of z ∼ 7 quasar candidates by Wang et al. (2019), combining DESI Legacy imaging survey (DELS), PS1, UKIRT or UHS, and WISE data, also includes only three of our quasars. All of them (LS J2301-1530, LS J1332 +1102, and LS J1035–0515) were excluded by the z-dropout requirement (zP1 − yP1 > 1.5).  
+
+> Comprehensive multi-method selection:
+
+The recent work by Belladitta et al. (2025) explore a broader set of quasar selec-tions strategies, including: 1) PS1 i-dropouts with NRAO VLA Sky Survey + ALLWISE detections (Belladitta et al. 2023), 2) Radio-selected quasars candidates from the Million Quasar cata-log (Flesch 2023), 3) PS1-based i-dropout selection from Baña-dos et al. (2023), 4) z ≳ 6.6 selection using DELS + PS1 and 5) 
+
+z > 6.5 selection from PS1 and ALLWISE by Belladitta et al. (2025), 6) DES /VHS /CatWISE i-dropouts (Wolf et al. 2024), and 7) DES-based photometric candidates (Yang & Shen 2023). None of our quasars are detected in radio, excluding them from selections (1) and (2). For selection (3), LS J2301-1530, LS J1332 +1102, and LS J1035–0515 failed the zP1 − yP1 < 0.5cut. Selection (4) excluded LS J2301-1530 and LS J1332 +1102 based on zP1 − zDE > 0.8, and LS J1035–0515 based on 
+
+zDE − yP1 > 0.5. Selection (5) reproduces the criteria from Wang et al. (2019), thus excluding the same sources. Selection (6) missed LS J2037–5152 and LS J2155–5111 due to the absence of i-band detections, which are necessary for their color criteria. Despite LS J0139-5209 meeting the photometric constraints, it may have been rejected at the SED fitting stage or deprioritized due to quality flags. Finally, none of our sources were matched to the candidates catalog from selection (7).  
+
+> DECaLS and DES selections:
+
+Wang et al. (2017) combined DECaLS with SDSS i-band photometry; however, their sample  
+
+> 5The X-ray and radio datasets checked are: eROSITA DR1, LO-FAR DR2, EMU, RACS (low, mid, high), FIRST, NVSS, VLASS, and Meerkat-MALS.
+
+does not overlap with our sources. Reed et al. (2017), using DES data, included LS J2037–5152, LS J2155–5111 and LS J0139-5209 in their footprint, but the first two were excluded for being fainter than their zPSF ≤ 21 magnitude threshold, while the last one met their color selection, they likely never followed up on it. 
+
+> 5.3. Contaminant morphologies and classification notes
+
+Our catalog-based preselection did not impose strict morpholog-ical constraints on i-dropouts, allowing for the inclusion of both point-like and extended sources. All confirmed quasars in our sample are classified as point-like (“PSF” type) in the LS DR10 catalog. Among the contaminants, 19 are also point-like and are thus consistent with being UCDs. One contaminant is modeled with an exponential profile, and two are best fit by round expo-nential galaxy models, suggesting they could be compact, dusty red galaxies at low redshift or other types of extended contami-nants. Spectroscopic analysis is required to confirm their nature. Interestingly, about half of the contaminants have photomet-ric redshifts zphot ≳ 6.7, a range where contamination from T dwarfs is particularly common. This further supports the in-terpretation that a significant fraction of our contaminants are UCDs misclassified due to their colors and morphology. 
+
+6. Conclusions 
+
+In this work, we report the discovery of 16 new quasars at 
+
+z = 5.94–6 .45 using a self-supervised CL approach applied to DESI Legacy Survey DR10 optical images. Our method com-bines a flexible catalog-based preselection of i-dropouts, free from strict morphological or color constraints, with represen-tation learning, enabling us to recover sources that would oth-erwise be overlooked, including quasars with slightly red NIR slopes, softer Ly α breaks, and even potential quasar pairs. Such successful outcomes stem from the interplay of our modern self-supervised image-based method with traditional methods such as dropout color cuts, SED fitting, and aperture photometry con-straints. Starting from a sample of 165,253 i-dropout candidates, we trained a CL model using only four DESI LS DR10 bands and produced a low-dimensional latent space representation where quasars naturally cluster. Within this embedded space, we iden-tified overdensities of spectroscopically confirmed quasars at 
+
+z ∼ 6.0 − 6.3, with contamination rates of ∼ 50% from known M, L, and T dwarfs from the literature. We also uncovered trends linked to brightness and morphology, the primary drivers of the latent representation: point-like and elongated sources oc-cupy distinct regions, and a smooth gradient in brightness is observed. Importantly, quasars appear across a broad range of 
+
+i − z ∼ 1.5 − 2.5 and z − J colors, including regions heavily contaminated by UCDs, underscoring the strength of CL in dis-entangling complex parameter spaces. To prioritize candidates for follow-up, we coupled our CL approach with SED fitting, achieving a ∼ 45% success rate in our spectroscopic campaigns. Among the confirmed quasars, we found a diversity in Ly α profiles, including four with rel-atively narrow lines (FWHM ∼ 1146–2656 km s −1), and six with red NIR slopes ( z − J > 0.4) with slightly lower aver-age redshifts compared to known quasars with similar colors. Our EW analysis of the Ly α+N v+ Si ii complex reveals that 
+
+∼ 44% of our sample exhibits enhanced line strengths. To ro-bustly determine whether our selection systematically recovers quasars with high EWs, a larger spectroscopic sample, on the 
+
+> Article number, page 15 of 29
+
+A&A proofs: manuscript no. aanda 
+
+order of 50–100 quasars, will be required. Such numbers will soon be within reach with DESI, Rubin /LSST, and 4MOST op-tical spectra, providing the statistical power to confirm whether the high-EW tail we observe reflects a genuine population rather than small-number statistics. With the currently available optical bands and a more flexible, data-driven search, we have shown that it is possible to probe parameter space heavily contaminated by T dwarfs and to recover quasars with systematically stronger emission features than those typically reported in the literature, which were overlooked by previous selections. As discussed in Section 2.1, relaxing the NIR detection re-quirement in the input catalog for the CL pipeline could poten-tially double the number of quasar discoveries. Many of these currently missed candidates are likely to be revealed by ongo-ing surveys such as Euclid , thanks to its deeper and more uni-form NIR coverage. Notably, even within the more traditional regions of parameter space populated by known quasars, our selection moves beyond the standard color-cut paradigm by re-covering sources with atypical properties. Alternative strategies, such as extending the search into less-explored regions of the latent space, where spectroscopic labels are scarce but trends in catalog properties o ff er guidance (see subsection 3.2), hold the potential to uncover even more unusual populations, albeit at higher observational risk. The set of artifacts and brown dwarf contaminants identified in our selection provides valuable training data to improve the algorithm’s performance, enhance the label-based interpretation of the embedded space, and refine the SED-fitting prioritization. Future iterations could make the algorithm more robust against artifacts by including them in the augmentation process or by in-corporating them as a separate class in a semi-supervised frame-work. Similarly, by expanding the stellar training set with high-quality optical and NIR spectra of these newly discovered UCDs, and especially focusing on atmospheric compositions that mimic quasar SEDs, we can reduce contamination rates and explore al-ternative photometric or morphological indicators to help dis-criminate these sources more reliably. Looking ahead, this approach can be naturally extended to ongoing and upcoming wide-field surveys such as Rubin /LSST, 
+
+Euclid , and Roman, where the combination of deep, multiband photometry and large-area coverage will dramatically increase the discovery potential for high-redshift quasars. With Euclid 
+
+already demonstrating the capability of the NISP spectroscopy to pinpoint rare and luminous quasars at z > 5 (e.g., Bañados et al. 2025), our method is well-positioned to scale to these fu-ture datasets, leveraging both imaging and low-resolution spec-tral data to push the quasar frontier deeper into the reionization era and place stronger constraints on the formation and early growth of SMBHs. 
+
+References 
+
+Abbott, T., Adamów, M., Aguena, M., et al. 2021, ApJS, 255, 20 Abbott, T. M., Abdalla, F., Allam, S., et al. 2018, ApJS, 239, 18 Abdul-Karim, M., Adame, A., Aguado, D., et al. 2025, arXiv preprint arXiv:2503.14745 Albert, L., Artigau, É., Delorme, P., et al. 2011, AJ, 141, 203 Allard, F., Hauschildt, P. H., Alexander, D. R., & Starrfield, S. 1997, ARA&A, 35, 137 Allard, F., Hauschildt, P. H., Alexander, D. R., Tamanai, A., & Schweitzer, A. 2001, ApJ, 556, 357 Andika, I. T., Jahnke, K., van der Wel, A., et al. 2023, ApJ, 943, 150 Astropy Collaboration, Price-Whelan, A. M., Sip˝ ocz, B. M., et al. 2018, AJ, 156, 123 Bañados, E., Le Brun, V., Belladitta, S., et al. 2025, MNRAS, 542, 1088 Bañados, E., Schindler, J.-T., Venemans, B. P., et al. 2023, ApJS, 265, 29 Bañados, E., Venemans, B. P., Decarli, R., et al. 2016, ApJS, 227, 11 Bara ff e, I., Chabrier, G., Allard, F., & Hauschildt, P. H. 1997, A&A, 327, 1054 Bara ff e, I., Chabrier, G., Allard, F., & Hauschildt, P. H. 1998, A&A, 337, 403 Bara ff e, I., Chabrier, G., Barman, T. S., Allard, F., & Hauschildt, P. H. 2003, A&A, 402, 701 Belladitta, S., Bañados, E., Xie, Z.-L., et al. 2025, A&A, 699, A335 Belladitta, S., Moretti, A., Caccianiga, A., et al. 2023, A&A, 669, A134 Belladitta, S., Moretti, A., Caccianiga, A., et al. 2019, A&A, 629, A68 Belladitta, S., Moretti, A., Caccianiga, A., et al. 2020, A&A, 635, L7 Best, W. M. J., Liu, M. C., Magnier, E. A., et al. 2015, ApJ, 814, 118 Brammer, G. B., van Dokkum, P. G., & Coppi, P. 2008, ApJ, 686, 1503 Burgasser, A. J. 2014, in Astronomical Society of India Conference Series, Vol. 11, Astronomical Society of India Conference Series, 7–16 Burgasser, A. J., Geballe, T. R., Leggett, S. K., Kirkpatrick, J. D., & Golimowski, D. A. 2006, ApJ, 637, 1067 Burningham, B., Cardoso, C. V., Smith, L., et al. 2013, MNRAS, 433, 457 Burningham, B., Pinfield, D. J., Leggett, S., et al. 2008, MNRAS, 391, 320 Burningham, B., Pinfield, D. J., Lucas, P. W., et al. 2010, MNRAS, 406, 1885 Bustamante, S. & Springel, V. 2019, MNRAS, 490, 4133 Buzzoni, B., Delabre, B., Dekker, H., et al. 1984, ESO Messenger (ISSN 0722-6691), Dec. 1984, p. 9-13., 38, 9 Byrne, X., Meyer, R. A., Farina, E. P., et al. 2024, MNRAS, 530, 870 Cardoso, C. V., Burningham, B., Smart, R. L., et al. 2015, MNRAS, 450, 2486 Carnall, A. C., Begley, R., McLeod, D. J., et al. 2023, MNRAS, 518, L45 Chabrier, G., Bara ff e, I., Allard, F., & Hauschildt, P. 2000, ApJ, 542, 464 Chambers, K. C., Magnier, E., Metcalfe, N., et al. 2016, arXiv preprint arXiv:1612.05560 Chen, T., Kornblith, S., Norouzi, M., & Hinton, G. 2020, in International confer-ence on machine learning, PmLR, 1597–1607 Chiu, K., Fan, X., Leggett, S. K., et al. 2006, AJ, 131, 2722 Chiu, K., Liu, M. C., Jiang, L., et al. 2008, MNRAS, 385, L53 Chopra, S., Hadsell, R., & LeCun, Y. 2005, in 2005 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’05), Vol. 1, 83 Clarke, A. O., Scaife, A. M. M., Greenhalgh, R., & Griguta, V. 2020, A&A, 639, A84 Conroy, C. & Gunn, J. E. 2010, ApJ, 712, 833 Conroy, C., Gunn, J. E., & White, M. 2009, ApJ, 699, 486 Day-Jones, A. C., Marocco, F., Pinfield, D. J., et al. 2013, MNRAS, 430, 1171 Deacon, N. R., Liu, M. C., Magnier, E. A., et al. 2011, AJ, 142, 77 Decarli, R., Walter, F., Venemans, B. P., et al. 2018, ApJ, 854, 97 Dey, A., Schlegel, D. J., Lang, D., et al. 2019, AJ, 157, 168 Di Matteo, T., Springel, V., & Hernquist, L. 2005, Nature, 433, 604 Diamond-Stanic, A. M., Fan, X., Brandt, W. N., et al. 2009, ApJ, 699, 782 D’Odorico, V., Bañados, E., Becker, G. D., et al. 2023, MNRAS, 523, 1399 Drlica-Wagner, A., Carlin, J. L., Nidever, D. L., et al. 2021, ApJS, 256, 2 Dye, S., Lawrence, A., Read, M. A., et al. 2018, MNRAS, 473, 5113 Euclid Collaboration, Barnett, R., Warren, S. J., et al. 2019, A&A, 631, A85 Fabian, A. C. 2012, ARA&A, 50, 455 Fan, X., Bañados, E., & Simcoe, R. A. 2023, ARA&A, 61, 373 Fan, X., Narayanan, V. K., Lupton, R. H., et al. 2001, AJ, 122, 2833 Fan, X., Strauss, M. A., Schneider, D. P., et al. 1999, AJ, 118, 1 Findlay, J. R., Sutherland, W. J., Venemans, B. P., et al. 2012, MNRAS, 419, 3354 Flaugher, B., Diehl, H. T., Honscheid, K., et al. 2015, AJ, 150, 150 Flesch, E. W. 2023, The Open Journal of Astrophysics, 6, 49 Gaia Collaboration, Vallenari, A., Brown, A. G. A., et al. 2023, A&A, 674, A1 Glikman, E., LaMassa, S., Piconcelli, E., Zappacosta, L., & Lacy, M. 2024, MN-RAS, 528, 711 Golimowski, D. A., Leggett, S. K., Marley, M. S., et al. 2004, AJ, 127, 3516 Granato, G. L., De Zotti, G., Silva, L., Bressan, A., & Danese, L. 2004, ApJ, 600, 580 Grevesse, N., Noels, A., & Sauval, A. J. 1993, A&A, 271, 587 Hadsell, R., Chopra, S., & LeCun, Y. 2006, in 2006 IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR’06), Vol. 2, 62 Hall, P. J., Schilizzi, R. T., Dewdney, P., & Lazio, T. 2008, URSI Radio Science Bulletin, 2008, 4 Hambly, N. C., Collins, R. S., Cross, N. J. G., et al. 2008, MNRAS, 384, 637 Harikane, Y., Zhang, Y., Nakajima, K., et al. 2023, ApJ, 959, 39 Häring, N. & Rix, H.-W. 2004, ApJ, 604, L89 Hauschildt, P. H., Allard, F., & Baron, E. 1999, ApJ, 512, 377 Huertas-Company, M., Sarmiento, R., & Knapen, J. H. 2023, RAS Techniques and Instruments, 2, 441 Irwin, M. J., Lewis, J., Hodgkin, S., et al. 2004, in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 5493, Optimizing Scientific Return for Astronomy through Information Technologies, ed. P. J. Quinn & A. Bridger, 411–422 
+
+Article number, page 16 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+Jiang, H., Hu, Z., Xu, M., et al. 2018, in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 10702, Ground-based and Airborne Instrumentation for Astronomy VII, ed. C. J. Evans, L. Simard, & H. Takami, 107022L Jiang, L., McGreer, I. D., Fan, X., et al. 2016, ApJ, 833, 222 Jin, X., Zhang, Y., Zhang, J., et al. 2019, MNRAS, 485, 4539 Kaiser, N., Aussel, H., Burke, B. E., et al. 2002, in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 4836, Survey and Other Telescope Technologies and Discoveries, ed. J. A. Tyson & S. Wol ff ,154–164 Kaiser, N., Burgett, W., Chambers, K., et al. 2010, in Society of Photo-Optical In-strumentation Engineers (SPIE) Conference Series, Vol. 7733, Ground-based and Airborne Telescopes III, ed. L. M. Stepp, R. Gilmozzi, & H. J. Hall, 77330E Karthik, A., Wu, M., Goodman, N., & Tamkin, A. 2021, arXiv e-prints, arXiv:2112.05340 Kau ff mann, G. & Haehnelt, M. 2000, MNRAS, 311, 576 Kaviraj, S., Laigle, C., Kimm, T., et al. 2017, MNRAS, 467, 4739 Kendall, T. R., Tamura, M., Tinney, C. G., et al. 2007, A&A, 466, 1059 Killi, M., Watson, D., Brammer, G., et al. 2024, A&A, 691, A52 Kirkpatrick, J. D., Cushing, M. C., Gelino, C. R., et al. 2011, ApJS, 197, 19 Kirkpatrick, J. D., Looper, D. L., Burgasser, A. J., et al. 2010, ApJS, 190, 100 Knapp, G. R., Leggett, S. K., Fan, X., et al. 2004, AJ, 127, 3553 Kormendy, J. & Ho, L. C. 2013, ARA&A, 51, 511 Lang, D. 2014, AJ, 147, 108 Lang, D., Hogg, D. W., & Mykytyn, D. 2016, The Tractor: Probabilistic astro-nomical source detection and measurement, Astrophysics Source Code Li-brary, record ascl:1604.008 Larson, R. L., Hutchison, T. A., Bagley, M., et al. 2023, ApJ, 958, 141 Liu, M. C., Fischer, D. A., Graham, J. R., et al. 2002, ApJ, 571, 519 Lodieu, N., Burningham, B., Day-Jones, A., et al. 2012, A&A, 548, A53 Lodieu, N., Hambly, N. C., Jameson, R. F., et al. 2007, MNRAS, 374, 372 Lodieu, N., Zapatero Osorio, M. R., Rebolo, R., Martín, E. L., & Hambly, N. C. 2009, A&A, 505, 1115 Logan, C. H. A. & Fotopoulou, S. 2020, A&A, 633, A154 Mace, G. N., Kirkpatrick, J. D., Cushing, M. C., et al. 2013, ApJS, 205, 6 Mainzer, A., Bauer, J., Cutri, R. M., et al. 2014, ApJ, 792, 30 Marconi, A. & Hunt, L. K. 2003, ApJ, 589, L21 Marley, M., Saumon, D., Morley, C., & Fortney, J. 2018, Zenodo Marocco, F., Jones, H. R. A., Day-Jones, A. C., et al. 2015, MNRAS, 449, 3651 Matsuoka, Y., Peterson, B. A., Murata, K. L., et al. 2011, AJ, 142, 64 Matsuoka, Y., Strauss, M. A., Kashikawa, N., et al. 2018, ApJ, 869, 150 Mau, S., Drlica-Wagner, A., Bechtol, K., et al. 2019, ApJ, 875, 154 Mazzucchelli, C., Bañados, E., Decarli, R., et al. 2017, ApJ, 834, 83 Mazzucchelli, C., Bischetti, M., D’Odorico, V., et al. 2023, A&A, 676, A71 McConnell, N. J. & Ma, C.-P. 2013, ApJ, 764, 184 McInnes, L., Healy, J., & Melville, J. 2018, arXiv e-prints, arXiv:1802.03426 McMahon, R. 2012, in Science from the Next Generation Imaging and Spectro-scopic Surveys, 37 Meisner, A. M., Schneider, A. C., Burgasser, A. J., et al. 2021, ApJ, 915, 120 Nakoneczny, S., Bilicki, M., Solarz, A., et al. 2019, A&A, 624, A13 Neeleman, M., Novak, M., Venemans, B. P., et al. 2021, ApJ, 911, 141 Oke, J. B. & Gunn, J. E. 1982, PASP, 94, 586 Onken, C. A., Lai, S., Wolf, C., et al. 2022, PASA, 39, e037 Onorato, S., Hennawi, J. F., Schindler, J.-T., et al. 2025, MNRAS, 540, 1308 Padovani, P. & Cirasuolo, M. 2023, Contemporary Physics, 64, 47 Partridge, H. & Schwenke, D. W. 1997, J. Chem. Phys., 106, 4618 Pearson, K. 1901, London Edinburgh Philos. Mag. & J. Sci., 6, 559 Pickles, A. J. 1998, PASP, 110, 863 Pinfield, D. J., Burningham, B., Tamura, M., et al. 2008, MNRAS, 390, 304 Planck Collaboration, Aghanim, N., Akrami, Y., et al. 2020, A&A, 641, A6 Pogge, R. W., Atwood, B., Brewer, D. F., et al. 2010, in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 7735, Ground-based and Airborne Instrumentation for Astronomy III, ed. I. S. McLean, S. K. Ramsay, & H. Takami, 77350A Prevot, M. L., Lequeux, J., Maurice, E., Prevot, L., & Rocca-Volmerange, B. 1984, A&A, 132, 389 Prochaska, J., Hennawi, J., Westfall, K., et al. 2020, The Journal of Open Source Software, 5, 2308 Radigan, J., Jayawardhana, R., Lafrenière, D., et al. 2013, ApJ, 778, 36 Reed, S. L., McMahon, R. G., Martini, P., et al. 2017, MNRAS, 468, 4702 Salvato, M., Wolf, J., Dwelly, T., et al. 2022, A&A, 661, A3 Sarmiento, R., Huertas-Company, M., Knapen, J. H., et al. 2021, ApJ, 921, 177 Schindler, J.-T., Bañados, E., Connor, T., et al. 2023, ApJ, 943, 67 Schindler, J.-T., Fan, X., Huang, Y.-H., et al. 2019, ApJS, 243, 5 Schmidt, S. J., West, A. A., Hawley, S. L., & Pineda, J. S. 2010, AJ, 139, 1808 Scholz, R.-D. 2010a, A&A, 515, A92 Scholz, R.-D. 2010b, A&A, 510, L8 Schryber, J. H., Miller, S., & Tennyson, J. 1995, J. Quant. Spectr. Rad. Transf., 53, 373 Shen, Y., Greene, J. E., Strauss, M. A., Richards, G. T., & Schneider, D. P. 2008, ApJ, 680, 169 Silva, D. R., Blum, R. D., Allen, L., et al. 2016, in American Astronomical So-ciety Meeting Abstracts, Vol. 228, American Astronomical Society Meeting Abstracts #228, 317.02 Springel, V., Di Matteo, T., & Hernquist, L. 2005, MNRAS, 361, 776 Temple, M. J., Hewett, P. C., & Banerji, M. 2021, MNRAS, 508, 737 Thompson, M. A., Kirkpatrick, J. D., Mace, G. N., et al. 2013, PASP, 125, 809 Tinney, C. G., Kirkpatrick, J. D., Faherty, J. K., et al. 2018, ApJS, 236, 28 Tody, D. 1986, in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 627, Instrumentation in astronomy VI, ed. D. L. Crawford, 733 Tody, D. 1993, in Astronomical Society of the Pacific Conference Series, Vol. 52, Astronomical Data Analysis Software and Systems II, ed. R. J. Hanisch, R. J. V. Brissenden, & J. Barnes, 173 Tremaine, S., Gebhardt, K., Bender, R., et al. 2002, ApJ, 574, 740 Vanden Berk, D. E., Richards, G. T., Bauer, A., et al. 2001, AJ, 122, 549 Villar Martín, M., Perna, M., Humphrey, A., et al. 2020, A&A, 634, A116 Wang, F., Fan, X., Yang, J., et al. 2017, ApJ, 839, 27 Wang, F., Yang, J., Fan, X., et al. 2019, ApJ, 884, 30 Wang, R., Wu, X.-B., Neri, R., et al. 2016, ApJ, 830, 53 Warren, S. J., Hewett, P. C., Irwin, M. J., McMahon, R. G., & Bridgeland, M. T. 1987, Nature, 325, 131 Wenzl, L., Schindler, J.-T., Fan, X., et al. 2021, AJ, 162, 72 West, A. A., Morgan, D. P., Bochanski, J. J., et al. 2011, AJ, 141, 97 Wolf, J., Salvato, M., Belladitta, S., et al. 2024, A&A, 691, A30 Wright, E. L., Eisenhardt, P. R. M., Mainzer, A. K., et al. 2010, AJ, 140, 1868 Yang, D.-M., Schindler, J.-T., Nanni, R., et al. 2024, MNRAS, 528, 2679 Yang, J., Fan, X., Gupta, A., et al. 2023, ApJS, 269, 27 Yang, Q. & Shen, Y. 2023, ApJS, 264, 9 Yèche, C., Palanque-Delabrouille, N., Claveau, C.-A., et al. 2020, Research Notes of the American Astronomical Society, 4, 179 York, D. G., Adelman, J., Anderson, Jr., J. E., et al. 2000, AJ, 120, 1579 Yue, M., Fan, X., Yang, J., & Wang, F. 2021, ApJ, 921, L27 Zenteno, A., Kluge, M., Kharkrang, R., et al. 2025, A&A, 698, A171 Zou, H., Zhou, X., Fan, X., et al. 2017, PASP, 129, 064101 
+
+Article number, page 17 of 29 A&A proofs: manuscript no. aanda 
+
+Appendix A: Unraveling the embedded space with catalog features 
+
+To investigate the dominant properties influencing the arrange-ment of sources in the embedded space, we color-code the data points by catalog magnitudes, color indices, depth, and PSF size. Figure A.1 highlights several relevant features: the z-band mag-nitude; i−z, z− J and z−W1 colors; the g-band depth and z-band PSF size. These maps reveal trends that aid the interpretation of the algorithm. For instance, source brightness is a major driver of the representation, as evidenced by the gradient in z magni-tude: it increases from bottom to top within the left island and from right to left within the right island. The i − z color map highlights regions with strong spectral breaks, where most con-firmed quasars and stars are located in Fig. 3. Notably, the area around (x,y) = (2, -3) containing quasars shows more moderate 
+
+i − z colors ( ∼ 1.5), suggesting that our more flexible selection criteria successfully include sources that might be excluded by stricter cuts. Although the NIR bands were not part of the CL input, we in-clude z − J color maps to investigate potential di ff erences among quasar populations. The region near (x,y) = (5, -2.5) corresponds to typical blue quasars with flat NIR slopes ( z − J ≤ 0.5), whereas the region around (x,y) = (2, -3) contains a mix of in-termediate colors ( z − J ∼ 1.0–1.5). Meanwhile, the region near (x,y) = (-2, -1) and the vertical structure toward the top of the map appear to host a distinct population of quasars with red NIR slopes. We also examine the z–W1 color, commonly em-ployed for quasar selection, where colors > −0.2 select quasars at z ≳ 5.7 (e.g., Yang et al. 2023), with redder values corre-sponding to higher redshifts. Consistently, we observe z–W1 ∼ 0near (x,y) = (5, –2), a region containing several spectroscopically confirmed quasars and extreme i–z breaks—suggesting a high-confidence selection region. Other areas hosting known quasars exhibit z–W1 values between ∼ 0−0.6, still consistent with z > 6quasars. Anomalously red z–W1 colors ( ∼ 3) appear on the left side of the small island, likely caused by W1 flux contamination from nearby sources, as the lower spatial resolution of WISE compared to LS DR10 can lead to blending. Meanwhile, the re-gion with z–W1 ∼ 2.5 on the right side of the large island co-incides with fainter z-band fluxes, weaker i–z breaks, and two known T dwarfs, suggesting that it may be hosting a larger pop-ulation of T dwarfs. The g-band depth map o ff ers insight into the impact of data quality on the latent space representation. Sources with deeper 
+
+g-band images, characterized by lower background noise, tend to cluster along the left edges of both latent-space islands. Upon visual inspection of the optical stamps of random sources from these regions, we did not find any trend in the background level; in fact, sources with both high and low background levels are often located adjacent to each other. However, we notice that the noise structure appears more peaked and irregular in the upper regions of the embedded space, becoming flatter and more ho-mogeneous toward the bottom. This suggests that subtle observa-tional systematics, particularly related to the noise texture, may influence the latent representation. Nevertheless, the e ff ect is not dominant; there is no smooth gradient or sharply defined clus-tering of deep g-band sources, indicating that this feature likely plays only a minor role in shaping the embedded space. This ef-fect of the imaging quality is also evidenced by the z-band PSF size map, as the smaller sizes indicating better resolution and less blurring overlap the deeper g-band areas and conversely. 
+
+Appendix B: Proper motion of stars in the embedded space 
+
+As shown in Fig. 4, the region of the embedded space associated with elongated sources overlaps with the distribution of stars, suggesting the influence of high proper motions. To investigate this, we retrieved proper motion measurements from Gaia DR3 for all spectroscopically confirmed stars in the embedded space and color-coded them by their proper motion S /N, defined as the proper motion divided by its uncertainty (see Fig. B.1). We find consistent trends in both RA and Dec components, with increas-ing proper motion S /N toward the upper right of the embedded space. This indicates that the CL algorithm is sensitive to the ap-parent motion of sources, placing those with the highest proper motions toward the periphery of the learned representation. 
+
+Appendix C: 2D Gaussian Kernel Density Estimation (KDE) maps 
+
+We define a quantitative criterion to select candidates from re-gions in the latent space with a high density of quasars and a low contamination fraction from UCDs, using Gaussian kernel density estimation (KDE) maps. These maps in Fig. C.1 are con-structed from the currently available sample of spectroscopically confirmed quasars and MLT dwarfs, and are normalized by the total number of sources in each class. Although the limited num-ber of labeled sources, particularly in the southern hemisphere, introduces potential biases, this KDE-based approach provides a reasonable first-order method for prioritizing quasar candidates. 
+
+Appendix D: Ultracool dwarf, star and galaxy templates included in eazy-py 
+
+The set of UCD templates includes: 1) cloud-free, solar-composition, and substellar atmosphere Sonora templates; 2) a compilation of low-resolution spectra of M3-M9, L0-L9, T0-T8 dwarfs from the IRTF SpeX spectrograph; 3) low tempera-ture, low metallicity, and cloud-free atmosphere templates from the Lowz Library; 4) AMES-Dusty and 5) AMES-Cond at-mosphere models with and without dust opacity, respectively; and 5) NextGen model atmosphere grid, which covers high-temperature low-mass stars and brown dwarfs. We also consider possible contamination by main-sequence stars by incorporating templates from the TRDS Pickles Atlas. In Table D.1 we provide technical details of the templates used for the SED fitting downs-election step including: number of templates, type and wave-length coverage in μm for all the templates; and surface gravity (log g), e ff ective temperature (T eff ) and metallicity ([M /H]) only for the theoretical ones. Also, we report on assumptions and the cleaning process we performed to reach the final number of tem-plates. To account for red galaxies (early type spectra and high-z) as potential contaminants, we include: five templates from the Flexible Stellar Population Synthesis (FSPS) library, modeling the emission of a range of galaxy types such as star-forming, quiescent and dusty, with diverse star formation histories (SFHs; Conroy et al. 2009; Conroy & Gunn 2010); three galaxy tem-plates with redshift-dependent SFHs and low dust attenuation from the CORR_SFHZ_13 library, based on JWST data of high-redshift galaxies (Larson et al. 2023; Carnall et al. 2023); and, to consider extreme emission line galaxies, the rest-frame version of the best-fit template to the NIRSpec spectrum of a z = 8.5galaxy (ID = 4590 in Carnall et al. 2023), which features high-
+
+> Article number, page 18 of 29
+
+L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+Fig. A.1. Color-coded embedded space maps showing catalog photometric features. Top row (left to right): z-band magnitude, i − z color, and z − J
+
+color. Bottom row : z-W1 color, g-band depth, and z-band PSF size. Top left : magnitude gradients across both regions underscore the crucial role of the brightness in shaping the low-dimensional representation. Top center : Multiple regions of strong i − z color indicate that while this feature may not fully dominate the embedding, it still plays a key role—evidenced by patterns and some clustering that overlap with the positions of spectroscopically confirmed quasars. Top right : The z − J color map reveals populations consistent with blue quasars ( z − J ≤ 0.5), quasars with intermediate colors ( z − J ∼ 1.0–1.5), and a population with red NIR slopes ( z − J > 2), supporting the potential of the model to uncover diverse quasar types. Bottom left : Red z-W1 colors seem to reflect the W1 blending due to companions and potential faint T dwarf populations. Bottom center : Subtle observational systematics, such as variations in background noise texture, may influence the latent space structure as evidenced by the g-band depth pattern. Bottom right : Larger PSFs point to a mix of slightly extended or noisy z-band images. 
+
+Table D.1. Templates included in eazy-py to account for stellar contaminants.                                                             
+
+> Name Reference Type Number log g[cm s 2]Teff [K] [M /H] Coverage [μm] (1) (2) (3) (4) (5) (6) (7) (8) Sonora 2018 Marley et al. (2018) Theoretical 420 [3.25, 5.5] [200, 2400] 0[0.4, 40] Lowz Library Meisner et al. (2021) Theoretical 374 a3.5, 5 [500, 1600] [-2.5, 1] [0.1, 10] AMES-Dusty Allard et al. (2001) Theoretical 16 4.5 [500, 2000] 0[0.1, 10] Bara ff e et al. (2003) Grevesse et al. (1993) Partridge & Schwenke (1997) AMES-Cond Allard et al. (2001) Theoretical 11 4.5 [800,1900] 0[0.1, 10] Chabrier et al. (2000) Grevesse et al. (1993) Partridge & Schwenke (1997) NextGen Allard et al. (1997) Theoretical 84.5 [2200, 9800] 0[0.01, 921] Bara ff e et al. (1997, 1998) Grevesse et al. (1993) Hauschildt et al. (1999) Schryber et al. (1995) SpeX Prism Library bBurgasser et al. (2006) Empirical 149 [0.6, 2.5] Burgasser (2014) L and T dwarf data archive c
+> Knapp et al. (2004) Empirical 148 [0.1, 2.5] Chiu et al. (2006) Golimowski et al. (2004) TRDS Pickles Atlas dPickles (1998) Empirical 131 [2951.21, 39810.7] [0.115, 2.5]
+> a
+
+This subsample is defined by a carbon-to-oxygen ratio C /O = 0.55 and vertical eddy di ff usion coe ffi cient log 10 Kzz = 2.0.  
+
+> b
+
+These templates were extended to 0.1 μm and 100 μm by assuming Wien and Rayleigh-Jeans emission tails, respectively.  
+
+> c
+
+Find compilation at http://svo2.cab.inta-csic.es/theory/newov2/index.php? . 
+
+> d
+
+TRDS Pickles Atlas account for all normal spectral types and luminosity classes at solar abundance, as well as metal-weak and metal-rich F-K dwarf and G-K giant stars. 
+
+Notes : Col (1): Template set name; Col (2): references; Col (3): type templates: either from a theoretical grid or empirical observed spectra; Col (4): number of templates included; Col (5): logarithm of the surface gravity; Col (6): E ff ective temperature; Col (7): logarithm of the ratio of the mass fraction of metals to the mass fraction of hydrogen, compared to the solar value; Col (8): lower and upper limits of the wavelength coverage. Article number, page 19 of 29 A&A proofs: manuscript no. aanda 11 12 13 14 
+
+> Embedded Euclidean x
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> 6.5
+> Embedded Euclidean y
+
+Proper motion (Gaia DR3) 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> PM/e_PM
+
+Fig. B.1. Embedded space distribution of spectroscopically confirmed stars, color-coded by S /N of Gaia DR3 proper motion measurements. Higher S /N values correspond to stronger detections of motion, high-lighting a gradient in proper motion across the embedded space. 
+
+equivalent-width [OIII] and H β emission lines producing a dis-tintive U-shaped SED in the F277W, F356W, and F444W bands. 
+
+Appendix E: Comparison with adapted color cuts 
+
+We compute synthetic photometry using quasar SED templates by Temple et al. (2021) convolved with the PS1, DECam, UKIDSS, VHS, and WISE filter transmission curves. We there-fore tested the aforementioned color selections by substituting the PS1 or DES DR2 y-band with VHS or UKIDSS Y where available, and by adopting i and z photometry from Legacy Sur-vey DR10. The original color cuts are adjusted to our photomet-ric system to account for the modified color evolution induced by the di ff erent filter responses. We emphasize that these trans-formations introduce additional scatter, and the resulting purity and completeness estimates should therefore be interpreted as approximate rather than exact. For Bañados et al. (2016), targeting quasars at 5 .7 < z < 6.5, the adapted criteria for our photometry are: 
+
+i − z > 0.8 and z − y < 0.12 for 5 .7 < z < 6.2, and 
+
+i − z > 0.8 and z − y > 0.12 for 6 .2 < z < 6.5, while the remaining signal-to-noise ratio and color constraints remain the same. This corresponds to the same selection as Wolf et al. (2024), with the additional constraint y −
+
+J < 0.8. The adaptation of the Wang et al. (2019) for z ∼ 7selection yields: 
+
+z − y > 0.5 and y − J < 0.4,
+
+with the original J−W1 > 1.5 cut. Finally, for Yang et al. (2023), the changed color cuts are: 5.0 2.5 0.0 2.5 5.0 7.5 10.0 12.5 15.0                     
+
+> Embedding X
+> 4
+> 2
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> Embedding Y
+> 2D KDE BD
+> 5.0 2.5 0.0 2.5 5.0 7.5 10.0 12.5 15.0
+> Embedding X
+> 4
+> 2
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 2D KDE QSO
+> 5.0 2.5 0.0 2.5 5.0 7.5 10.0 12.5 15.0
+> Embedding X
+> 4
+> 2
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10 QSO /BD
+> 0.0000
+> 0.0001
+> 0.0002
+> 0.0003
+> 0.0004
+> 0.0005
+> 0.0006
+> 0.0000
+> 0.0002
+> 0.0004
+> 0.0006
+> 0.0008
+> 0.0010
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+
+Fig. C.1. 2D KDE density maps for MLT dwarfs ( upper ), z > 5.7quasar population ( central ); and quasar-to-brown-dwarf density ratio map ( lower ). White contours highlight the source density in the em-bedded space. 
+
+i − z > 0.8, z − y < 0.3, and y − W1 > −0.1for 5 .7 < z < 6.4, and 
+
+z − y > 0.3, y − W1 > −0.1, and z − W1 > 0.7at higher redshift, while rejecting sources with y − J > 0.4. The performance of these adapted selections is summarized in the following Table E.1. 
+
+Appendix F: List of confirmed UCDs 
+
+In Table F.1 we compile the sample of quasar candidates ob-served during our spectroscopic campaign that did not exhibit a 
+
+Article number, page 20 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning  
+
+> Table E.1. Performance of color-based selections.
+
+Selection TP FN FP P C Cand. 
+
+(1) (2) (3) (4) (5) (6) (7) Bañados et al. (2016) 28 3 39 42% 90% 28526 Wang et al. (2019) 3 28 3 40% 11% 1892 Yang et al. (2023) 51 18 7 88% 74% 39924 Wolf et al. (2024) 18 13 53 25% 58% 2344 CL +SED fitting 52 17 10 84% 75% 1438  
+
+> Notes: Col (1): Candidate selection; Col (2): True positives; Col (3): False negatives; Col (4): False positives; Col (5): Precision; Col (6): Completeness; Col (7): Number of candidates selected.
+
+Ly-α break and present a likely brown dwarf spectrum. A de-tailed analysis of the spectrum of these sources is beyond the scope of this paper. 
+
+Appendix G: SED fitting results and images for all the new quasars 
+
+Here we report the optical and near-IR images and the SED fit-ting results of the 16 new quasars (see Figs G.1, G.2, G.3, G.4, G.5 and G.6). 
+
+> Article number, page 21 of 29
+
+A&A proofs: manuscript no. aanda 
+
+Table F.1. Spectroscopically confirmed to not be high-z quasars. 
+
+Name RA DEC Date Telescope Type zml 
+
+(1) (2) (3) (4) (5) (6) (7) LS J012806.35-070949.28 22.02645 -7.16369 2024 Sep. 8 Hale /DBSP EXP 6.89 LS J013153.69-091341.41 22.97369 -9.22817 2024 Oct. 4 Hale /DBSP PSF 6.60 LS J023459.52-184732.42 38.74801 -18.79234 2024 Dec. 2 LBT /MODS PSF 7.03 LS J040409.74-010111.57 61.04060 -1.01988 2024 Dec. 2 Hale /DBSP PSF 7.07 LS J040940.43-044153.29 62.41846 -4.69797 2024 Oct. 4 Hale /DBSP PSF 6.64 LS J082810.33-024514.58 127.04305 -2.75405 2024 Dec. 2 LBT /MODS REX 6.29 LS J091505.37-162230.52 138.77237 -16.37507 2025 May. 1 Clay /LDSS3 PSF 7.08 LS J093306.52-004703.13 143.27715 -0.78420 2024 Dec. 5 LBT /MODS PSF 5.96 LS J101348.72-244710.12 153.45299 -24.78617 2025 May. 1 Clay /LDSS3 PSF 7.05 LS J113244.38 +153820.65 173.18492 15.63907 2025 April. 24 LBT /MODS PSF 6.34 LS J115515.06 +024328.27 178.81276 2.72452 2025 March. 5 Keck /LRIS PSF 6.98 LS J130209.38 +064549.53 195.53908 6.76376 2025 April. 24 LBT /MODS PSF 7.02 LS J132838.18-340410.74 202.15908 -34.06965 2025 May. 1 Clay /LDSS3 REX 6.73 LS J133245.75-391414.68 203.19063 -39.23741 2025 May. 1 Clay /LDSS3 PSF 7.13 LS J140247.81 +102132.87 210.69923 10.35913 2025 April. 20 LBT /MODS PSF 6.56 LS J150722.36-232544.21 226.84315 -23.42895 2025 May. 1 Clay /LDSS3 PSF 6.01 LS J152443.10-262001.87 231.17957 -26.33393 2025 May. 1 Clay /LDSS3 PSF 6.85 LS J160255.50-082640.24 240.73126 -8.44451 2025 May. 1 Clay /LDSS3 PSF 5.94 LS J190808.07-691041.42 287.03364 -69.17804 2025 May. 1 Clay /LDSS3 PSF 5.94 LS J193812.38-570418.00 294.55158 -57.07166 2025 May. 1 Clay /LDSS3 PSF 6.97 LS J200926.15-600141.31 302.35896 -60.02814 2025 May. 1 Clay /LDSS3 PSF 6.00 LS J230435.88-800915.08 346.14950 -80.15419 2025 May. 1 Clay /LDSS3 PSF 5.93 
+
+Notes: Col (1): Brown dwarf name with convention: "LS" for DESI Legacy Survey DR10; Col (2) and Col (3): coordinates (J2000) in degrees, Col (4): Date of the observations; Col (5): Telescope and instrument used for the optical spectroscopic follow-up; Col (6): Morphological model from LS DR10 catalog: PSF =stellar, REX =round exponential galaxy, or EXP =exponential; Col (7): maximum-likelihood photometric redshift estimated by eazy-py .
+
+LS J2301-1530 10 0 10 1      
+
+> obs [m]
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> f [10  19  erg/s/cm 2]
+> Best QSO model at z =6.37 ( 2= 46.75)
+> Best brown dwarf model ( 2= 135.27):
+> Teff_650.0_logg_5.0_logZ_-1.5
+> Observed photometry
+> Predicted photometry
+
+Fig. G.1. Continued from Fig. 5. SED fitting results and postage stamps of the quasar LS J230129.72-153020.4. Article number, page 22 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+LS J0208-6647 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.11 ( 2 = 51.24) 
+
+Best brown dwarf model ( 2 = 283.37): 
+
+Teff_650.0_logg_5.0_logZ_-2.0 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J2223-3815 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.3 ( 2 = 207.67) 
+
+Best brown dwarf model ( 2 = 466.49): 
+
+Teff_850.0_logg_3.5_logZ_-2.0 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J0104-6857 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.11 ( 2 = 129.87) 
+
+Best brown dwarf model ( 2 = 481.45): 
+
+Teff_650.0_logg_5.0_logZ_-1.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+Fig. G.2. Continued from Fig. 5. SED fitting results and postage stamps of the quasars: LS J020801.31-664713.7 (top panel), LS J222343.78-381526.8 (central panel) and LS J010449.12-685756.8 (bottom panel). Article number, page 23 of 29 A&A proofs: manuscript no. aanda 
+
+LS J1035-0515 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+100 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.43 ( 2 = 275.76) 
+
+Best brown dwarf model ( 2 = 595.75): 
+
+Teff_650.0_logg_3.5_logZ_-2.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J1130 +1420 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.2 ( 2 = 6.91) 
+
+Best brown dwarf model ( 2 = 145.71): 
+
+Teff_650.0_logg_5.0_logZ_-1.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J1332 +1102 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.22 ( 2 = 77.67) 
+
+Best brown dwarf model ( 2 = 226.55): 
+
+Teff_750.0_logg_5.0_logZ_-1.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+Fig. G.3. Continued from Fig. G.2. SED fitting results and postage stamps of the quasars: LS J103511.29-051537.9 (top panel), LS J113000.56 +142043.97 (central panel) and LS J133204.89 +110208.94 (bottom panel). Article number, page 24 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+LS J1435-1053 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.21 ( 2 = 108.46) 
+
+Best brown dwarf model ( 2 = 134.84): 
+
+Teff_800.0_logg_3.5_logZ_-1.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J1141 +1006 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.07 ( 2 = 96.83) 
+
+Best brown dwarf model ( 2 = 261.2): 
+
+Teff_950.0_logg_3.5_logZ_-0.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J0139-5209 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.02 ( 2 = 217.96) 
+
+Best brown dwarf model ( 2 = 736.41): 
+
+Teff_1100.0_logg_3.5_logZ_-2.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+Fig. G.4. Continued from Fig. G.3. SED fitting results and postage stamps of the quasars: LS J143510.65-105325.11 (top panel), LS J114156.14 +100636.90 (central panel) and LS J013938.24-520945.73 (bottom panel). Article number, page 25 of 29 A&A proofs: manuscript no. aanda 
+
+LS J1330-4025 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.03 ( 2 = 54.53) 
+
+Best brown dwarf model ( 2 = 633.11): 
+
+Teff_1000.0_logg_3.5_logZ_-2.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J2011-4436 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.31 ( 2 = 72.93) 
+
+Best brown dwarf model ( 2 = 211.59): 
+
+Teff_750.0_logg_3.5_logZ_-2.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+LS J2037-5152 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+> f [10  19  erg/s/cm 2]
+
+Best QSO model at z =6.18 ( 2 = 263.97) 
+
+Best brown dwarf model ( 2 = 344.1): 
+
+Teff_650.0_logg_5.0_logZ_-1.5 
+
+Observed photometry 
+
+Predicted photometry 
+
+Fig. G.5. Continued from Fig. G.4. SED fitting results and postage stamps of the quasars: LS J133014.01-402508.92 (top panel), LS J201119.04-443609.39 (central panel) and LS J203704.37-515240.27 (bottom panel). Article number, page 26 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning 
+
+LS J2155-5111 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+5
+
+10 
+
+15 
+
+20 
+
+25 
+
+30 
+
+35     
+
+> f [10  19  erg/s/cm 2]
+> Best QSO model at z =6.24 ( 2= 73.7)
+> Best brown dwarf model ( 2= 185.27):
+> Teff_650.0_logg_5.0_logZ_-1.5
+> Observed photometry
+> Predicted photometry
+
+LS J1451-0445 10 0 10 1 
+
+> obs
+
+[ m] 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+100     
+
+> f [10  19  erg/s/cm 2]
+> Best QSO model at z =6.1 ( 2= 45.96)
+> Best brown dwarf model ( 2= 200.72):
+> Teff_900.0_logg_3.5_logZ_+1.0
+> Observed photometry
+> Predicted photometry
+
+Fig. G.6. Continued from Fig. G.5. SED fitting results and postage stamps of the quasars: LS J215501.13-511151.11 (top panel) and LS J145109.79-044542.12 (bottom panel). Article number, page 27 of 29 A&A proofs: manuscript no. aanda 
+
+Appendix H: Acknowledgements 
+
+We thank the anonymous referee for their valuable sugges-tions and constructive report, which improved the quality and clarity of this paper. We gratefully acknowledge sup-port from the National Agency for Research and Develop-ment (ANID) under the fellowship ANID Becas /Doctorado Nacional, #21220337 (LNMR-R), Millennium Science Initia-tive Program - ICN12_009 (LNM-R, FEB), CATA-BASAL -FB210003 (LNM-R, FEB, ET, CM), and FONDECYT Regu-lar - #1200495 (LNM-R, FEB) and - #1250821 (ET); and the Vicerrectoría de Investigación of Pontificia Universidad Católica de Chile under the fellowship Stay of Doctoral Co-tutelage Abroad, leading to double degree. C.M. acknowledges sup-port from Fondecyt Iniciacion grant 11240336. REH acknowl-edges support by the German Aerospace Center (DLR) and the Federal Ministry for Economic A ff airs and Energy (BMWi) through program 50OR2403 ‘RUBIES’. The work of DS was carried out at the Jet Propulsion Laboratory, California Insti-tute of Technology, under a contract with the National Aeronau-tics and Space Administration (80NM0018D0004). RAM ac-knowledges support from the Swiss National Science Founda-tion (SNSF) through project grant 200020_207349. FL acknowl-edges support from the INAF 2022 /2023 "Ricerca Fondamen-tale" Mini grant. This work is based on observations collected at the European Southern Observatory under ESO programmes 114.27MF.001 and 115.2816.001. This paper includes data from the LBT under the programmes MPIA-2024B-003 and MPIA-2025A-005. The LBT is an international collaboration among institutions in the United States, Italy, and Germany. The LBT Corporation partners are: The University of Arizona on behalf of the Arizona university system; Istituto Nazionale di Astrofisica, Italy; LBT Beteiligungsgesellschaft, Germany, representing the Max Planck Society, the Astrophysical Institute Potsdam, and Heidelberg University; The Ohio State University; The Research Corporation, on behalf of The University of Notre Dame, Uni-versity of Minnesota and University of Virginia. This work in-cludes data gathered with the 6.5 m Magellan Telescopes lo-cated at Las Campanas Observatory, Chile. This paper is based on observations collected with the Magellan /LDSS3 under the programme allocated by the Chilean Telescope Allocation Com-mittee (CNTAC) no: CN2024B-55 and CN2025A-26. The Pan-STARRS1 Surveys (PS1) and the PS1 public science archive have been made possible through contributions by the Insti-tute for Astronomy, the University of Hawaii, the Pan-STARRS Project O ffi ce, the Max-Planck Society and its participating in-stitutes, the Max Planck Institute for Astronomy, Heidelberg and the Max Planck Institute for Extra-terrestrial Physics, Garching, The Johns Hopkins University, Durham University, the Univer-sity of Edinburgh, the Queen’s University Belfast, the Harvard-Smithsonian Center for Astrophysics, the Las Cumbres Observa-tory Global Telescope Network Incorporated, the National Cen-tral University of Taiwan, the Space Telescope Science Institute, the National Aeronautics and Space Administration under Grant No. NNX08AR22G issued through the Planetary Science Di-vision of the NASA Science Mission Directorate, the National Science Foundation Grant No. AST1238877, the University of Maryland, Eotvos Lorand University (ELTE), the Los Alamos National Laboratory, and the Gordon and Betty Moore Founda-tion. The Legacy Surveys consist of three individual and com-plementary projects: the Dark Energy Camera Legacy Survey (DECaLS; Proposal ID 2014B-0404; PIs: David Schlegel and Arjun Dey), the Beijing-Arizona Sky Survey (BASS; NOAO Prop. ID 2015A-0801; PIs: Zhou Xu and Xiaohui Fan), and the Mayall z-band Legacy Survey (MzLS; Prop. ID 2016A-0453; PI: Arjun Dey). DECaLS, BASS and MzLS together in-clude data obtained, respectively, at the Blanco telescope, Cerro Tololo Inter-American Observatory, NSF’s NOIRLab; the Bok telescope, Steward Observatory, University of Arizona; and the Mayall telescope, Kitt Peak National Observatory, NOIRLab. Pipeline processing and analyses of the data were supported by NOIRLab and the Lawrence Berkeley National Laboratory (LBNL). The Legacy Surveys project is honored to be permitted to conduct astronomical research on Iolkam Du’ag (Kitt Peak), a mountain with particular significance to the Tohono O’odham Nation. NOIRLab is operated by the Association of Universities for Research in Astronomy (AURA) under a cooperative agree-ment with the National Science Foundation. LBNL is managed by the Regents of the University of California under contract to the U.S. Department of Energy. This project used data ob-tained with the Dark Energy Camera (DECam), which was con-structed by the Dark Energy Survey (DES) collaboration. Fund-ing for the DES Projects has been provided by the U.S. Depart-ment of Energy, the U.S. National Science Foundation, the Min-istry of Science and Education of Spain, the Science and Tech-nology Facilities Council of the United Kingdom, the Higher Education Funding Council for England, the National Center for Supercomputing Applications at the University of Illinois at Urbana-Champaign, the Kavli Institute of Cosmological Physics at the University of Chicago, Center for Cosmology and Astro-Particle Physics at the Ohio State University, the Mitchell In-stitute for Fundamental Physics and Astronomy at Texas A&M University, Financiadora de Estudos e Projetos, Fundacao Carlos Chagas Filho de Amparo, Financiadora de Estudos e Projetos, Fundacao Carlos Chagas Filho de Amparo a Pesquisa do Es-tado do Rio de Janeiro, Conselho Nacional de Desenvolvimento Cientifico e Tecnologico and the Ministerio da Ciencia, Tec-nologia e Inovacao, the Deutsche Forschungsgemeinschaft and the Collaborating Institutions in the Dark Energy Survey. The Collaborating Institutions are Argonne National Laboratory, the University of California at Santa Cruz, the University of Cam-bridge, Centro de Investigaciones Energeticas, Medioambien-tales y Tecnologicas- Madrid, the University of Chicago, Univer-sity College London, the DES-Brazil Consortium, the Univer-sity of Edinburgh, the Eidgenossische Technische Hochschule (ETH) Zurich, Fermi National Accelerator Laboratory, the Uni-versity of Illinois at Urbana-Champaign, the Institut de Ciencies de l’Espai (IEEC /CSIC), the Institut de Fisica d’Altes Energies, Lawrence Berkeley National Laboratory, the Ludwig Maximil-ians Universitat Munchen and the associated Excellence Clus-ter Universe, the University of Michigan, NSF’s NOIRLab, the University of Nottingham, the Ohio State University, the Uni-versity of Pennsylvania, the University of Portsmouth, SLAC National Accelerator Laboratory, Stanford University, the Uni-versity of Sussex, and Texas A&M University. BASS is a key project of the Telescope Access Program (TAP), which has been funded by the National Astronomical Observatories of China, the Chinese Academy of Sciences (the Strategic Priority Re-search Program “The Emergence of Cosmological Structures” Grant # XDB09000000), and the Special Fund for Astronomy from the Ministry of Finance. The BASS is also supported by the External Cooperation Program of Chinese Academy of Sciences (Grant # 114A11KYSB20160057), and Chinese National Natu-ral Science Foundation (Grant # 12120101003, #11433005). The Legacy Survey team makes use of data products from the Near-Earth Object Wide-field Infrared Survey Explorer (NEOWISE), which is a project of the Jet Propulsion Laboratory /California Institute of Technology. NEOWISE is funded by the National  
+
+> Article number, page 28 of 29 L.N. Martínez-Ramírez et al.: 16 new quasars at the end of the reionization unveiled by self-supervised learning
+
+Aeronautics and Space Administration. The Legacy Surveys imaging of the DESI footprint is supported by the Director, Of-fice of Science, O ffi ce of High Energy Physics of the U.S. De-partment of Energy under Contract No. DE-AC02-05CH1123, by the National Energy Research Scientific Computing Center, a DOE O ffi ce of Science User Facility under the same contract; and by the U.S. National Science Foundation, Division of Astro-nomical Sciences under Contract No. AST-0950945 to NOAO. This project used public archival data from the Dark Energy Sur-vey (DES). Funding for the DES Projects has been provided by the U.S. Department of Energy, the U.S. National Science Foun-dation, the Ministry of Science and Education of Spain, the Sci-ence and Technology Facilities Council of the United Kingdom, the Higher Education Funding Council for England, the National Center for Super-computing Applications at the University of Illinois at Urbana- Champaign, the Kavli Institute of Cosmolog-ical Physics at the University of Chicago, the Center for Cos-mology and Astro-Particle Physics at the Ohio State University, the Mitchell Institute for Fundamental Physics and Astronomy at Texas A&M University, Financiadora de Estudos e Projetos, Fundação Carlos Chagas Filho de Amparo á Pesquisa do Es-tado do Rio de Janeiro, Conselho Nacional de Desenvolvimento Científico e Tecnológico and the Ministério da Ciencia, Tec-nologia e Inovacão, the Deutsche Forschungsgemeinschaft, and the Collaborating Institutions in the Dark Energy Survey. The Collaborating Institutions are Argonne National Laboratory, the University of California at Santa Cruz, the University of Cam-bridge, Centro de Investigaciones Energéticas, Medioambien-tales y Tecnológicas-Madrid, the University of Chicago, Univer-sity College London, the DES-Brazil Consortium, the Univer-sity of Edinburgh, the Eidgenössische Technische Hochschule (ETH) Zurich, Fermi National Accelerator Laboratory, the Uni-versity of Illinois at Urbana-Champaign, the Institut de Ciències de l’Espai (IEEC /CSIC), the Institut de Física d’Altes Energies, Lawrence Berkeley National Laboratory, the Ludwig- Maximil-ians Universität München and the associated Excellence Cluster Universe, the University of Michigan, the National Optical As-tronomy Observatory, the University of Nottingham, The Ohio State University, the OzDES Membership Consortium, the Uni-versity of Pennsylvania, the University of Portsmouth, SLAC National Accelerator Laboratory, Stanford University, the Uni-versity of Sussex, and Texas A&M University. Based in part on observations at Cerro Tololo Inter-American Observatory, Na-tional Optical Astronomy Observatory, which is operated by the Association of Universities for Research in Astronomy (AURA) under a cooperative agreement with the National Science Foun-dation. This publication makes use of data products from the Wide-field Infrared Survey Explorer, which is a joint project of the University of California, Los Angeles, and the Jet Propul-sion Laboratory /Caltech, funded by the National Aeronautics and Space Administration. Based on observation obtained as part of the VISTA Hemisphere Survey, ESO Program, 179.A-2010 (PI: McMahon). The VISTA Data Flow System pipeline pro-cessing and science archive are described in Irwin et al. (2004) and Hambly et al. (2008). This research made use of Astropy, a community-developed core Python package for Astronomy (As-tropy Collaboration et al. 2018).

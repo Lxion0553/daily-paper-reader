@@ -1,0 +1,455 @@
+Title: Interpretable Graph-Level Anomaly Detection via Contrast with Normal Prototypes
+
+URL Source: https://arxiv.org/pdf/2602.10708v1
+
+Published Time: Thu, 12 Feb 2026 01:54:43 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Interpretable Graph-Level Anomaly Detection via Contrast with Normal Prototypes 
+
+# Qiuran Zhao 1,2 , Kai Ming Ting 1,2 and Xinpeng Li 1,21State Key Laboratory for Novel Software Technology, Nanjing University, Nanjing, China 
+
+> 2
+
+# School of Artificial Intelligence, Nanjing University, Nanjing, China zhaoqr@lamda.nju.edu.cn, tingkm@nju.edu.cn, lixp@lamda.nju.edu.cn 
+
+# Abstract 
+
+The task of graph-level anomaly detection (GLAD) is to identify anomalous graphs that deviate signif-icantly from the majority of graphs in a dataset. While deep GLAD methods have shown promising performance, their black-box nature limits their re-liability and deployment in real-world applications. Although some recent methods have made attempts to provide explanations for anomaly detection re-sults, they either provide explanations without ref-erencing normal graphs, or rely on abstract latent vectors as prototypes rather than concrete graphs from the dataset. To address these limitations, we propose Prototype-based Graph-Level Anomaly Detection (ProtoGLAD) , an interpretable unsu-pervised framework that provides explanation for each detected anomaly by explicitly contrasting with its nearest normal prototype graph. It employs a point-set kernel to iteratively discover multiple normal prototype graphs and their associated clus-ters from the dataset, then identifying graphs dis-tant from all discovered normal clusters as anoma-lies. Extensive experiments on multiple real-world datasets demonstrate that ProtoGLAD achieves competitive anomaly detection performance com-pared to state-of-the-art GLAD methods while pro-viding better human-interpretable prototype-based explanations. 
+
+# 1 Introduction 
+
+Graphs are data structures widely used to represent complex relationships in various domains such as chemistry, traffic systems, and social networks. Recently, graph-level anomaly detection (GLAD) has emerged as a critical but challenging task in the graph data mining community [Luo et al. , 2022; Qiu et al. , 2022; Zhao and Akoglu, 2023; Ma et al. , 2022; Liu et al. , 2023; Kim et al. , 2024]. GLAD aims to identify graphs that deviate significantly from the majority of graphs in a dataset of graphs. Reliable GLAD methods enable a va-riety of applications, including the detection of toxic molecu-lar compounds, finding malicious communication patterns in networks, and identifying abnormal brain connectivity pro-files in neuroscience. However, despite their promising detection performance, most advanced GLAD methods operate as black-box mod-els. They detect anomalies based on anomaly scores derived from, for example, the reconstruction error of a graph au-toencoder [Luo et al. , 2022], the learning discrepancy from a knowledge distillation framework [Ma et al. , 2022], or the consistency score from cross-view mutual information max-imization [Liu et al. , 2023]. The anomaly scores offered by these methods are self-referential, which means they measure how well a graph conforms to a compressed version of itself or to an augmented view of itself, rather than comparing it to normality. Consequently, it is unclear how the detected anomalies can be understood when the detectors cannot pro-vide human-interpretable explanations or verify whether their detected anomalies are indeed rare and different from the ma-jority of the dataset. Recently, some works [Liu et al. , 2023; Yang et al. , 2025; Zhang et al. , 2025] have attempted to provide explanations for their detected graph anomalies. However, existing ap-proaches are limited as they either fail to provide a compar-ative normal reference to verify why a detected anomaly is deviant, or use learnable latent vectors as prototypes, which may deviate from real normal graphs and lead to unreliable normal references for detection and explanation. To address these issues, we propose Prototype-based Graph-Level Anomaly Detection (ProtoGLAD). We argue that this paradigm is particularly well suited for GLAD, as it discovers multiple prototype graphs and their associated nor-mal clusters, which together serve as normal references for anomaly detection and explanation. The anomaly score of a graph is then determined by its similarity to the nearest nor-mal cluster. This design naturally aligns with the definition of graph anomalies as rare deviations from normal distribu-tions and provides an inherent basis for explainability, as each detected anomaly can be directly contrasted with its nearest normal prototype. The main contributions of this work are: • Proposing an effective, interpretable GLAD framework capable of detecting anomalous graphs accurately based on their similarity with respect to a cluster of normal graphs discovered from the dataset. • Developing a node-level explanation mechanism that uses a similarity measure between a node and a graph, 
+
+> arXiv:2602.10708v1 [cs.LG] 11 Feb 2026
+
+enabling the identification of nodes and substructures that are responsible for the anomalousness of a detected graph. • Conducting extensive experiments on multiple real-world datasets, demonstrating that ProtoGLAD achieves competitive anomaly detection performance compared to state-of-the-art GLAD methods while providing clear and interpretable prototype-based explanations. 
+
+# 2 Related Work 
+
+In this section, we briefly review related work. 
+
+2.1 Graph-level anomaly detection 
+
+Graph-level anomaly detection (GLAD) aims to identify anomalous graphs that exhibit significant deviations from the majority of graphs in a dataset. Existing GLAD methods can be broadly categorized into two types: two-step methods and end-to-end methods. Two-step methods first generate graph-level embeddings using graph kernels [Vishwanathan 
+
+et al. , 2010; Neumann et al. , 2016] or self-supervised repre-sentation learning ( e.g. , Graph2Vec [Narayanan et al. , 2017], InfoGraph [Sun et al. , 2019]), followed by applying an anomaly detector such as OCSVM [Amer et al. , 2013], LOF [Breunig et al. , 2000], or Isolation Forest [Liu et al. ,2008]. End-to-end methods , on the other hand, leverage GNNs [Kipf and Welling, 2016; Xu et al. , 2018] to jointly learn graph representations and detect anomalies in a uni-fied framework. Among them, some approaches presume that the anomaly labels of the graphs are accessible dur-ing model training, and thus frame GLAD as a supervised classification problem [Zhang et al. , 2022; Ma et al. , 2023; Dong et al. , 2023]. However, their strong dependence on la-beled anomalies renders their application difficult in a real-world scenarios where such annotations are few or, more of-ten than not, nonexistent. Therefore, most approaches fo-cus on unsupervised learning, where only normal samples are used during the training phase. For example, some of them adopt GNN-based graph reconstruction [Luo et al. , 2022; Kim et al. , 2024], where anomalies are identified as graphs that are poorly reconstructed by the model, while some others like GLocalKD [Ma et al. , 2022] uses a knowledge distilla-tion framework where anomalies are detected as those having large knowledge discrepancies. 
+
+2.2 Explainable GLAD 
+
+Explainable graph-level anomaly detection has attracted in-creasing attention, and several recent methods have at-tempted to provide explanations for their detected anomalies. SIGNET [Liu et al. , 2023] identifies the specific substructures within a single graph that contribute to its anomaly score. It is done by extracting an important “bottleneck” subgraph using the Information Bottleneck principle. While it highlights the suspicious subgraph of the detected anomaly, it fails to pro-vide a contrastive reference to a normal counterpart, making it difficult to verify why the highlighted subgraph is consid-ered deviant. GLADPro [Yang et al. , 2025], aims to provide a general understanding of the model’s behavior by learning global pro-totypes. It extends the IB principle to learn a set of pro-totypes that capture important subgraph patterns across the entire dataset. However, a key limitation is that these pro-totypes are modeled as abstract, learnable vectors in a latent space, rather than actual graphs directly discovered from the dataset, and interpreting a high-dimensional latent vector is a challenging task. More recently, X-GAD [Zhang et al. , 2025] aggre-gates common structural and attribute characteristics across anomalous graphs to construct anomaly prototypes . By con-trasting graphs with these learned anomaly prototypes, X-GAD provides explanations that highlight recurring anoma-lous patterns shared among abnormal graphs. However, X-GAD relies on the availability of anomaly labels during train-ing, which are often expensive or inaccessible. Furthermore, the presupposition of anomaly prototypes is a restrictive as-sumption, as anomalies do not necessarily exhibit consistent patterns. These factors constrain the practical utility of X-GAD in real-world applications. 
+
+# 3 Preliminaries 
+
+3.1 Problem definition 
+
+Let M = {G i|i = 1 , . . . , n } be a set of n attributed graphs, where each graph Gi = ( Vi, Ei) has a set of nodes Vi and a set of edges Ei. Each node v ∈ V is associated with an attribute vector xv ∈ Rm with m attributes. We assume the majority of graphs in M are normal and can be grouped into k distinct normal clusters C = {C1, ..., C k}, where each cluster has a prototype Pi. The anomalous graphs are few and dissimilar from the majority of the graphs in M . This process requires a similarity measure sim (·, ·) that can compute the similarity between a single graph and a set (or distribution) of graphs. 
+
+Definition 1 (Graph-Level Anomaly Detection ). Graph-level anomaly detection aims to identify anomalous graphs which have characteristics different from those of the major-ity of the graphs in the given set M of graphs, and to rank all the graphs on the basis of their anomaly scores such that the anomalous graphs are ranked higher than the normal ones. 
+
+Definition 2 (Normal and Anomalous Graphs ). Given 
+
+M = {G i}, a set of k normal clusters C = {Cj }kj=1 discov-ered from M , and a point-set similarity function sim (G, C j )
+
+that measures the similarity between a graph G and the dis-tribution of cluster Cj :
+
+• A graph GN is normal if it belongs to a cluster Cj and is close to that cluster’s overall distribution. 
+
+• A graph GA is anomalous if it does not belong to any cluster and is dissimilar to all normal cluster distribu-tions. and they have the following relationship: 
+
+max 
+
+> j
+
+ sim (GN , C j ) ≫ max 
+
+> j
+
+ sim (GA, C j )
+
+3.2 Weisfeiler-Lehman graph kernels 
+
+Graph kernels are a class of methods for measuring the simi-larity between graphs. Most existing graph kernels are based on the R-Convolution kernel [Haussler and others, 1999], which operates by extracting substructures from graphs and representing these substructures in a vector form. The kernel between two graphs is then computed based on the similar-ity between these substructures. This process of converting graphs into vector representations is often referred to as em-bedding. One of the most influential embedding techniques is the Weisfeiler-Lehman (WL) scheme [Leman and Weisfeiler, 1968; Shervashidze et al. , 2011], which captures the depen-dencies in a graph in the form of subtrees. The WL scheme applies specifically to labeled graphs. Over time, there have been several extensions and variations of the WL scheme [Shervashidze et al. , 2011; Morris et al. , 2017]. For in-stance, a different version of the WL scheme has been pro-posed to handle attributed graphs, i.e. , graphs with continuous node features and possibly weighted edges [Togninalli et al. ,2019]. In this approach, each graph is encoded as a histogram that reflects the distribution of node embeddings produced by the WL process. Let G = ( V, E) be an attributed graph and N (v) be the set of points in the 1-hop neighborhood of v, excluding v.
+
+Definition 3. A Weisfeiler-Lehman (WL) scheme [Togninalli 
+
+et al. , 2019] that embeds node v associated with G, denoted as G(v), is defined as: 
+
+x(h) 
+
+> v
+
+= [ x0 
+
+> v
+
+, x1 
+
+> v
+
+, . . . , xhv ]
+
+where xhv represents the embedding of G(v) at iteration h:
+
+xhv = 12
+
+x(h−1)  
+
+> v
+
++ 1
+
+|N (v)|
+
+X 
+
+> u∈N (v)
+
+x(h−1) 
+
+> u
+
+
+
+3.3 Isolation Kernel 
+
+Isolation Kernel (IK) is a data-dependent kernel that derives directly from data without explicit learning, and it has no closed-form expression [Ting et al. , 2018]. It has been shown to improve the task-specific performance of SVM [Ting et al. ,2018] and density-based clustering [Qin et al. , 2019] simply by replacing the data-independent kernel or distance in the algorithms. Let D = S 
+
+> v∈V i,i ∈[1 ,n ]
+
+xv be the set of all node vectors in the given dataset M of graphs. Here we use IK to map each node vector xv ∈ Rm into a vector φ(xv | D) ∈ { 0, 1}t×ψ
+
+as is done in [Xu et al. , 2021], where the use of IK has been shown to be the key to improving the discriminative power of the WL scheme. Let Hψ (D) denote the set of all partitionings H admissible from D ⊂ D, where each point ˆxv ∈ D has equal probability of being selected from D and |D| = ψ. Each θ[ˆ xv ] ∈ H
+
+isolates a point ˆxv ∈ D .
+
+Definition 4 ( [Ting et al. , 2018; Qin et al. , 2019]) . Isolation Kernel of x1 and x2 is defined to be the expectation taken over the distribution of partitionings H ∈ Hψ (D) that both 
+
+x1 and x2 fall into the same isolating partition θ[ˆ xv ] ∈ H,where ˆxv ∈ D ⊂ D, ψ = |D| :
+
+κψ (x1, x2 | D) = EHψ (D) [1(x1, x2 ∈ θ | θ ∈ H)] 
+
+≈ 1
+
+t
+
+> t
+
+X
+
+> i=1
+
+1(x1, x2 ∈ θ | θ ∈ Hi)= 1
+
+t
+
+> t
+
+X
+
+> i=1
+
+X
+
+> θ∈Hi
+
+1(x1 ∈ θ)1(x2 ∈ θ)
+
+where 1(·) is an indicator function; κψ is constructed using a finite number of partitionings Hi, i = 1 , . . . , t , where each 
+
+Hi is created using randomly subsampled Di ⊂ D; and θ is a shorthand for θ[ˆ xv ].
+
+Definition 5 (Feature map of Isolation Kernel. [Ting et al. , 2020]) . For node vector xv ∈ Rm, the feature mapping 
+
+φ : Rm → { 0, 1}t×ψ of κψ maps xv into a vector that rep-resents the partitions in all the partitionings Hi ∈ Hψ (D),
+
+i = 1 , . . . , t , where xv falls into either one of the ψ hyper-spheres or none in each partitioning Hi.
+
+Rewriting Equation 4 using φ gives: 
+
+κψ (x1, x2 | D) = 1
+
+t ⟨φ(x1 | D), φ (x2 | D)⟩
+
+# 4 Proposed framework: ProtoGLAD 
+
+4.1 Graph embedding 
+
+The Weisfeiler-Lehman (WL) embedding used here is the same as that introduced in section 2. The only exception is that we use the IK mapped vector φ(v) rather than node vec-tor xv as the input representation of the WL scheme, which is the same as in [Xu et al. , 2021]. Let φ0(xv ) = φ(xv ) be the IK mapped vector of node xv
+
+for a node v in a graph G = ( V, E). The WL embedding at iteration h > 0 is recursively defined as: 
+
+φh(xv ) = 12
+
+φh−1(xv ) + 1
+
+|N (v)|
+
+X 
+
+> u∈N (v)
+
+φh−1(xu)
+
+
+
+We view each graph G = ( V, E) as having a representa-tive sample of WL-embedded node vectors φh(xv ) (∀v ∈ V )of an unknown distribution, where each node vector is repre-sented using the IK-WL embedding. Then, a mean embed-ding can be used to represent each graph. For a graph G = ( V, E), its embedding is given as the mean embeddings of all nodes in G:
+
+Φ( G) = 1
+
+|V| 
+
+X
+
+> v∈V
+
+φh(xv ).
+
+The similarity between any pair of two graphs is calculated by a dot product between the two mean embeddings or feature mean maps, i.e. ,
+
+sim (G, G′) = ⟨Φ( G), Φ( G′)⟩4.2 Anomalous graph detection 
+
+Once graph-level embeddings are obtained for each graph in the dataset, the GLAD problem can be naturally reformulated as a point anomaly detection task in the embedding space. Each graph Gi is represented by a fixed-dimensional vec-tor Φ( Gi) that captures its structural and semantic properties. Then we utilize a point-set kernel ˆK to measure the similarity between a single graph and a set of graphs. This point-set kernel is defined as: 
+
+ˆK(x, C ) = ⟨Φ( x), ˆΦ( C)⟩
+
+and 
+
+ˆΦ( C) = 1
+
+|C|
+
+X
+
+> y∈C
+
+Φ( y)
+
+where ˆΦ is the kernel mean map of ˆK; Φ is the feature map of a point-to-point kernel κ; and ⟨a, b ⟩ denotes a dot prod-uct between two vectors a and b. The point-to-point kernel, expressed in terms of a dot product, is given as follows: 
+
+κ(x, y ) = ⟨Φ( x), Φ( y)⟩
+
+In this paper, follow a prior work [Ting et al. , 2022], we pro-pose to use Isolation Kernel introduced above as κ in ˆK be-cause it has a finite-dimensional feature map, and its similar-ity adapts to local density of the data distribution of a given dataset. ProtoGLAD employs the point-set kernel ˆK to discover clusters by first locating a high-density data point which is treated as the prototype for that cluster. A cluster is then “grown” from this prototype by absorbing all points that are sufficiently similar to the cluster, based on a growth rate ρ.The process repeats for subsequent clusters using the unas-signed points in Π. It continues until Π is empty or no re-maining point has a similarity greater than a threshold τ . The final anomaly score for any graph Gi is its point-set similar-ity to its nearest cluster. Graphs dissimilar to all clusters are thus identified as anomalies. The detailed algorithm is given in Algorithm 1. 
+
+4.3 Explain why a detected graph is anomalous 
+
+Once the anomaly score is obtained, for a detected anomalous graph GA, we identify its most similar prototype G∗ 
+
+> p
+
+. Then, we explain the anomalousness of GA by assigning each node 
+
+u ∈ V A a score measuring how well it aligns with the nearest prototype. We define the node normality score as the inner-product similarity between the node embedding and the near-est prototype embedding: 
+
+c(u) = ⟨φh(u), Φ( G∗ 
+
+> p
+
+)⟩.
+
+Intuitively, a lower c(u) indicates that node u contributes little to the similarity between GA and its nearest normal prototype, signifying the contribution of this node to the anomalousness of GA.In the same way, scores for nodes in G∗ 
+
+> p
+
+can be computed with respect to GA. This identifies the lowest scored nodes in 
+
+G∗ 
+
+> p
+
+that are least similar to the nodes in GA. Thus, the pair-sets of lowest scored nodes in GA and G∗ 
+
+> p
+
+explain how the detected anomalous graph differs from its most similar prototype. 
+
+Algorithm 1 ProtoGLAD : Prototype-based Graph-Level Anomaly Detection 
+
+Input: Dataset of graphs M = {G i = (Vi, Ei)|i =1, . . . , n }, τ : similarity threshold, ϱ: growth rate 
+
+Output: Anomaly scores S = {si}ni=1 for the graphs in M ,a set of prototype graphs P = {G jp}kj=1 . 
+
+> 1:
+
+Obtain graph embedding gi for each graph Gi in M ,
+
+Gall = {gi, i = 1 , . . . , n } 
+
+> 2:
+
+Π = Gall  
+
+> 3:
+
+k = 0  
+
+> 4:
+
+while |Π| > 1 do  
+
+> 5:
+
+gp = arg max g∈Π ˆK(g, Π)  
+
+> 6:
+
+gq = arg max g∈Π\{ gp} ˆK(g, {gp}) 
+
+> 7:
+
+γ = (1 − ϱ) × ˆK(gq , {gp}) 
+
+> 8:
+
+if γ ≤ τ then  
+
+> 9:
+
+break  
+
+> 10:
+
+end if  
+
+> 11:
+
+k = k + 1  
+
+> 12:
+
+Gkp = gp 
+
+> 13:
+
+Ck = {gp, g q } 
+
+> 14:
+
+while γ > τ do  
+
+> 15:
+
+Ck 
+
+> new
+
+= {g ∈ Π | ˆK(g, C k) > γ } 
+
+> 16:
+
+Ck = Ck 
+
+> new
+> 17:
+
+γ = (1 − ϱ)γ 
+
+> 18:
+
+end while  
+
+> 19:
+
+Π = Π \ Ck 
+
+> 20:
+
+end while  
+
+> 21:
+
+for i = 1 to n do  
+
+> 22:
+
+si = max j=1 ,...,k ˆK(gi, C j ) 
+
+> 23:
+
+end for  
+
+> 24:
+
+return S = {si}ni=1 , P = {G jp}kj=1 
+
+# 5 Experiments 
+
+5.1 Experimental Setup 
+
+Datasets. We employ eight publicly available real-world datasets from the TUDataset benchmark [Morris et al. , 2020], which are collected from various critical domains including bioinformatics and social networks. 
+
+Baselines. Six unsupervised GLAD methods are selected as baseline methods: • Two-step Method : We choose WL-iForest , a classic approach that combines the Weisfeiler-Lehman graph kernel [Shervashidze et al. , 2011] for graph embedding with the Isolation Forest [Liu et al. , 2008] for anomaly detection. • Deep Learning Methods : We include five state-of-the-art deep GLAD methods: GLADC [Luo et al. ,2022], GLocalKD [Ma et al. , 2022], OCGTL [Qiu et al. , 2022], SIGNET [Liu et al. , 2023], and GLADPro 
+
+[Yang et al. , 2025]. It is important to note that among these baselines, only 
+
+SIGNET and GLADPro are capable of providing explana-tions for their detection results. Dataset ProtoGLAD GLADC GLocalKD SIGNET WL-iForest OCGTL GLADPro 
+
+AIDS 0.980 ±0.005 0.967 ±0.005 0.969 ±0.012 0.976 ±0.009 0.614 ±0.031 0.975 ±0.021 0.526 ±0.148 BZR 0.856 ±0.005 0.678 ±0.032 0.681 ±0.056 0.779 ±0.069 0.528 ±0.023 0.519 ±0.031 0.606 ±0.095 COX2 0.709 ±0.015 0.615 ±0.044 0.602 ±0.059 0.645 ±0.078 0.512 ±0.033 0.598 ±0.034 0.637 ±0.094 DD 0.788 ±0.006 0.703 ±0.034 0.753 ±0.043 0.712 ±0.024 0.704 ±0.011 0.711 ±0.022 0.766 ±0.016 MUTAG 0.898 ±0.005 0.732 ±0.021 0.833 ±0.023 0.766 ±0.018 0.711 ±0.002 0.657 ±0.021 0.891 ±0.057 PROTEINS 0.794 ±0.026 0.699 ±0.056 0.761 ±0.034 0.733 ±0.034 0.621 ±0.025 0.656 ±0.024 0.736 ±0.029 NCI1 0.701 ±0.024 0.683 ±0.045 0.653 ±0.028 0.713 ±0.044 0.504 ±0.018 0.637 ±0.012 0.592 ±0.006 DHFR 0.624 ±0.056 0.612 ±0.026 0.618 ±0.022 0.634 ±0.033 0.517 ±0.015 0.598 ±0.023 0.609 ±0.084 
+
+Avg. Rank 1.25 4.63 3.38 2.50 6.50 5.63 4.13 
+
+> Table 1: Anomaly detection performance in terms of AUC (mean ± std). Parameter settings for all baseline methods follow their original papers.
+
+Rank Anomalous Graph Normal Prototype 
+
+1
+
+2
+
+3 
+
+> Table 2: Visualization of anomalous graphs and their most simi-lar normal prototypes from the artificial dataset detected by Pro-toGLAD . Darker node colors indicate higher similarity between matched nodes, while lighter colors highlight potential anomaly-inducing substructures.
+
+5.2 Anomaly Detection Performance 
+
+In terms of evaluation, we use the popular anomaly detection evaluation metric - Area Under the Receiver Operating Char-acteristic Curve (AUC). Higher AUC indicates better perfor-mance. We report the mean AUC and standard deviation based on 5-fold cross-validation for all datasets. As shown in Table 1, we observe that ProtoGLAD achieves the best performance on most datasets, ranking first on 6 out of the 8 datasets. On NCI1 and DHFR, it achieves a compet-itive second-place performance, ranking only slightly behind SIGNET. Overall, ProtoGLAD achieves the best average rank (1.25), indicating the effectiveness of our method in detecting anomalies. 
+
+5.3 Interpretability 
+
+To validate interpretability of ProtoGLAD, we first create a synthetic dataset inspired by previous work [Wu et al. , 2022], where each normal graph is constructed by combining a base structure ( e.g. , tree, wheel, or ladder) with a normal substruc-ture (circle), while anomalous graphs incorporate an anoma-lous substructure (house). As shown in Table 2, we can clearly observe that our method successfully identifies match-
+
+Dataset Anomalous Graph Normal Prototype 
+
+AIDS 
+
+COX2 
+
+PROTEINS   
+
+> Table 3: Visualization of anomalous graphs and their most similar normal prototypes detected by ProtoGLAD on real-world datasets.
+
+ing substructures (highlighted by darker node colors) between anomalous graphs and their most similar normal prototypes, and distinctly detects anomaly-inducing substructures (high-lighted by lighter node colors). We then evaluate our method’s interpretability on real-world datasets. We argue that in real-world datasets, graphs are not monolithic but often form multiple patterns ( i.e. , clus-ters). ProtoGLAD is designed to first discover these clus-ters and their corresponding centers, which serve as the pro-totypes. Based on this, ProtoGLAD can provide contrastive explanations for its results. For each detected anomaly, we Method Anomalous Graph Anomaly Rank Normal Prototype Additional Normal Reference Graphs 
+
+SIGNET 
+
+GLADPro 
+
+ProtoGLAD  
+
+> Table 4: Visualizations of explanations generated by SIGNET, GLADPro, and ProtoGLAD on the MUTAG dataset. For each method, we show the top-2 ranked anomalous graphs detected, together with a normal prototype graph and additional normal reference graphs. For ProtoGLAD, the prototype graphs and their clusters are directly discovered from the dataset. For GLADPro, whose prototypes are learnable latent vectors, we retrieve the closest normal graph in the embedding space as a reference prototype and show its nearest normal neighbors. SIGNET does not explicitly identify normal prototypes or clusters, the prototype and normal reference examples shown for SIGNET are obtained by applying ProtoGLAD to the detected anomalous graphs.
+
+first identify its nearest prototype and closest cluster. This enables a comparison between the anomalous graph and the nearest prototype. As illustrated in Table 3, the anomaly ex-hibits substructural deviations from its corresponding normal counterpart. We also conduct a qualitative comparison with two ex-plainable methods, SIGNET and GLADPro, on the MUTAG dataset as illustrated in Table 4. • SIGNET identifies an important “bottleneck subgraph” within the graph to indicate where an anomaly may oc-cur. While it indicates where the anomaly is, SIGNET fails to provide a corresponding normal reference, mak-ing it difficult to verify whether the detected anomaly truly deviates from the majority. Notably, the top-1 ranked anomaly (the first row in Table 4) detected by SIGNET is identified as a normal graph by both GLAD-Pro and ProtoGLAD. To make a fair comparison, we use ProtoGLAD to obtain the normal prototype and cluster examples for the anomalous graphs detected by SIGNET. As illustrated, the top-1 anomalous graph de-tected by SIGNET is highly similar to its nearest normal prototype as well as to other graphs within the corre-sponding prototype cluster, which contradicts the fun-damental definition of anomaly. This also highlights the risk of misinterpretation when the explanation lack a contrastive normal reference. • GLADPro learns global prototypes. However, as its prototypes are abstract latent vectors, it can only visu-alize them indirectly by retrieving a set of Top-K similar graphs from the dataset. While this provides a general sense of normal patterns, it forces user to manually sum-marize normality from a diverse set of retrieved graphs. • ProtoGLAD provides direct, contrastive explanations for its detection results. Not only does ProtoGLAD highlight the anomalous substructure, but it also finds the specific real normal prototype that the anomaly should have resembled. In contrast to the baselines, node colors in ProtoGLAD describe the similarity to the prototype: darker nodes indicate high similarity (con-sistency with normality), while lighter nodes highlight the anomalous deviations (low similarity). We provide a further analysis of the quality of the proto-types discovered by GLADPro and ProtoGLAD in Table 4 and Table 5. A critical observation from Table 4 is that Method Prototype 
+
+GLADPro 
+
+ProtoGLAD 
+
+> Table 5: Visualizations of prototype graphs identified by GLADPro and ProtoGLAD on the MUTAG dataset.
+
+GLADPro incorrectly flags a ground-truth normal graph as anomalous. We attribute this failure to the inherent insta-bility of its prototype learning mechanism. Since GLAD-Pro models prototypes as learnable vectors in a continuous latent space, these vectors may drift into sparse regions that do not correspond to any dense normal distribution. This is evidenced in Table 5, where the second prototype retrieved by GLADPro is structurally similar to an anomalous pattern rather than a representative normal graph. Using such a ref-erence inevitably leads to erroneous detection. In contrast, ProtoGLAD explicitly identifies four concrete prototypes. As illustrated, ProtoGLAD not only captures the dominant nor-mal pattern identified by GLADPro but also successfully dis-covers others that GLADPro fails to find. This confirms that the data-dependent approach of ProtoGLAD ensures both the 
+
+validity and the coverage of the normal reference set. 
+
+# 6 Conclusion 
+
+We present ProtoGLAD, an interpretable framework for graph-level anomaly detection that grounds its decisions in concrete normal graphs. ProtoGLAD first discovers multiple modes of normality by clustering graphs with a point-set ker-nel and selecting representative normal prototypes, and then assigns anomaly scores based on each graph’s similarity to its closest normal cluster distribution. Moreover, ProtoGLAD provides contrastive explanations: for a detected anomaly, it highlights the nodes/substructures that are least consistent with its corresponding prototype and the neighboring normal graphs, making the deviation from normal patterns explicit and verifiable. Empirical evaluation results on both synthetic data with known anomalous motifs and multiple real-world benchmarks demonstrate that ProtoGLAD achieves strong detection performance while providing intuitive, prototype-based explanations. 
+
+# References 
+
+[Amer et al. , 2013] Mennatallah Amer, Markus Goldstein, and Slim Abdennadher. Enhancing one-class support vec-tor machines for unsupervised anomaly detection. In Pro-ceedings of the ACM SIGKDD workshop on outlier detec-tion and description , pages 8–15, 2013. [Breunig et al. , 2000] Markus M Breunig, Hans-Peter Kriegel, Raymond T Ng, and J¨ org Sander. Lof: iden-tifying density-based local outliers. In Proceedings of the 2000 ACM SIGMOD international conference on Management of data , pages 93–104, 2000. [Dong et al. , 2023] Xiangyu Dong, Xingyi Zhang, and Sibo Wang. Rayleigh quotient graph neural networks for graph-level anomaly detection. arXiv preprint arXiv:2310.02861 , 2023. [Haussler and others, 1999] David Haussler et al. Convolu-tion kernels on discrete structures. Technical report, Cite-seer, 1999. [Kim et al. , 2024] Sunwoo Kim, Soo Yong Lee, Fanchen Bu, Shinhwan Kang, Kyungho Kim, Jaemin Yoo, and Kijung Shin. Rethinking reconstruction-based graph-level anomaly detection: Limitations and a simple rem-edy. Advances in Neural Information Processing Systems ,37:95931–95962, 2024. [Kipf and Welling, 2016] Thomas N Kipf and Max Welling. Semi-supervised classification with graph convolutional networks. arXiv preprint arXiv:1609.02907 , 2016. [Leman and Weisfeiler, 1968] Andrei Leman and Boris We-isfeiler. A reduction of a graph to a canonical form and an algebra arising during this reduction. Nauchno-Technicheskaya Informatsiya , 2(9):12–16, 1968. [Liu et al. , 2008] Fei Tony Liu, Kai Ming Ting, and Zhi-Hua Zhou. Isolation forest. In 2008 eighth ieee international conference on data mining , pages 413–422. IEEE, 2008. [Liu et al. , 2023] Yixin Liu, Kaize Ding, Qinghua Lu, Fuyi Li, Leo Yu Zhang, and Shirui Pan. Towards self-interpretable graph-level anomaly detection. Advances in Neural Information Processing Systems , 36:8975–8987, 2023. [Luo et al. , 2022] Xuexiong Luo, Jia Wu, Jian Yang, Shan Xue, Hao Peng, Chuan Zhou, Hongyang Chen, Zhao Li, and Quan Z Sheng. Deep graph level anomaly detection with contrastive learning. Scientific Reports , 12(1):19867, 2022. [Ma et al. , 2022] Rongrong Ma, Guansong Pang, Ling Chen, and Anton van den Hengel. Deep graph-level anomaly de-tection by glocal knowledge distillation. In Proceedings of the fifteenth ACM international conference on web search and data mining , pages 704–714, 2022. [Ma et al. , 2023] Xiaoxiao Ma, Jia Wu, Jian Yang, and Quan Z Sheng. Towards graph-level anomaly detection via deep evolutionary mapping. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining , pages 1631–1642, 2023. [Morris et al. , 2017] Christopher Morris, Kristian Kersting, and Petra Mutzel. Glocalized weisfeiler-lehman graph ker-nels: Global-local feature maps of graphs. In 2017 IEEE International Conference on Data Mining (ICDM) , pages 327–336. IEEE, 2017. [Morris et al. , 2020] Christopher Morris, Nils M. Kriege, Franka Bause, Kristian Kersting, Petra Mutzel, and Mar-ion Neumann. Tudataset: A collection of benchmark datasets for learning with graphs. In ICML 2020 Workshop on Graph Representation Learning and Beyond (GRL+ 2020) , 2020. [Narayanan et al. , 2017] Annamalai Narayanan, Mahinthan Chandramohan, Rajasekar Venkatesan, Lihui Chen, Yang Liu, and Shantanu Jaiswal. graph2vec: Learning distributed representations of graphs. arXiv preprint arXiv:1707.05005 , 2017. [Neumann et al. , 2016] Marion Neumann, Roman Garnett, Christian Bauckhage, and Kristian Kersting. Propagation kernels: efficient graph kernels from propagated informa-tion. Machine learning , 102:209–245, 2016. [Qin et al. , 2019] Xiaoyu Qin, Kai Ming Ting, Ye Zhu, and Vincent CS Lee. Nearest-neighbour-induced isolation sim-ilarity and its impact on density-based clustering. In Pro-ceedings of the AAAI Conference on Artificial Intelligence ,volume 33, pages 4755–4762, 2019. [Qiu et al. , 2022] Chen Qiu, Marius Kloft, Stephan Mandt, and Maja Rudolph. Raising the bar in graph-level anomaly detection. arXiv preprint arXiv:2205.13845 , 2022. [Shervashidze et al. , 2011] Nino Shervashidze, Pascal Schweitzer, Erik Jan Van Leeuwen, Kurt Mehlhorn, and Karsten M Borgwardt. Weisfeiler-lehman graph kernels. 
+
+Journal of Machine Learning Research , 12(9), 2011. [Sun et al. , 2019] Fan-Yun Sun, Jordan Hoffmann, Vikas Verma, and Jian Tang. Infograph: Unsupervised and semi-supervised graph-level representation learning via mutual information maximization. arXiv preprint arXiv:1908.01000 , 2019. [Ting et al. , 2018] Kai Ming Ting, Yue Zhu, and Zhi-Hua Zhou. Isolation kernel and its effect on svm. In Pro-ceedings of the 24th ACM SIGKDD International Con-ference on Knowledge Discovery & Data Mining , pages 2329–2337, 2018. [Ting et al. , 2020] Kai Ming Ting, Bi-Cun Xu, Takashi Washio, and Zhi-Hua Zhou. Isolation distributional kernel: A new tool for kernel based anomaly detection. In Pro-ceedings of the 26th ACM SIGKDD international confer-ence on knowledge discovery & data mining , pages 198– 206, 2020. [Ting et al. , 2022] Kai Ming Ting, Jonathan R Wells, and Ye Zhu. Point-set kernel clustering. IEEE Transactions on Knowledge and Data Engineering , 35(5):5147–5158, 2022. [Togninalli et al. , 2019] Matteo Togninalli, Elisabetta Ghisu, Felipe Llinares-L´ opez, Bastian Rieck, and Karsten Borg-wardt. Wasserstein weisfeiler-lehman graph kernels. Ad-vances in neural information processing systems , 32, 2019. [Vishwanathan et al. , 2010] S Vichy N Vishwanathan, Nicol N Schraudolph, Risi Kondor, and Karsten M Borg-wardt. Graph kernels. The Journal of Machine Learning Research , 11:1201–1242, 2010. [Wu et al. , 2022] Ying-Xin Wu, Xiang Wang, An Zhang, Xiangnan He, and Tat-Seng Chua. Discovering invari-ant rationales for graph neural networks. arXiv preprint arXiv:2201.12872 , 2022. [Xu et al. , 2018] Keyulu Xu, Weihua Hu, Jure Leskovec, and Stefanie Jegelka. How powerful are graph neural net-works? arXiv preprint arXiv:1810.00826 , 2018. [Xu et al. , 2021] Bi-Cun Xu, Kai Ming Ting, and Yuan Jiang. Isolation graph kernel. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 35, pages 10487–10495, 2021. [Yang et al. , 2025] Zhenyu Yang, Ge Zhang, Jia Wu, Jian Yang, Shan Xue, Amin Beheshti, Hao Peng, and Quan Z. Sheng. Global interpretable graph-level anomaly detection via prototype. In Proc. SIGKDD , pages 1–12, 2025. [Zhang et al. , 2022] Ge Zhang, Zhenyu Yang, Jia Wu, Jian Yang, Shan Xue, Hao Peng, Jianlin Su, Chuan Zhou, Quan Z Sheng, Leman Akoglu, et al. Dual-discriminative graph neural network for imbalanced graph-level anomaly detection. Advances in Neural Information Processing Systems , 35:24144–24157, 2022. [Zhang et al. , 2025] Xinqiu Zhang, Wei Qin, Tairan Huang, and Jianliang Gao. X-gad: Explainable graph-level anomaly detection via inter-graph anomalies. Expert Sys-tems with Applications , page 128902, 2025. [Zhao and Akoglu, 2023] Lingxiao Zhao and Leman Akoglu. On using classification datasets to evaluate graph outlier detection: Peculiar observations and new insights. 
+
+Big Data , 11(3):151–180, 2023.

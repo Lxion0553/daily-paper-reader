@@ -1,0 +1,778 @@
+Title: Weak Lensing by Photometric Density Ridges
+
+URL Source: https://arxiv.org/pdf/2603.04025v1
+
+Published Time: Thu, 05 Mar 2026 02:00:27 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# Weak Lensing by Photometric Density Ridges 
+
+Mehraveh Nikjoo ∗
+
+Institute of Theoretical Physics and Astrophysics, University of Gdansk, 80-308 Gdansk, Poland 
+
+Joe Zuntz †
+
+Institute for Astronomy, University of Edinburgh, Blackford Hill, Edinburgh EH9 3HJ, United Kingdom 
+
+Ben Moews ‡
+
+Business School, University of Edinburgh, 29 Buccleuch Pl, Edinburgh EH8 9JS, United Kingdom and Centre for Statistics, University of Edinburgh, Peter Guthrie Tait Rd, Edinburgh EH9 3FD, United Kingdom 
+
+Ridges in galaxy density fields measured by photometric surveys are 2D projections of filaments in the cosmic web, and so should lens light from background galaxies. We report on a detection of this effect in Dark Energy Survey Year 3 data at high significance, though not independently of galaxy-galaxy lensing. We describe improvements to the existing subspace-constrained mean shift algorithm to locate these ridges efficiently at scale, and examine the dependence of the signal in simulations on cosmological and algorithmic parameters. We find that it depends primarily on 
+
+S8 = σ8 (Ω m/0.3) 1/2, and discuss improvements to our methodology that would be needed to allow precision parameter estimation. 
+
+I. INTRODUCTION 
+
+Predicted by General Relativity, gravitational lensing 
+
+occurs as a consequence of the bending of light as it trav-els through the curved spacetime created by massive ob-jects. Weak lensing manifests as a subtle distortion in the shape of background galaxies, which can be detected sta-tistically across large populations of galaxies and encodes information on the integrated mass distribution and of-fers a unique window for probing large-scale structure and cosmology[1]. The primary set of statistics used to quantify weak lensing and extract this information are two-point cor-relation functions in either real or Fourier space. One statistic, cosmic shear , uses galaxy shapes alone, cor-relating shapes among different redshift bins and mea-suring lensing mass structure correlations along the line of sight directly. Another, usually called galaxy-galaxy lensing, uses a second foreground sample of galaxies de-signed to trace high mass halos along the line of sight, and then measures the distortion by lensing around these foreground samples. Both, and their combination, have been measured in a series of current generation ( Stage III ) surveys [2–5] to great effect, and are key targets of upcoming ( Stage IV ) surveys like the Rubin Observatory [6], Euclid Space Telescope [7], Roman Space Telescope [8], and the China Space Station Telescope [9]. Two-point measurements capture all the information present in purely Gaussian random fields, but non-linear evolution of cosmic structure adds additional higher or-der information. Additional statistics are needed to make    
+
+> ∗mehraveh.nikjoo@phdstud.ug.edu.pl
+> †joe.zuntz@ed.ac.uk
+> ‡ben.moews@ed.ac.uk
+
+use of this information, and in recent years, there has been a significant effort to transition towards higher-order and morphology-sensitive statistics to extract it. These include bispectra, three-point correlation func-tions, Minkowski functionals, peak counts, or moments of the convergence field have been developed to capture information from nonlinear structure formation [see 10, for a review]. These tools are sensitive to non-linear clus-tering, halo morphology, and void/filament topology, and can help break degeneracies between cosmological param-eters. This work focuses on lensing by ridges, the photomet-ric (two-dimensional) projection of filaments. Lensing by 3D filaments found with spectroscopy has been stud-ied before, with many works finding signals of lensing by individual filaments [11–15], or considering simulated data[16, 17]. Several others have focused on searches for wide-field lensing signals around straight lines connect-ing Luminous Red Galaxy (LRG) samples in foreground spectroscopic samples, using estimators that remove the lensing from the LRGs themselves. This essentially treats all filaments as straight lines. Clampitt et al. [18] did so using Sloan Digital Sky Survey (SDSS) data for both the foreground and background samples, finding a 4 .5σ de-tection of filament lensing, and comparing their fit to different models of filament thickness. Kondo et al. [19] used SDSS and Baryon Oscillation Spectroscopic Sur-vey (BOSS) foreground samples and HyperSuprimeCam (HSC), and found similar results at 3 .9σ. Xia et al. [20] performed a similar analysis using a compilation of Kilo-Degree Survey, Red Cluster Sequence Lensing Survey, and the Canada-France-Hawaii Telescope Lensing Sur-vey data, making a 3 .4σ detection. In this work we will consider a new statistical metric: lensing by photometrically-located filamentary structures in the foreground. This variant of galaxy-galaxy lensing 
+
+> arXiv:2603.04025v1 [astro-ph.CO] 4 Mar 2026
+
+2has not previously been explored. An advantage of this method is much higher signal-to-noise, since we have a much higher density of foreground points. But since the nulling approach used in previous works relies on assum-ing that filaments are straight lines, our approach has the disadvantage of not removing any signal associated with halos at the ends of the filaments, and is therefore not independent of traditional galaxy-galaxy lensing signals. Recent work in Euclid Collaboration et al. [21] has compared ridge fields extracted from projected photo-metric maps to the underlying three-dimensional filament network by extracting skeletons from simulated galaxies’ true redshifts and their photometric redshift, then com-paring the two to quantify their similarity. They find that ridges are good tracers of 3D filaments, suggesting that this type of lensing should contain real new cosmo-logical information rather than simply reflecting chance alignments of halo structures. Prior work on density ridges in a cosmological context also includes the application to dark matter particles in hydrodynamical simulations and, subsequently, galaxy photometry of the Sloan Digital Sky Survey (SDSS) [22, 23]. The topic of lensing imprints by 3D filaments has also previously been investigated by He et al. [24] for the cosmic microwave background, using the sepa-rate datasets provided by Chen et al. [23] and the Planck CMB lensing potential map [25]. Various algorithms can be used to locate ridges in 2D or beyond. Those applied in cosmology include DISPERSE [26] and machine learning approaches like MaLeFiSenta [27]. In this work we use the subspace-constrained mean shift (SCMS) algorithm, as imple-mented in the DREDGE package introduced in Moews 
+
+et al. [28] which extended the algorithm to include spher-ical distance metrics, mesh size and bandwidth optimi-sation, and an open-source implementation of the SCMS algorithm as a software package. It was applied in Moews 
+
+et al. [29] to locate ridges in lensing convergence maps, and here we apply it to find ridges in foreground lens maps, and then search for lensing signals around the ridges it finds. In general, the SCMS algorithm works in any dimensionality, and was applied to 3D filament finding in SDSS in [30]. The structure of this work is as follows. In Section II, we describe our methodology for defining ridges from a foreground galaxy sample, and then computing the lens-ing signal with respect to them. In Section III, we de-scribe the simulated and real data sets to which we apply the algorithm. In Section IV we present the results on noiseless simulations testing effects of cosmological and algorithmic parameters, and in Section V we show mea-surements on real data and equivalent noisy simulations. We conclude in Section VI.  
+
+> II. METHODOLOGY
+
+Figure 1 presents a schematic overview of the steps in our methodology, from simulating a set of initial cata-logues to computing the shear. In this section we detail the various stages.   
+
+> A. The SCMS Algorithm
+> 1. Definition of a ridge
+
+One-dimensional ridges in a D-dimensional space are defined mathematically as the set of points where (i) the Hessian matrix of the surface has D−1 negative eigenval-ues, and (ii) the projection of the surface gradient onto the associated D − 1 eigenvectors is zero [31]. Points sat-isfying these conditions match the everyday definition of a extended narrow crest on a surface. Ridges can be visually recognised quite straightfor-wardly, but robustly and efficiently locating them from discrete samples and/or noisy data can prove challeng-ing. In this work, we use the subspace-constrained mean shift (SCMS) algorithm, an iterative approach to ridge estimation from point samples introduced in Oz-ertem and Erdogmus [32] and refined in Genovese et al. 
+
+[31]. A more technical definition of ridges in this context for the interested reader can be found in Appendix A.  
+
+> 2. SCMS algorithm details
+
+The SCMS algorithm makes use of a kernel density estimate (KDE) of the distribution in the data space, using a radial basis function (RBF) kernel to identify points matching the definition in Subsection II A 1 in the resulting density profile. Points subsequently forming the ridges start out as a grid or cloud of mesh points distinct from the data samples, for equidistant or uniformly-random distributed points, respectively. As noted by Moews et al. [28], there is an analogy to be made between the operation of the algorithm and large-scale structure formation by gravi-tational forces. Sample points in the space evolve over time, or in this case through iterations of the algorithm. Starting with this mesh of potential ridge points overlaid on the data space, they are iteratively pulled towards high-density areas in a way that directs them towards ridges rather than purely peaks, forming a “large-scale structure” of the data. The one-dimensional nature of these curvilinear struc-tures is particularly useful for applications requiring an exact location rather than a constrained but spread-out profile, as is the case with variations of wavelets as an al-ternative [see, for example, 33, 34]. A pseudocode listing of the SCMS algorithm is shown in Appendix B. For an overview of the inner workings of the algorithm, see the pioneering work by Ozertem and Erdogmus [32] and the 3TABLE I: Fiducial parameters used throughout this work. Algorithmic parameters control the density–ridge reconstruction, while cosmological parameters specify the fiducial simulation.                         
+
+> Parameter Fiducial value Description
+> Ridge reconstruction parameters
+> Bandwidth / arcmin 6Kernel smoothing scale Mesh size 10 6Number of initial mesh points Density threshold 15 Min ridge density percentile to retain
+> nneighbors 5000 Nearest neighbors per update Convergence / arcmin 0.3Iteration convergence threshold Max unconverged fraction 0.005 Stopping criterion Max iterations 5000 Maximum number of iterations Distance metric Haversine Angular distance definition
+> Cosmological parameters (fiducial simulation)
+> Ωm0.3Total matter density Ωb0.045 Baryon density
+> H70 km/s/Mpc Hubble parameter
+> σ80.8Amplitude of matter density fluctuations
+
+exploration of nonparametric ridge estimation by Gen-ovese et al. [31].  
+
+> 3. Changes to the algorithm
+
+Our implementation makes use of the package 
+
+Dredge , as described in Moews et al. [28] and Moews 
+
+et al. [29]. We have updated it in several ways to speed it up when applied to large data sets ( > 10 6 points): 
+
+• Since the SCMS algorithm is embarrassingly paral-lel with respect to the mesh points that gravitate towards the ridges, we use MPI [35] to parallelize over them. 
+
+• For the same reason, we updated the convergence criterion for the system to apply to the movement of individual mesh points instead of to the average movement of the whole ensemble. This allows us to stop updating points once they have individually converged, speeding up the iterations towards the end of the algorithm. 
+
+• We use a Ball Tree – a nearest neighbour search method – to query galaxies near to mesh points to use for the update step, avoiding using very distant objects very far from the mesh that will contribute negligibly to the update. 
+
+• We added checkpointing and just-in-time compila-tion with Numba [36] to the implementation.  
+
+> B. Convergence criteria
+
+Our algorithm employs two complementary notions of convergence. One operates at the level of individual mesh points to control their evolution under SCMS flow and defines when a single point has effectively reached a sta-tionary configuration, while the other determines when the iterative procedure as a whole is terminated. In the former case, after each iteration, the algorithm evaluates the total displacement applied to the point in coordinate space. If this displacement falls below a fixed tolerance, the point is deemed to have converged and is removed from further updates. In practice, a small sub-set of mesh points may continue to evolve very slowly or exhibit oscillatory behavior, requiring a global conver-gence at the level of all mesh points helps avoid excessive runtime. This global convergence is defined in terms of the frac-tion of mesh points that remain active. Once the pro-portion of unconverged points falls below a prescribed threshold the algorithm terminates.  
+
+> C. Density Thresholds
+
+As in Chen et al. [22], we can apply a local number den-sity cut to the ridges that we detect, to remove both spu-rious noise detections and genuine ridges which nonethe-less have a low density and so a low lensing signal. We do so by building a KDE of the full foreground galaxy sample, and using it to evaluate the density at the detected ridge points. We can then select a certain density percentile to retain. We explore the effects on our signal of choosing this percentile in Section IV C 1.  
+
+> D. Segmentation: Ridge Points to Filaments
+
+We wish to partition the ridge points found by the SCMS process into discrete groups representing individ-ual ridges. This is an ambiguous process in our case: there are multiple viable ways to split ridges, though most reasonable variants are expected to generate a sim-ilar lensing signal. 4Glass 
+
+> Lenses
+> Catalog
+> Dredge
+> Filaments
+> Map
+> Redshift cut
+> MST
+> Sample
+> DBSCAN
+> Labeled
+> filaments
+> map
+> Shear computation
+> Shear catalog
+> Random
+> rotations
+> Results
+
+FIG. 1: A schematic of the simulation and analysis procedure used in this paper. We do this by: 1. Constructing a Minimum Spanning Tree (MST) from the ridge point set using nearest-neighbour distances. This joins all the ridge points together with connecting edges. 2. Identifying branch points in the MST as nodes with degree > 2, and splitting the tree there. This splits the ridges at nodes where they connect. 3. Applying the DBSCAN clustering algorithm within each MST segment to split into separate ridges and assign labels to ridge points. We begin with a discrete set of ridge coordinates trac-ing regions of enhanced projected density, with the goal of extracting geometrically coherent filamentary structures. In this framework, the Minimum Spanning Tree (MST) encodes the global topological connectivity of the point distribution. The MST connects all points while mini-mizing the total edge length and avoiding closed loops, thereby providing a unique, loop-free 1 representation of the underlying filamentary skeleton. Each point first identifies its k-nearest neighbors us-ing a KDTree search, generating a sparse weighted graph whose edge weights correspond to the pairwise spatial separations of connected neighbors. Applying the MST algorithm to this graph yields a network that minimizes the cumulative edge distances while maintaining global connectivity. Real cosmic filaments exhibit junctions and bifurca-tions that give rise to nodes connecting multiple subfil-aments. To isolate single, physically coherent branches and reduce projection-induced blending in lensing anal-yses, we identify branch points as nodes with degree greater than two and remove them from the MST. The re-sulting disjoint connected components represent individ-ual filament segments. From a weak lensing perspective, treating all branches as a single filament would increase the projected overlap and artificially mix the shear signal from multiple directions; the segmentation step therefore ensures that each recovered structure contributes a dis-tinct, interpretable lensing signature. The subsequent step performs density-based segmen-tation on each MST component using the DBSCAN (Density-Based Spatial Clustering of Applications with Noise) algorithm. DBSCAN groups points according to local spatial density without imposing assumptions about cluster shape or topology [37]. Within each MST segment, this procedure consolidates locally connected ridges into continuous and physically coherent filamen-tary chains, while excluding spurious or sparsely sampled points classified as noise. Figure 2 shows and overview of these stages of ridge segmentation and labelling.  
+
+> 1While being loop-free is not necessarily a requirement of ridge structure, especially in 2D, underlying 3D filaments are expected to be largely so.
+
+5192 194 196 198 200 
+
+> RA [deg]
+> 57
+> 56
+> 55
+> 54
+> 53
+> DEC [deg]
+
+Ridge Points 192 194 196 198 200 
+
+> RA [deg]
+> 57
+> 56
+> 55
+> 54
+> 53
+> DEC [deg]
+
+MST + Branch Construction 192 194 196 198 200 
+
+> RA [deg]
+> 57
+> 56
+> 55
+> 54
+> 53
+> DEC [deg]
+
+DBSCAN Filaments 
+
+FIG. 2: Schematic overview of the ridge-to-filament iden-tification pipeline in Radians. 
+
+E. Tangential Shear measurement 
+
+Having identified the filamentary structure in the pre-vious steps, we aim to quantify the lensing signal around each labelled filament. Thus, we measure the tangential shear of background galaxies relative to each filament seg-ment. A schematic of the geometry we consider is shown in Figure 3. True ridge 
+
+> Located rige points
+> Background
+> galaxy
+
+FIG. 3: Top: a schematic of the identification of nearest points on a ridge to background galaxies. Bottom: Azoom-in on one pair showing the separation angle θ and the rotation angle ϕ to convert to tangential shears. The formalism follows standard treatments [38] where the observed ellipticity components (γ1, γ 2) of source/background galaxies are related to the projected shear field through local coordinate rotations: 
+
+γ+ = −(γ1 cos 2 ϕ + γ2 sin 2 ϕ), (1) 
+
+γ× = γ1 sin 2 ϕ − γ2 cos 2 ϕ, (2) Where ϕ is the position angle between the source and the nearest point on the filament, which we com-pute using Astropy [39–41]. Generally, in the absence of systematics, and assuming no parity-violating signal, 
+
+⟨γ×⟩ = 0 is expected for standard galaxy-galaxy lensing. For ridge lensing we shall see the same, although this is not necessarily required in the case of non-straight ridges. For each galaxy-filament pair, we identify the position angle between the source and the vector to the nearest point located on the filament. Pairs are then binned by 6the separation angle θ and the mean γ+ and γ× across all pairs is computed. To perform this calculation for a large map and reduce computational cost, the source catalog is first divided into low-resolution HEALPix pixels to avoid unnecessary whole-sky searches. All background galax-ies projected into the filament neighbourhood are then selected using a Haversine metric, which defines the local sky used for shear calculation. We use 20 bins, logarithmically spaced from 1 to 60 arcmin, though at the smaller scales our log-normal sim-ulations are not expected to reproduce realistic structure. 
+
+III. DATA & SIMULATIONS A. GLASS Simulations 
+
+We use the package GLASS [42] to generate simu-lated realizations of our lens and source galaxy samples. We use it to generate log-normal density fields consistent with matter power spectra computed by CAMB [43, 44] up to ℓmax = 10 , 000 and zmax = 3 in shells of spacing 150 Mpc/h. It then computes the convergence in those shells, and generates source and lens samples consistent with both density, shear, and a selected shape noise level. Our fiducial cosmological parameters are Ω m = 0 .3, H0 = 70 km/s/Mpc, Ω b = 0 .045, and σ8 = 0 .8. 
+
+1. DES-like 
+
+For our primary DES-like simulations we use the Year 3 GOLD mask 2 which is passed to GLASS . We supply the main non-tomographic redshift distributions of both the Metacal source sample [45] and MagLim lens sam-ple [46] as generated by the survey, as shown in Figure 4, and also match the object density of the samples. We use linear galaxy biases, with value given by the mean of those found in Porredon et al. [2]. We use a con-stant shape noise per component in the source sample, 
+
+σe = 0 .26, though we also make signal-only simulations in which this set to σe = 10 −3.
+
+B. DES Data 
+
+For our real DES data analysis we use the MetaCal 
+
+[47] catalog released as part of the DES Year 3 results 3
+
+[48]. We select galaxies in the same way as the main DES cosmic shear analysis, by requiring unflagged galax-ies with signal-to-noise ratio S/N > 10, size to PSF size ratio T /T PSF > 0.5, and weight w > 0.            
+
+> 2https://des.ncsa.illinois.edu/releases/y3a2/Y3key-catalogs
+> 3https://desdr-server.ncsa.illinois.edu/despublic/y3a2_ files/y3kp_cats/ 0.0 0.5 1.0 1.5 2.0 2.5 3.0
+> Redshift z
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4
+> 1.6
+> Redshift Distributions Before Selection Cut
+> Lens catalog
+> Source catalog
+> Selection cut z= 0.4
+
+FIG. 4: The input redshift distributions for the simulation foreground lenses (on whose density the ridges are defined) and background sources (whose orientation around the ridges we measure). The vertical line shows z = 0 .4: we cut the lenses to z < 0.4 and the sources to z > 0.4, defined on the true redshifts in the simulations, to maximize the signal-to-noise by ensuring that the sources are behind the lenses. Based on these selections we apply the metacalibration procedure from Sheldon and Huff [47] on the catalogs, finding a calibration factor R = 0 .68. 
+
+C. Redshift cuts 
+
+Since light can only be lensed by structures along its path, configurations where the filament is behind the source galaxy will only add noise to the measurement. To optimize any possible signal-to-noise, we therefore split both the lens galaxies used to generate the ridges and the source galaxies. We take lens galaxies with redshifts 
+
+z < 0.4, and source galaxies with z > 0.4. We note that in on our real DES data this cut is performed on photometric redshifts generated using the DNF method [49] and released as part of the DES Y3 GOLD data set [50]. In our simulations, however, they are performed on the known true galaxy redshifts. This makes the simulation cuts considerably more precise than those on real data. We also note that we do not calculate an additional selection bias for these cuts in the MetaCal framework, because the DNF redshift catalog is not available for sheared variants of the catalogs. Based on the sizes of other selection biases, we expect this to induce a percent-level bias in our results, and future precision comparisons of ridge lensing to data should account for this bias. 7 
+
+> IV. RESULTS: NOISELESS SIMULATIONS
+
+In this section we study simulations containing no shape noise in order to test the convergence of algorithm parameters and examine the behaviour of the underly-ing shear signal with respect to cosmology. In this limit, the shear signal is determined entirely by the projected mass distribution and by the geometry of the ridge re-construction algorithm. The purpose of this section is therefore not to optimize signal-to-noise, but to establish the robustness and internal consistency of the measure-ment pipeline under controlled conditions.  
+
+> A. General Signal Structure
+
+Figure 5 shows the ridge lensing signal we measure on a noise-free simulation with our fiducial cosmological and algorithm parameters (discussed in subsequent sections). We compare it to a standard galaxy-galaxy lensing signal on the same objects. It can be seen that at large sep-arations the signals approximately converge. At scales below the SCMS bandwidth (smoothing) parameter, set here to 6 arcminutes, the negative ridge lensing signal corresponds to background galaxies aligning perpendic-ularly along the ridge because they are primarily lensed by other structures along it, as seen in Higuchi et al. [12] and Clampitt et al. [18]. The cross-shear γx is around two orders of magnitude smaller than γt for ridges. Because this is fairly consistent throughout our results, and much smaller than the noise levels we shall see in section V, we do not consider it in our parameter tests.  
+
+> B. SCMS Parameter Convergence
+
+We now test the convergence of our SCMS implemen-tation with respect to the three main parameters that trade off numerical convergence against computational time (as opposed to the bandwidth and thresholding pa-rameter, which change the physical meaning of the de-tected ridges).  
+
+> 1. Target move distance
+
+The first parameter is a target move distance. If a mesh point moves less than the target from one iteration to the next then it is deemed to converged. We find that 98.9% of points that have converged when the target is 10 −5 degrees have also converged if the target is 10 −4
+
+degrees, so that any remaining change by decreasing this tolerance is likely to have negligible effect on the shear. There is no visually detectable difference between the ridges detected in the two scenarios. We adopt a target of 10 −5 degrees in this paper. 10 0 10 1
+
+(arcmin)   
+
+> 1.5
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> / 10  3
+> Galaxy-Galaxy
+> Lensing
+> Tangential Ridge
+> Lensing +
+> Cross Ridge
+> Lensing ×
+
+FIG. 5: The tangential shear around ridges in a fiducial shape noise-free simulation as a function of separation, compared with the galaxy-galaxy lensing signal from the same data.  
+
+> .
+> 2. Number of neighbour galaxies
+
+Figure 6 shows a check of the second parameter, the number of nearest neighbour galaxies to each ridge mesh point to use to update the ridge locations (the original algorithm used all the points in the entire simulation). While there are visible differences between N = 4000 and N = 5000, almost all of the detected ridges are un-changed between the two. We therefore adopt N = 5000 in this paper.  
+
+> 3. Effect of mesh size
+
+The mesh size parameter controls the initial number of uniformly distributed points from which the algorithm begins its iterative convergence process. The algorithm generates a random mesh of points spanning the spa-tial domain of the input galaxy distribution, which are then iteratively shifted towards the underlying density ridges. Each mesh point undergoes a successive update until the displacement between iterations falls below the convergence threshold. At this point, a ridge coordinate is considered as accepted. The mesh size is, thus, an in-dicator of the initial spatial sampling density with larger values providing more complete coverage at the cost of increased computational expense. To assess the sensitivity of our results to this param-eter, we performed a systematic convergence study by running the complete pipeline for mesh threshold values of N = 5 × 10 5 to 2 × 10 6. For each value, we computed the tangential shear signal γ+ around the constructed fil-825 30 35 40 
+
+## RA (deg) 
+
+24 
+
+22 
+
+20 
+
+18 
+
+16 
+
+14 
+
+12 
+
+10 
+
+> Dec (deg)
+
+N=4000 
+
+N=5000 
+
+FIG. 6: Detected ridges in a small region of our simulation when using 4000 and 5000 neighbours around each mesh point. There is good visual agreement between the two, indicating reasonable convergence.  
+
+> .10 010 1
+> [arcmin]
+> 2.0
+> 1.5
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+> + / 10  3
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4
+> 1.6
+> 1.8
+> 2.0
+> Number Ridge Points /  10 6
+
+FIG. 7: Variation of the signal-only tangential ridge shear signal with respect to the number of points used to locate ridges (the mesh size). The small-scale signal increases as more points map out ridge structure more clearly. aments. As shown in Figure 7 the tangential shear pro-files are consistent at large scales across all tested mesh sizes, with small variation at small angular scales. For this study, we adopt an intermediate mesh size N = 10 6
+
+to reduce the computational costs. 10 0 10 1
+
+> [arcmin]
+> 1.5
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> + / 10  3
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> Density threshold percentile
+
+FIG. 8: Variation of the signal-only tangential ridge shear signal with respect to a percentile used as density threshold; ridges with density below the threshold are excluded.  
+
+> C. Physical Parameters
+
+We now check the behaviour of the shape noise-free ridge lensing signal as a function of the two ridge de-tection parameters that determine the physical meaning of the ridges we find: the density threshold cut and the bandwidth.  
+
+> 1. Effect of density threshold
+
+We perform a density threshold cut on the detected ridge points, using a KDE to identify those that lie in low-density regions of the map. We parametrize this cut as a percentile, removing detected ridge points in regions below that level. Physically, this selection is motivated by the expec-tation that higher-density ridges are both more robust against noise fluctuations and more efficient lenses. In-creasing the density threshold enhances the lensing sig-nal, but reduces the number of contributing structures. This leads to a trade-off between signal amplitude and statistical noise. The tangential shear exhibits a clear dependence on the threshold. As the latter increases, the amplitude sys-tematically rises, as expected, across a range of angular separations, while the overall shape of the profile remains stable. The location of the peak is preserved, and no qualitative change in the profile morphology is observed. Interestingly, this smaller scale negative signal remains mostly insensitive to density selections. 9 
+
+> 2. Effects of bandwidth
+
+The bandwidth parameter serves as a smoothing scale in our algorithm. It governs how the galaxy distribution is mapped onto a density field. In the present analy-sis, the bandwidth parameter is used as the Gaussian kernel weighting and controls both the kernel density es-timation and the subsequent subspace-constrained mean shift (SCMS) updates. Therefore, bandwidth defines the scale at which filamentary or ridge-like structures are as-sumed to be physically meaningful. As a primary step, an initial random mesh of candidate ridge points is also truncated by discarding points whose nearest data neigh-bour lies farther than a fixed multiple of the bandwidth. Primarily, the choice of bandwidth represent a trade-off between sensitivity to small-scale filamentary structure and the robustness against spurious noise detection. The Dredge code has an internal estimator for an appropriate bandwidth from the cross validation maxi-mum likelihood KDE bandwidth tool in the statsmod-els package [51]. We use that to obtain an initial order of magnitude for the bandwidth, and then vary around that value. Once chosen, the bandwidth remains unchanged throughout the ridge-finding process; the SCMS itera-tions do not adapt or refine it. In Figure 9 Increasing the bandwidth suppresses the positive part of the signal, but has a more complicated behaviour in the small-scale negative part. The location of the peak also shifts towards larger angular separations; this shift is expected as larger bandwidths effectively pro-duce more diffuse ridges and, thus, the angular scale at which the signal is maximized moves outward. The zero-crossing point is close to linearly dependent on the band-width ( θ0 ∝ b1.04 ), as expected for a smoothing scale. Finally, we note that the measurement obtained for the smallest bandwidth coincides with the galaxy-galaxy lensing signal shown in Figure 5. This behavior is physi-cally expected: as the bandwidth is reduced, the filament reconstruction becomes increasingly sensitive to overden-sities in the galaxy field. In this limit, the dominant structures are very short filaments corresponding to in-dividual galaxies and their host halos.  
+
+> D. Cosmological signal
+
+We now explore how the signal we detect responds to the values of primary cosmological parameters, again in the noise-free case. To isolate how the filament tangential shear responds to changes in cosmological parameters, we look at vari-ations across the plane of (Ω m, σ 8), both along the axes and along the line of structure growth parameter S8 =
+
+σ8(Ω m/0.3) 1/2 and its orthogonal complement. We have fixed the previously mentioned parameters of the dredge code to the values in I. 10 0 10 1
+
+> [arcmin]
+> 2.0
+> 1.5
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+> + / 10  3
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> Bandwidth / rad
+
+FIG. 9: Variation of the signal-only tangential ridge shear signal with respect to the bandwidth (smoothing) parameter. For small bandwidths the signal resembles the galaxy-galaxy lensing signal. Figure 10 shows the dependence of the signal in the 
+
+σ8, Ω m, and S8 directions, as well as the direction per-pendicular to S8 at the fiducial point. A clear monotonic dependence of the shear signal am-plitude on S8 is observed, with higher values enhanc-ing the signal in both the positive and negative regimes. There is no shift to the zero-crossing or other shape. In the perpendicular direction to S8 there is only minimal variation of the signal at small scales, and no other clear effect. This change is within - as we shall see below -the noise levels for DES data. This suggests that ridge lensing may have similar general response to cosmic shear and therefore be of limited use as a higher-order statistic. The two panels for Ω m and fixed σ8 show intermediate behaviour between the two, consistent with this interpre-tation.  
+
+> V. RESULTS: NOISY SIMULATIONS & DARK ENERGY SURVEY DATA
+
+We now switch on the shape noise in the background shear simulation, with its level σe matching the DES Y3 Metacalibration catalogs described in Section III B, us-ing our fiducial cosmological and other parameters. We also use the same configuration to run on real DES data (Metacalibration and Maglim), applying the R calibra-tion described in Section III B. The resulting measure-ments are displayed in Figure 11. The noise and signal are generally consistent in both simulation and data, and we are able to make a clear de-tection of the signal. They are also consistent, in both overall shape and amplitude, with the signal-only simu-lations in previous sections. We assess the statistical significance of the fiducial sim-ulation by computing the χ2 statistics for the stacked 10 10 0 10 1
+
+[arcmin ]
+
+2.0 
+
+1.5 
+
+1.0 
+
+0.5 
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+> /10  3
+> +
+> ×
+
+0.66 
+
+0.68 
+
+0.70 
+
+0.72 
+
+0.74 
+
+0.76 
+
+0.78 
+
+0.80 
+
+> S8
+
+10 0 10 1
+
+[arcmin ]
+
+2.0 
+
+1.5 
+
+1.0 
+
+0.5 
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+> /10  3
+> +
+> ×
+
+0.40 
+
+0.45 
+
+0.50 
+
+0.55 
+
+0.60 
+
+0.65 
+
+0.70 
+
+0.75 
+
+0.80 
+
+> S8
+
+10 0 10 1
+
+[arcmin ]
+
+2.0 
+
+1.5 
+
+1.0 
+
+0.5 
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+> /10  3
+> +
+> ×
+
+0.66 
+
+0.68 
+
+0.70 
+
+0.72 
+
+0.74 
+
+0.76 
+
+0.78 
+
+0.80 
+
+> 8
+
+10 0 10 1
+
+[arcmin ]
+
+2.0 
+
+1.5 
+
+1.0 
+
+0.5 
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+> /10  3
+> +
+> ×
+
+0.24 
+
+0.26 
+
+0.28 
+
+0.30 
+
+0.32 
+
+0.34 
+
+0.36 
+
+0.38 
+
+0.40 
+
+> m
+
+FIG. 10: Behaviour of shear profiles γ+ and γx with respect to changing cosmological parameters. Top: S8 and S⊥ 
+
+> 8
+
+.Bottom: fixed Ω m and fixed σ8.10 0 10 1
+
+Separation [arcmin] 
+
+> 2.0
+> 1.5
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+> + / 10  3
+> Simulation
+> DES-Y3
+
+FIG. 11: Ridge lensing tangential shear for Dark Energy Survey Year 3 data and a comparable noisy simulation with Ω m = 0 .3 and σ8 = 0 .8. 
+
+.
+
+shear signal using an estimated covariance from real-10 0 10 1
+
+Separation [arcmin] 
+
+> 2
+> 1
+> 0
+> 1
+> 2
+> + / 10  3
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> Density thresholds
+
+FIG. 12: Ridge lensing tangential shear for increasing value of the threshold cut in noisy simulations 
+
+.
+
+izations with randomly rotated shears. This yields a highly significant γ+ detection at a signal to noise ratio 11 TABLE II: Tangential shear detection significance as a function of density-threshold percentile.       
+
+> Density percentile SNR +
+> 10 52.72 15 56.97 25 64.23 40 63.88 55 80.49 70 72.32
+
+S/N ≈ 57 while, the γ× component remains consistent with zero. The DES Y3 measurement yields a compara-ble tangential shear detection at S/N ≈ 47, and also has a cross component remains consistent with zero. While the choice of our fiducial values yield a clear detection in both simulation and the data the density threshold cut constitutes a non-trivial analysis choice. Increasing the value of the cut enhances the shear ampli-tude by preferentially selecting the higher density ridges but simultaneously reduces the number of contributing structures (lenses). The statistical significance should therefore have some maximum at an intermediate thresh-old. To quantify this, we have evaluated the S/N of the tangential shear with respect to the increase in the den-sity percentile shown in Figure 12. This allows us to assess the robustness of the detection against variation in the density cut. The resulting S/N shown in Table II increases to reach a maximum at the 55th percentile before declining at a higher cut. Finally, We have performed a test of algorithmic sta-bility. Holding the catalogue and fiducial choices fixed, and varying only the random seed controlling the SCMS initialization, we obtain an ensemble of 50 shear pro-files. The typical internal scatter produces fractional RMS ≈ 1% with a maximum of 8 .7% in the lowest signal-to-noise bin. The internal covariance is therefore sub-dominant to statistical shape noise covariance and may be neglected.  
+
+> VI. CONCLUSION
+
+In this paper we have introduced a novel weak lensing approach: computing tangential shear measured around density ridges identified in photometric foreground sam-ples. We used the Subspace-Constrained Mean Shift al-gorithm, followed by a segmentation pipeline and tan-gential shear measurement, and detected a clear signal in the Dark Energy Survey Year 3 data. We have shown that the signal is robust under changes of convergence parameters such as mesh size and the density threshold. We have explored the expected behaviour of the un-derlying signal using Glass simulations, with respect to both cosmological parameters and algorithmic ones. We find that there is a clear dependence on structure for-mation parameters, primarily on the S8 parameter, and have shown that we recover stronger signals when we re-strict to higher density foreground ridges, as expected. We find that the bandwidth parameter in the algorithm has a strong effect on the structure of the signal. While the signal has a distinct morphology from that of galaxy-galaxy lensing, there is significant overlap in their behaviour and thus in our detection significance should not be seen as completely independent of that phenomenon: the shear morphology converges towards the galaxy-galaxy lensing signal at the limit of small bandwidth or large scale, In future work we will consider different approaches to subtraction of the galaxy-galaxy lensing signal to obtain a more pure detection. While our simple simulations are sufficient to recover the general signal strength, to be able to use them for pre-cision parameter estimation we will need to make several improvements. In particular, we must apply more realis-tic treatment of redshift cuts to improve the simulations, and incorporate lens sample weights into the ridge esti-mation to account for varying depth across the field. With such improvements, we can consider emulation or simulation-based inference approaches to using ridge lensing for cosmological parameter estimates. 
+
+> ACKNOWLEDGMENTS
+
+We thank Shrihan Agarwal for sharing examples of using the Glass simulation code. We also wish to ac-knowledge the work undertaken by the Cosmostatistics Initiative at the 6 th COIN Residence Program (CRP#6) in 2019, the modified DREDGE code of which provided a starting point for our extensions. For the purpose of open access, the author has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising from this submission. Author MN acknowledges support provided by UGrant-start under the financial task number 533-BG60-GS18-25. 
+
+> Appendix A: Formal ridge definition
+
+The subspace-constrained mean shift algorithm was first introduced by Ozertem and Erdogmus [32], start-ing with an initial uniform layer of points in the desired parameter space to identify local principal curves. The algorithm has been investigated in more detail by Gen-ovese et al. [31], who define a ridge for a map ξ : Rd → R
+
+as 
+
+R = {x : || G(x)|| = 0 , λ d+1 (x) < 0}, (A1) where λ denote eigenvalues of the Hessian, and x repre-sents locations in which an omitted largest eigenvalue is positive and G is zero. The latter is defined as 
+
+G(x) = L(x)∇p(x) s .t. L (x) ∝ L(H(x)) = v′v′⊤ , (A2) 12 with ∇p(x) as the projected gradient of a probability function p : Rd → R. Here, v′ denotes the columns of U (x) associated with the d − 1 smallest entries in λ
+
+in an eigendecomposition with a diagonal matrix Λ( x)featuring λ as the diagonal, 
+
+H(x) = U (x)Λ( x)U (x)⊤, (A3) where λ signifies eigenvalues sorted in descending order, corresponding to eigenvalues v. As the dimensionality of the space is d, the eigenvector running parallel to a given ridge is thus removed. A more detailed overview can be found in the foundational papers by Ozertem and Erdogmus [32] and Genovese et al. [31]. 
+
+Appendix B: SCMS Algorithm Listing 
+
+The SCMS algorithm steps are shown below. The pseudocode features the updated convergence criterion for individual mesh points described in Section II A 3. 
+
+Algorithm 1 SCMS with thresholding, adapted from Moews et al. [28].  
+
+> 1:
+
+Input: Coordinates θ, bandwidth β, threshold τ , itera-tions N 
+
+> 2:
+
+Output: Density ridge point coordinates ψ 
+
+> 3:
+
+procedure SCMS (θ, β, τ , N , T ) 
+
+> 4:
+
+κ(x) ← KDE RBF (θ, β ) 
+
+> 5:
+
+xmin ← (min( θ∗,1), max( θ∗,1))  
+
+> 6:
+
+ymin ← (min( θ∗,2), max( θ∗,2))  
+
+> 7:
+
+ψ ← ψ ∼ U (xmin , y min )dim( θ) 
+
+> 8:
+
+ψ ← ∀ y ∈ ψ : κ(y) > τ  
+
+> 9:
+
+for i ← 1, 2, . . . , dim( ψ) do  
+
+> 10:
+
+for n ← 1, 2, . . . , N do  
+
+> 11:
+
+for j ← 1, 2, . . . , dim( θ) do  
+
+> 12:
+
+aj ← ψi−θj 
+
+> β2
+> 13:
+
+bj ← K 
+
+ ψi−θj
+
+> β
+
+ 
+
+> 14:
+
+end for  
+
+> 15:
+
+H(x) ← 1dim( θ)
+
+Pdim( θ) 
+
+> j=1
+
+bj
+
+
+
+aj a⊤ 
+
+> j
+
+− 1 
+
+> β2
+
+I
+
+ 
+
+> 16:
+
+v, λ ← v, λ from diagonalisation eig( H(x))  
+
+> 17:
+
+v′ ← entries in v corresp . to sort asc (λ)1,2,...,d −1 
+
+> 18:
+
+ψ′ ← v′v′⊤     
+
+> Pdim( ψ)
+> j=1 bjθj
+> Pdim( ψ)
+> j=1 bj
+> 19:
+
+∆ ← ψ − ψ′ 
+
+> 20:
+
+ψi ← ψ′ 
+
+> 21:
+
+if |∆| < T then break  
+
+> 22:
+
+end if  
+
+> 23:
+
+end for  
+
+> 24:
+
+end for  
+
+> 25:
+
+return ψ 
+
+> 26:
+
+end procedure 
+
+[1] J. Prat and D. Bacon, Weak gravitational lensing, in En-cyclopedia of Astrophysics, Volume 5 , Vol. 5 (2026) pp. 508–537, arXiv:2501.07938 [astro-ph.CO]. [2] A. Porredon, M. Crocce, J. Elvin-Poole, R. Cawthon, G. Giannini, J. De Vicente, A. Carnero Rosell, I. Fer-rero, E. Krause, X. Fang, J. Prat, M. Rodriguez-Monroy, S. Pandey, A. Pocino, F. J. Castander, et al. (DES Col-laboration), Dark energy survey year 3 results: Cosmo-logical constraints from galaxy clustering and galaxy-galaxy lensing using the maglim lens sample, Phys. Rev. D 106 , 103530 (2022). [3] C. Heymans, T. Tr¨ oster, M. Asgari, C. Blake, H. Hilde-brandt, B. Joachimi, K. Kuijken, C.-A. Lin, A. G. S´ anchez, J. L. van den Busch, A. H. Wright, A. Amon, M. Bilicki, J. de Jong, M. Crocce, et al. , KiDS-1000 Cosmology: Multi-probe weak gravitational lensing and spectroscopic galaxy clustering constraints, A&A 646 ,A140 (2021), arXiv:2007.15632 [astro-ph.CO]. [4] S. Sugiyama, H. Miyatake, S. More, X. Li, M. Shirasaki, M. Takada, Y. Kobayashi, R. Takahashi, T. Nishimichi, A. J. Nishizawa, M. M. Rau, T. Zhang, R. Dalal, R. Mandelbaum, M. A. Strauss, et al. , Hyper Suprime-Cam Year 3 results: Cosmology from galaxy cluster-ing and weak lensing with HSC and SDSS using the minimal bias model, Phys. Rev. D 108 , 123521 (2023), arXiv:2304.00705 [astro-ph.CO]. [5] A. Amon, N. C. Robertson, H. Miyatake, C. Heymans, M. White, J. DeRose, S. Yuan, R. H. Wechsler, T. N. Varga, S. Bocquet, A. Dvornik, S. More, A. J. Ross, H. Hoekstra, A. Alarcon, et al. , Consistent lensing and clustering in a low-S 8 Universe with BOSS, DES Year 3, HSC Year 1, and KiDS-1000, MNRAS 518 , 477 (2023), arXiv:2202.07440 [astro-ph.CO]. [6] ˇZ. Ivezi´ c, S. M. Kahn, J. A. Tyson, B. Abel, E. Acosta, R. Allsman, D. Alonso, Y. AlSayyad, S. F. Anderson, J. Andrew, J. R. P. Angel, G. Z. Angeli, R. Ansari, P. An-tilogus, C. Araujo, et al. , LSST: From Science Drivers to Reference Design and Anticipated Data Products, ApJ 
+
+873 , 111 (2019), arXiv:0805.2366 [astro-ph]. [7] Euclid Collaboration, Y. Mellier, Abdurro’uf, J. A. Acevedo Barroso, A. Ach´ ucarro, J. Adamek, R. Adam, G. E. Addison, N. Aghanim, M. Aguena, V. Ajani, Y. Akrami, A. Al-Bahlawan, A. Alavi, I. S. Albuquerque, 
+
+et al. , Euclid: I. Overview of the Euclid mission, A&A 
+
+697 , A1 (2025), arXiv:2405.13491 [astro-ph.CO]. [8] R. Akeson, L. Armus, E. Bachelet, V. Bailey, L. Bar-tusek, A. Bellini, D. Benford, D. Bennett, A. Bhat-tacharya, R. Bohlin, M. Boyer, V. Bozza, G. Bry-den, S. Calchi Novati, K. Carpenter, et al. , The Wide Field Infrared Survey Telescope: 100 Hubbles for the 2020s, arXiv e-prints , arXiv:1902.05569 (2019), arXiv:1902.05569 [astro-ph.IM]. 13 
+
+[9] CSST Collaboration, Y. Gong, H. Miao, H. Zhan, Z.-Y. Li, J. Shangguan, H. Li, C. Liu, X. Chen, H. Yuan, J. Zhou, H.-G. Liu, C. Yu, J. Ji, Z. Qi, et al. , In-troduction to the Chinese Space Station Survey Tele-scope (CSST), arXiv e-prints , arXiv:2507.04618 (2025), arXiv:2507.04618 [astro-ph.IM]. [10] Euclid Collaboration, V. Ajani, M. Baldi, A. Barthelemy, A. Boyle, P. Burger, V. F. Cardone, S. Cheng, S. Codis, C. Giocoli, J. Harnois-D´ eraps, S. Heydenre-ich, V. Kansal, M. Kilbinger, L. Linke, et al. , Euclid preparation. XXVIII. Forecasts for ten different higher-order weak lensing statistics, A&A 675 , A120 (2023), arXiv:2301.12890 [astro-ph.CO]. [11] S. D. Epps and M. J. Hudson, The Weak Lensing Masses of Filaments between Luminous Red Galaxies, MNRAS 
+
+468 , 2605 (2017), arXiv:1702.08485 [astro-ph.CO]. [12] Y. Higuchi, M. Oguri, and M. Shirasaki, Statistical prop-erties of filaments in weak gravitational lensing, MNRAS 
+
+441 , 745 (2014), arXiv:1403.6591 [astro-ph.CO]. [13] K. HyeongHan, M. J. Jee, S. Cha, and H. Cho, Weak-lensing detection of intracluster filaments in the Coma cluster, Nature Astronomy 8, 377 (2024), arXiv:2310.03073 [astro-ph.CO]. [14] M. Jauzac, E. Jullo, J.-P. Kneib, H. Ebeling, A. Leau-thaud, C.-J. Ma, M. Limousin, R. Massey, and J. Richard, A weak lensing mass reconstruction of the large-scale filament feeding the massive galaxy clus-ter MACS J0717.5+3745, MNRAS 426 , 3369 (2012), arXiv:1208.4323 [astro-ph.CO]. [15] A. Dutta, J. R. Peterson, M. Cianfaglione, and G. Sembroski, Weak Lensing Analysis of A115, A2219 and A2261: Detection of Galaxy Groups and Fila-ments Around Clusters, PASP 137 , 064102 (2025), arXiv:2504.08479 [astro-ph.CO]. [16] M. Maturi and J. Merten, Weak-lensing detection of in-tracluster filaments with ground-based data, A&A 559 ,A112 (2013), arXiv:1306.0015 [astro-ph.CO]. [17] J. M. G. Mead, L. J. King, and I. G. McCarthy, Prob-ing the cosmic web: intercluster filament detection us-ing gravitational lensing, MNRAS 401 , 2257 (2010), arXiv:0910.2417 [astro-ph.CO]. [18] J. Clampitt, H. Miyatake, B. Jain, and M. Takada, Detec-tion of stacked filament lensing between SDSS luminous red galaxies, MNRAS 457 , 2391 (2016), arXiv:1402.3302 [astro-ph.CO]. [19] H. Kondo, H. Miyatake, M. Shirasaki, N. Sugiyama, and A. J. Nishizawa, Weak lensing measurement of fil-amentary structure with the SDSS BOSS and Subaru Hyper Suprime-Cam data, MNRAS 495 , 3695 (2020), arXiv:1905.08991 [astro-ph.CO]. [20] Q. Xia, N. Robertson, C. Heymans, A. Amon, M. Asgari, Y.-C. Cai, T. Erben, J. Harnois-D´ eraps, H. Hildebrandt, A. Kannawadi, K. Kuijken, P. Schneider, C. Sif´ on, T. Tr¨ oster, and A. H. Wright, A gravitational lensing detection of filamentary structures connecting luminous red galaxies, A&A 633 , A89 (2020), arXiv:1909.05852 [astro-ph.CO]. [21] Euclid Collaboration, N. Malavasi, F. Sarron, U. Kuch-ner, C. Laigle, K. Kraljic, P. Jablonka, M. Balogh, S. Bardelli, M. Bolzonella, J. Brinchmann, G. De Lu-cia, F. Fontanot, C. Gouin, M. Hirschmann, et al. , Eu-clid preparation. Establishing the quality of the 2D re-construction of the filaments of the cosmic web with DisPerSE using Euclid photometric redshifts, arXiv e-prints , arXiv:2508.15915 (2025), arXiv:2508.15915 [astro-ph.CO]. [22] Y.-C. Chen, S. Ho, P. E. Freeman, C. R. Genovese, and L. Wasserman, Cosmic web reconstruction through den-sity ridges: method and algorithm, MNRAS 454 , 1140 (2015). [23] Y.-C. Chen, S. Ho, J. Brinkmann, P. E. Freeman, C. R. Genovese, D. P. Schneider, and L. Wasserman, Cosmic web reconstruction through density ridges: catalogue, MNRAS 461 , 3896 (2016). [24] S. He, S. Alam, S. Ferraro, Y.-C. Chen, and S. Ho, The detection of the imprint of filaments on cosmic microwave background lensing, Nature Astronomy 2, 401 (2017). [25] Planck Collaboration, Ade, P. A. R., Aghanim, N., Armitage-Caplan, C., Arnaud, M., Ashdown, M., Atrio-Barandela, F., Aumont, J., Baccigalupi, C., Banday, A. J., et al. , Planck 2013 results. xvii. gravitational lensing by large-scale structure, A&A 571 , A17 (2014). [26] T. Sousbie, The persistent cosmic web and its fil-amentary structure – i. theory and implementation, Monthly Notices of the Royal Astronomical Society 414 ,350 (2011), https://academic.oup.com/mnras/article-pdf/414/1/350/3809858/mnras0414-0350.pdf. [27] D. Alina, A. Shomanov, and S. Baimukhametova, Male-fisenta: Machine learning for filaments identification and orientation in the ism, IEEE Access 10 , 74472 (2022). [28] B. Moews, M. A. Schmitz, A. J. Lawler, J. Zuntz, A. I. Malz, R. S. de Souza, R. Vilalta, A. Krone-Martins, E. E. O. Ishida, and for the COIN Collaboration, Ridges in the dark energy survey for cosmic trough identifica-tion, MNRAS 500 , 859 (2020). [29] B. Moews, J. R. Argueta, and A. Gieschen, Filaments of crime: informing policing via thresholded ridge estima-tion, Decision Support Systems 144 , 113518 (2021). [30] Carr´ on Duque, Javier, Migliaccio, Marina, Marinucci, Domenico, and Vittorio, Nicola, A novel cosmic filament catalogue from sdss data, A&A 659 , A166 (2022). [31] C. R. Genovese, M. Perone-Pacifico, I. Verdinelli, and L. Wasserman, Nonparametric ridge estimation, Ann. Stat. 42 , 1511 (2014). [32] U. Ozertem and D. Erdogmus, Locally defined princi-pal curves and surfaces, J. Mach. Learn. Res. 12 , 1249 (2011). [33] L. Hergt, A. Amara, R. Brandenberger, T. Kacprzak, and A. Refregier, Searching for cosmic strings in cmb anisotropy maps using wavelets and curvelets, J. Cos-mology Astropart. Phys. 2017 , 004 (2017). [34] A. Vafaei Sadr, S. Movahed, M. Farhang, C. Ringeval, and F. Bouchet, A multiscale pipeline for the search of string-induced cmb anisotropies, MNRAS 475 , 1010 (2017). [35] L. Clarke, I. Glendinning, and R. Hempel, The mpi message passing interface standard, in Programming En-vironments for Massively Parallel Distributed Systems ,edited by K. M. Decker and R. M. Rehmann (Birkh¨ auser Basel, Basel, 1994) pp. 213–218. [36] S. K. Lam, A. Pitrou, and S. Seibert, Numba: a llvm-based python jit compiler, in Proceedings of the Sec-ond Workshop on the LLVM Compiler Infrastructure in HPC , LLVM ’15 (Association for Computing Machinery, New York, NY, USA, 2015). [37] B. Moews and A. Gieschen, Scadda: Spatiotem-poral cluster analysis with density-based distance augmentation and its application to fire carbon 14 
+
+emissions, Geographical Analysis 58 , e70030 (2026), https://onlinelibrary.wiley.com/doi/pdf/10.1111/gean.70030. [38] J. Prat and D. Bacon, Weak gravitational lensing, in En-cyclopedia of Astrophysics, Volume 5 , Vol. 5 (2026) pp. 508–537, arXiv:2501.07938 [astro-ph.CO]. [39] Astropy Collaboration, T. P. Robitaille, E. J. Tollerud, P. Greenfield, M. Droettboom, E. Bray, T. Ald-croft, M. Davis, A. Ginsburg, A. M. Price-Whelan, W. E. Kerzendorf, A. Conley, N. Crighton, K. Barbary, D. Muna, et al. , Astropy: A community Python package for astronomy, A&A 558 , A33 (2013), arXiv:1307.6212 [astro-ph.IM]. [40] Astropy Collaboration, A. M. Price-Whelan, B. M. Sip˝ ocz, H. M. G¨ unther, P. L. Lim, S. M. Crawford, S. Conseil, D. L. Shupe, M. W. Craig, N. Dencheva, A. Ginsburg, J. T. Vand erPlas, L. D. Bradley, D. P´ erez-Su´ arez, M. de Val-Borro, T. L. Aldcroft, K. L. Cruz, T. P. Robitaille, E. J. Tollerud, C. Ardelean, T. Babej, et al. ,The Astropy Project: Building an Open-science Project and Status of the v2.0 Core Package, AJ 156 , 123 (2018), arXiv:1801.02634 [astro-ph.IM]. [41] Astropy Collaboration, A. M. Price-Whelan, P. L. Lim, N. Earl, N. Starkman, L. Bradley, D. L. Shupe, A. A. Patil, L. Corrales, C. E. Brasseur, M. N”othe, A. Do-nath, E. Tollerud, B. M. Morris, A. Ginsburg, et al. , The Astropy Project: Sustaining and Growing a Community-oriented Open-source Project and the Latest Major Re-lease (v5.0) of the Core Package, ApJ 935 , 167 (2022), arXiv:2206.14220 [astro-ph.IM]. [42] N. Tessore, A. Loureiro, B. Joachimi, M. von Wietersheim-Kramsta, and N. Jeffrey, GLASS: Genera-tor for Large Scale Structure, The Open Journal of As-trophysics 6, 11 (2023), arXiv:2302.01942 [astro-ph.CO]. [43] A. Lewis, A. Challinor, and A. Lasenby, Efficient compu-tation of CMB anisotropies in closed FRW models, ApJ 
+
+538 , 473 (2000), arXiv:astro-ph/9911177 [astro-ph]. [44] C. Howlett, A. Lewis, A. Hall, and A. Challinor, CMB power spectrum parameter degeneracies in the era of pre-cision cosmology, J. Cosmology Astropart. Phys. 1204 ,027 (2012), arXiv:1201.3654 [astro-ph.CO]. [45] J. Myles, A. Alarcon, A. Amon, C. S´ anchez, S. Ev-erett, J. DeRose, J. McCullough, D. Gruen, G. M. Bernstein, M. A. Troxel, S. Dodelson, A. Cam-pos, N. MacCrann, B. Yin, M. Raveri, et al. ,Dark energy survey year 3 results: redshift calibra-tion of the weak lensing source galaxies, Monthly Notices of the Royal Astronomical Society 505 ,4249 (2021), https://academic.oup.com/mnras/article-pdf/505/3/4249/38816060/stab1515.pdf. [46] G. Giannini, A. Alarcon, M. Gatti, A. Porredon, M. Crocce, G. M. Bernstein, R. Cawthon, C. S´ anchez, C. Doux, J. Elvin-Poole, M. Raveri, J. Myles, H. Lin, A. Amon, S. Allam, et al. , Dark Energy Survey Year 3 results: redshift calibration of the MAGLIM lens sam-ple from the combination of SOMPZ and clustering and its impact on cosmology, MNRAS 527 , 2010 (2024), arXiv:2209.05853 [astro-ph.CO]. [47] E. S. Sheldon and E. M. Huff, Practical Weak-lensing Shear Measurement with Metacalibration, ApJ 841 , 24 (2017), arXiv:1702.02601 [astro-ph.CO]. [48] M. Gatti, E. Sheldon, A. Amon, M. Becker, M. Troxel, A. Choi, C. Doux, N. MacCrann, A. Navarro-Alsina, I. Harrison, D. Gruen, G. Bernstein, M. Jarvis, L. F. Secco, A. Fert´ e, et al. , Dark energy sur-vey year 3 results: weak lensing shape catalogue, Monthly Notices of the Royal Astronomical Society 504 ,4312 (2021), https://academic.oup.com/mnras/article-pdf/504/3/4312/37925836/stab918.pdf. [49] J. De Vicente, E. S´ anchez, and I. Sevilla-Noarbe, Dnf – galaxy photometric redshift by direc-tional neighbourhood fitting, Monthly Notices of the Royal Astronomical Society 459 , 3078 (2016), https://academic.oup.com/mnras/article-pdf/459/3/3078/8109193/stw857.pdf. [50] I. Sevilla-Noarbe, K. Bechtol, M. Carrasco Kind, A. Carnero Rosell, M. R. Becker, A. Drlica-Wagner, R. A. Gruendl, E. S. Rykoff, E. Sheldon, B. Yanny, A. Alar-con, S. Allam, A. Amon, A. Benoit-L´ evy, G. M. Bern-stein, et al. , Dark Energy Survey Year 3 Results: Pho-tometric Data Set for Cosmology, ApJS 254 , 24 (2021), arXiv:2011.03407 [astro-ph.CO]. [51] S. Seabold and J. Perktold, statsmodels: Econometric and statistical modeling with python, in 9th Python in Science Conference (2010).
