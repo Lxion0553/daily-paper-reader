@@ -1,0 +1,701 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-03-12T20:08:13.760270+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 6,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 25,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2603.04040v1",
+      "title": "Morphologies for DECaLS Galaxies through a combination of non-parametric indices and machine learning methods: A comprehensive catalog using the Galaxy Morphology Extractor (galmex) code",
+      "abstract": "Galaxy morphology encodes key information about formation and evolution. Large imaging surveys require automated, reproducible methods beyond visual inspection. Non--parametric indices provide an useful framework, but their performance must be quantitatively assessed. We present a homogeneous catalog of non--parametric morphological indices for DECaLS galaxies with effective radii larger than 2 arcsec. Our goal is to evaluate the reliability of indices in separating spirals and ellipticals, test their consistency with existing classification schemes, and establish their applicability for the upcoming surveys focused in the southern hemisphere. We developed galmex, a modular Python package for preprocessing images and measuring a variety of non--parametric indices. Using bona-fide spirals and ellipticals as control samples, we assessed the discriminatory power of each index, and compared them with CNN-based T-Types and Galaxy Zoo DECaLS labels. We use the indices as input for a Light Gradient Boosted Machine (LightGBM) to obtain probabilistic classifications. Concentration is the most reliable parameter from the Concentratiom + Asymmetry + Smoothness system (CAS), while asymmetry--based indices (A and S) are limited to detecting disturbed morphologies. MEGG indices (M20, Entropy, Gini, G2) provide stronger separation and trace a gradient with T--Type. By using a simple binary (0/1) label for ellipticals/spirals, classifiers trained on non--parametric indices achieve high accuracy and well--calibrated probabilities, dominated by entropy, concentration, and Gini. We release the first public catalog of CA[A_S]S+MEGG indices for DECaLS, together with galmex. We combine the non-parametric indices with machine learning framework to derive spiral/elliptical separation for galaxies below z~0.15 through a probabilistic approach.",
+      "authors": [
+        "V. M. Sampaio",
+        "Y. Jaffé",
+        "C. Lima-Dias",
+        "S. Véliz Astudillo",
+        "M. Martínez-Marín",
+        "H. Méndez-Hernández",
+        "R. Herrera-Camus",
+        "A. Monachesi"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-04T13:19:58+00:00",
+      "link": "https://arxiv.org/pdf/2603.04040v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Automated galaxy morphology classification using machine learning in large surveys",
+      "llm_evidence_cn": "在大型巡天中使用机器学习进行自动星系形态分类",
+      "llm_evidence": "在大型巡天中使用机器学习进行自动星系形态分类",
+      "canonical_evidence": "在大型巡天中使用机器学习进行自动星系形态分类",
+      "llm_tldr_en": "Presents a catalog of morphological indices for DECaLS galaxies using automated machine learning methods.",
+      "llm_tldr_cn": "使用自动机器学习方法为 DECaLS 星系提供形态指数目录。",
+      "llm_tldr": "使用自动机器学习方法为 DECaLS 星系提供形态指数目录。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04392v1",
+      "title": "SELDON: Supernova Explosions Learned by Deep ODE Networks",
+      "abstract": "The discovery rate of optical transients will explode to 10 million public alerts per night once the Vera C. Rubin Observatory's Legacy Survey of Space and Time comes online, overwhelming the traditional physics-based inference pipelines. A continuous-time forecasting AI model is of interest because it can deliver millisecond-scale inference for thousands of objects per day, whereas legacy MCMC codes need hours per object. In this paper, we propose SELDON, a new continuous-time variational autoencoder for panels of sparse and irregularly time-sampled (gappy) astrophysical light curves that are nonstationary, heteroscedastic, and inherently dependent. SELDON combines a masked GRU-ODE encoder with a latent neural ODE propagator and an interpretable Gaussian-basis decoder. The encoder learns to summarize panels of imbalanced and correlated data even when only a handful of points are observed. The neural ODE then integrates this hidden state forward in continuous time, extrapolating to future unseen epochs. This extrapolated time series is further encoded by deep sets to a latent distribution that is decoded to a weighted sum of Gaussian basis functions, the parameters of which are physically meaningful. Such parameters (e.g., rise time, decay rate, peak flux) directly drive downstream prioritization of spectroscopic follow-up for astrophysical surveys. Beyond astronomy, the architecture of SELDON offers a generic recipe for interpretable and continuous-time sequence modeling in any time domain where data are multivariate, sparse, heteroscedastic, and irregularly spaced.",
+      "authors": [
+        "Jiezhong Wu",
+        "Jack O'Brien",
+        "Jennifer Li",
+        "M. S. Krafczyk",
+        "Ved G. Shah",
+        "Amanda R. Wasserman",
+        "Daniel W. Apley",
+        "Gautham Narayan",
+        "Noelle I. Samia"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "cs.LG"
+      ],
+      "published": "2026-03-04T18:57:21+00:00",
+      "link": "https://arxiv.org/pdf/2603.04392v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "automated feature extraction and forecasting for astrophysical light curves",
+      "llm_evidence_cn": "天文光变曲线的自动特征提取与预测",
+      "llm_evidence": "天文光变曲线的自动特征提取与预测",
+      "canonical_evidence": "天文光变曲线的自动特征提取与预测",
+      "llm_tldr_en": "A continuous-time variational autoencoder for fast inference and forecasting of supernova light curves.",
+      "llm_tldr_cn": "一种连续时间变分自编码器，用于超新星光变曲线的快速推理和预测。",
+      "llm_tldr": "一种连续时间变分自编码器，用于超新星光变曲线的快速推理和预测。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "automated feature extraction from light curves",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.05265v1",
+      "title": "EMU/GAMA: A statistical perspective on active galactic nuclei diagnostics",
+      "abstract": "While it is well known that galaxies are composites of many emission processes, quantifying the various contributions remains challenging. In this work, we use unsupervised machine learning based clustering algorithms to evaluate the agreement between the clustering tools and astrophysical classifications, and hence quantify the fractional contributions of star formation processes and nuclear black hole activity to the total galaxy energy budget of radio sources. We perform clustering on the multiwavelength (optical, infrared (IR), and radio) active galactic nuclei (AGN) diagnostic spaces, using the data from the G09 and G23 fields from the Galaxy and Mass Assembly (GAMA) survey, Evolutionary Map of the Universe (EMU) survey, and the Wide-field Infrared Survey Explorer (WISE). We find that the statistical clustering recovers $\\approx$ 90 % of the star forming galaxies (SFGs) and $\\approx$ 80 % of the AGN. We define a new IR-radio AGN diagnostic scheme that identifies radio AGN from IR SFGs and AGN, corresponding to the KMeans cluster with approximately 90 % reliability. We demonstrate the superior power of radio AGN selection in higher dimensions using a three-dimensional space composed of directly observable parameters ($\\rm W_1-W_2$ colour, $\\rm W_2$ magnitude, and the 1.4 GHz radio flux density). This novel three dimensional diagnostic shows immense potential in radio AGN selection that is close to 90 % reliable and 90 % complete. We also publish a catalogue of radio sources in the EMU survey with associated probabilities for them to be active in the optical regime, through which we emphasise the philosophy of considering a galaxy to be composed of various fractions rather than a binary classification of SFGs and AGN.",
+      "authors": [
+        "J. Prathap",
+        "A. M. Hopkins",
+        "R. Carvajal",
+        "M. Cowley",
+        "S. M. Croom",
+        "D. Farrah",
+        "I. Prandoni",
+        "S. S. Shabala",
+        "J. Th. van Loon",
+        "C. Pappalardo",
+        "K. A. Pimbblet",
+        "U. T. Ahmed",
+        "M. Bilicki",
+        "M. J. I. Brown",
+        "D. Leahy",
+        "A. Mailvaganam",
+        "J. R. Marvil",
+        "T. Mukherjee",
+        "S. F. Rahman",
+        "T. Vernstrom",
+        "J. Willingham",
+        "T. Zafar"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA"
+      ],
+      "published": "2026-03-05T15:15:18+00:00",
+      "link": "https://arxiv.org/pdf/2603.05265v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "unsupervised machine learning based clustering for galaxy diagnostics",
+      "llm_evidence_cn": "基于无监督机器学习聚类的星系诊断",
+      "llm_evidence": "基于无监督机器学习聚类的星系诊断",
+      "canonical_evidence": "基于无监督机器学习聚类的星系诊断",
+      "llm_tldr_en": "Uses unsupervised clustering to quantify star formation and black hole activity in radio sources.",
+      "llm_tldr_cn": "利用无监督聚类算法量化射电源中恒星形成和黑洞活动的贡献。",
+      "llm_tldr": "利用无监督聚类算法量化射电源中恒星形成和黑洞活动的贡献。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised learning applications in astronomy and astrophysics",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.03732v1",
+      "title": "A Generalist Model Including Evolved Star Mass and Age",
+      "abstract": "Determining precise stellar ages and masses for evolved giants is crucial for Galactic archaeology but challenged by spectral degeneracies. Gaia's low-resolution XP spectra offer a unique opportunity to infer these parameters on a massive scale using data-driven methods. We extend a transformer-based astronomical foundation model to evolved stars, establishing a unified framework to simultaneously predict atmospheric parameters ($T_{\\mathrm{eff}}$, $\\log g$, $[\\mathrm{M}/\\mathrm{H}]$) and evolutionary labels (mass, age) with physical consistency. Treating spectra as token sequences, we integrated mass and age into the model's vocabulary. The model is trained on Gaia XP spectra cross-matched with the APOGEE DR17 DistMass catalog. Our generative approach enables flexible input handling, including spectral inpainting and parameter-to-spectrum generation. On an independent test set, the model achieves a prediction scatter of $σ\\approx 0.114 \\, M_{\\odot}$ for mass and $σ\\approx 1.334$ Gyr for age. Beyond numerical accuracy, it successfully reproduces the giant branch's mass-luminosity relation and autonomously disentangles interstellar extinction from intrinsic temperature variations without explicit physical priors. It also robustly recovers missing spectral data and estimates reliable uncertainties. Validating that foundation models can internalize stellar physics from data, this physically-aware, probabilistic framework offers a powerful tool for unraveling Milky Way history using large-scale spectroscopic surveys.",
+      "authors": [
+        "Mengmeng Zhang",
+        "Yude Bu",
+        "Siqi Wang",
+        "Shanshan Li",
+        "Jiangchuan Zhang",
+        "Jingzhen Sun",
+        "Yuhang Zhang",
+        "Ke Wang",
+        "Jian Liu",
+        "Hongliang Yan",
+        "Zhenping Yi",
+        "Meng Liu",
+        "Xiaoming Kong"
+      ],
+      "primary_category": "astro-ph.SR",
+      "categories": [
+        "astro-ph.SR",
+        "astro-ph.GA",
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-04T05:04:42+00:00",
+      "link": "https://arxiv.org/pdf/2603.03732v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Astronomical foundation model for stellar parameter prediction using Gaia spectra",
+      "llm_evidence_cn": "使用 Gaia 光谱进行恒星参数预测的天文基础模型",
+      "llm_evidence": "使用 Gaia 光谱进行恒星参数预测的天文基础模型",
+      "canonical_evidence": "使用 Gaia 光谱进行恒星参数预测的天文基础模型",
+      "llm_tldr_en": "Extends a transformer-based foundation model to predict mass and age for evolved stars using Gaia spectra.",
+      "llm_tldr_cn": "扩展了基于 Transformer 的基础模型，利用 Gaia 光谱预测演化恒星的质量和年龄。",
+      "llm_tldr": "扩展了基于 Transformer 的基础模型，利用 Gaia 光谱预测演化恒星的质量和年龄。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04516v1",
+      "title": "Augmenting representations with scientific papers",
+      "abstract": "Astronomers have acquired vast repositories of multimodal data, including images, spectra, and time series, complemented by decades of literature that analyzes astrophysical sources. Still, these data sources are rarely systematically integrated. This work introduces a contrastive learning framework designed to align X-ray spectra with domain knowledge extracted from scientific literature, facilitating the development of shared multimodal representations. Establishing this connection is inherently complex, as scientific texts encompass a broader and more diverse physical context than spectra. We propose a contrastive pipeline that achieves a 20% Recall@1% when retrieving texts from spectra, proving that a meaningful alignment between these modalities is not only possible but capable of accelerating the interpretation of rare or poorly understood sources. Furthermore, the resulting shared latent space effectively encodes physically significant information. By fusing spectral and textual data, we improve the estimation of 20 physical variables by 16-18% over unimodal spectral baselines. Our results indicate that a Mixture of Experts (MoE) strategy, which leverages both unimodal and shared representations, yields superior performance. Finally, outlier analysis within the multimodal latent space identifies high-priority targets for follow-up investigation, including a candidate pulsating ULX (PULX) and a gravitational lens system. Importantly, this framework can be extended to other scientific domains where aligning observational data with existing literature is possible.",
+      "authors": [
+        "Nicolò Oreste Pinciroli Vago",
+        "Rocco Di Tella",
+        "Carolina Cuesta-Lázaro",
+        "Michael J. Smith",
+        "Cecilia Garraffo",
+        "Rafael Martínez-Galarza"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "astro-ph.IM",
+        "cs.AI"
+      ],
+      "published": "2026-03-04T19:04:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.04516v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "contrastive learning for multimodal astronomical representations",
+      "llm_evidence_cn": "多模态天文表示的对比学习",
+      "llm_evidence": "多模态天文表示的对比学习",
+      "canonical_evidence": "多模态天文表示的对比学习",
+      "llm_tldr_en": "Aligns X-ray spectra with scientific literature using contrastive learning for shared representations.",
+      "llm_tldr_cn": "利用对比学习将X射线光谱与科学文献对齐，构建共享的多模态表示。",
+      "llm_tldr": "利用对比学习将X射线光谱与科学文献对齐，构建共享的多模态表示。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.09601v1",
+      "title": "MM-algorithms for traditional and convex NMF with Tweedie and Negative Binomial cost functions and empirical evaluation",
+      "abstract": "Non-negative matrix factorisation (NMF) is a widely used tool for unsupervised learning and feature extraction, with applications ranging from genomics to text analysis and signal processing. Standard formulations of NMF are typically derived under Gaussian or Poisson noise assumptions, which may be inadequate for data exhibiting overdispersion or other complex mean-variance relationships. In this paper, we develop a unified framework for both traditional and convex NMF under a broad class of distributional assumptions, including Negative Binomial and Tweedie models, where the connection between the Tweedie and the $β$-divergence is also highlighted. Using a Majorize-Minimisation approach, we derive multiplicative update rules for all considered models, and novel updates for convex NMF with Poisson and Negative Binomial cost functions. We provide a unified implementation of all considered models, including the first implementations of several convex NMF models. Empirical evaluations on mutational and word count data demonstrate that the choice of noise model critically affects model fit and feature recovery, and that convex NMF can provide an efficient and robust alternative to traditional NMF in scenarios where the number of classes is large. The code for our proposed updates is available in the R package nmfgenr and can be found at https://github.com/MartaPelizzola/nmfgenr.",
+      "authors": [
+        "Elisabeth Sommer James",
+        "Asger Hobolth",
+        "Marta Pelizzola"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ME",
+        "stat.ML"
+      ],
+      "published": "2026-03-10T12:46:25+00:00",
+      "link": "https://arxiv.org/pdf/2603.09601v1",
+      "tags": [
+        "keyword:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Non-negative matrix factorisation for unsupervised learning and feature extraction",
+      "llm_evidence_cn": "用于无监督学习和特征提取的非负矩阵分解",
+      "llm_evidence": "用于无监督学习和特征提取的非负矩阵分解",
+      "canonical_evidence": "用于无监督学习和特征提取的非负矩阵分解",
+      "llm_tldr_en": "Develops a unified NMF framework for unsupervised feature extraction under various noise distributions.",
+      "llm_tldr_cn": "开发了一个统一的 NMF 框架，用于各种噪声分布下的无监督特征提取。",
+      "llm_tldr": "开发了一个统一的 NMF 框架，用于各种噪声分布下的无监督特征提取。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "blind source separation in astronomical imaging",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2603.05214v1",
+      "title": "The bliss of dimensionality: how an unsupervised criterion identifies optimal low-resolution representations of high-dimensional datasets",
+      "abstract": "Selecting the optimal resolution for discretizing high-dimensional data is a central problem in physics and data analysis, particularly in unsupervised settings where the underlying distribution is unknown. The Relevance-Resolution (Res-Rel) framework addresses this issue through an information-theoretic trade-off between descriptive detail and statistical reliability. Here we provide a systematic validation of this approach by comparing its characteristic optima--maximum relevance and the -1 slope (information-theoretic) point--with the discretization that minimizes the Kullback-Leibler divergence from a known or physically motivated ground truth distribution. Across unstructured and structured synthetic datasets, Gaussian clones of MNIST, and molecular dynamics simulations of the alanine dipeptide, we find that as the dimensionality or informative content increases the KL-optimal discretization consistently lies within the Res-Rel optimality region. Furthermore, in high-dimensional regimes the -1 slope criterion closely matches the KL divergence minimum. These results establish the quantitative consistency of unsupervised information-theoretic selection with distribution-based optimality.",
+      "authors": [
+        "Margherita Mele",
+        "Daniel Campos Moreno",
+        "Raffaello Potestio"
+      ],
+      "primary_category": "cond-mat.stat-mech",
+      "categories": [
+        "cond-mat.stat-mech"
+      ],
+      "published": "2026-03-05T14:22:12+00:00",
+      "link": "https://arxiv.org/pdf/2603.05214v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Unsupervised criterion for optimal low-resolution representations of high-dimensional data",
+      "llm_evidence_cn": "高维数据最优低分辨率表示的无监督准则",
+      "llm_evidence": "高维数据最优低分辨率表示的无监督准则",
+      "canonical_evidence": "高维数据最优低分辨率表示的无监督准则",
+      "llm_tldr_en": "Introduces an information-theoretic framework for unsupervised representation learning in high-dimensional datasets.",
+      "llm_tldr_cn": "为高维数据集的无监督表示学习引入了一个信息论框架。",
+      "llm_tldr": "为高维数据集的无监督表示学习引入了一个信息论框架。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised machine learning techniques",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.03530v1",
+      "title": "Directional Neural Collapse Explains Few-Shot Transfer in Self-Supervised Learning",
+      "abstract": "Frozen self-supervised representations often transfer well with only a few labels across many semantic tasks. We argue that a single geometric quantity, \\emph{directional} CDNV (decision-axis variance), sits at the core of two favorable behaviors: strong few-shot transfer within a task, and low interference across many tasks. We show that both emerge when variability \\emph{along} class-separating directions is small. First, we prove sharp non-asymptotic multiclass generalization bounds for downstream classification whose leading term is the directional CDNV. The bounds include finite-shot corrections that cleanly separate intrinsic decision-axis variability from centroid-estimation error. Second, we link decision-axis collapse to multitask geometry: for independent balanced labelings, small directional CDNV across tasks forces the corresponding decision axes to be nearly orthogonal, helping a single representation support many tasks with minimal interference. Empirically, across SSL objectives, directional CDNV collapses during pretraining even when classical CDNV remains large, and our bounds closely track few-shot error at practical shot sizes. Additionally, on synthetic multitask data, we verify that SSL learns representations whose induced decision axes are nearly orthogonal. The code and project page of the paper are available at [\\href{https://dlfundamentals.github.io/directional-neural-collapse/}{project page}].",
+      "authors": [
+        "Achleshwar Luthra",
+        "Yash Salunkhe",
+        "Tomer Galanti"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-03-03T21:28:13+00:00",
+      "link": "https://arxiv.org/pdf/2603.03530v1",
+      "tags": [
+        "keyword:AI AST"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Theoretical analysis of few-shot transfer in self-supervised representation learning",
+      "llm_evidence_cn": "自监督表示学习中少样本迁移的理论分析",
+      "llm_evidence": "自监督表示学习中少样本迁移的理论分析",
+      "canonical_evidence": "自监督表示学习中少样本迁移的理论分析",
+      "llm_tldr_en": "Explains why self-supervised representations transfer well using the concept of directional neural collapse.",
+      "llm_tldr_cn": "利用定向神经崩溃的概念解释了为什么自监督表示具有良好的迁移性。",
+      "llm_tldr": "利用定向神经崩溃的概念解释了为什么自监督表示具有良好的迁移性。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.05318v1",
+      "title": "GALACTIC: Global and Local Agnostic Counterfactuals for Time-series Clustering",
+      "abstract": "Time-series clustering is a fundamental tool for pattern discovery, yet existing explainability methods, primarily based on feature attribution or metadata, fail to identify the transitions that move an instance across cluster boundaries. While Counterfactual Explanations (CEs) identify the minimal temporal perturbations required to alter the prediction of a model, they have been mostly confined to supervised settings. This paper introduces GALACTIC, the first unified framework to bridge local and global counterfactual explainability for unsupervised time-series clustering. At instance level (local), GALACTIC generates perturbations via a cluster-aware optimization objective that respects the target and underlying cluster assignments. At cluster level (global), to mitigate cognitive load and enhance interpretability, we formulate a representative CE selection problem. We propose a Minimum Description Length (MDL) objective to extract a non-redundant summary of global explanations that characterize the transitions between clusters. We prove that our MDL objective is supermodular, which allows the corresponding MDL reduction to be framed as a monotone submodular set function. This enables an efficient greedy selection algorithm with provable $(1-1/e)$ approximation guarantees. Extensive experimental evaluation on the UCR Archive demonstrates that GALACTIC produces significantly sparser local CEs and more concise global summaries than state-of-the-art baselines adapted for our problem, offering the first unified approach for interpreting clustered time-series through counterfactuals.",
+      "authors": [
+        "Christos Fragkathoulas",
+        "Eleni Psaroudaki",
+        "Themis Palpanas",
+        "Evaggelia Pitoura"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-03-05T15:59:33+00:00",
+      "link": "https://arxiv.org/pdf/2603.05318v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "unsupervised time-series clustering and explainability",
+      "llm_evidence_cn": "无监督时间序列聚类与可解释性",
+      "llm_evidence": "无监督时间序列聚类与可解释性",
+      "canonical_evidence": "无监督时间序列聚类与可解释性",
+      "llm_tldr_en": "A framework for local and global counterfactual explanations in unsupervised time-series clustering.",
+      "llm_tldr_cn": "一种用于无监督时间序列聚类的局部和全局反事实解释框架。",
+      "llm_tldr": "一种用于无监督时间序列聚类的局部和全局反事实解释框架。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised machine learning techniques",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.04035v1",
+      "title": "mlx-vis: GPU-Accelerated Dimensionality Reduction and Visualization on Apple Silicon",
+      "abstract": "mlx-vis is a Python library that implements six dimensionality reduction methods and a k-nearest neighbor graph algorithm entirely in MLX, Apple's array framework for Apple Silicon. The library provides UMAP, t-SNE, PaCMAP, TriMap, DREAMS, CNE, and NNDescent, all executing on Metal GPU through a unified fit_transform interface. Beyond embedding computation, mlx-vis includes a GPU-accelerated circle-splatting renderer that produces scatter plots and smooth animations without matplotlib, composing frames via scatter-add alpha blending on GPU and piping them to hardware H.264 encoding. On Fashion-MNIST with 70,000 points, all methods complete embedding in 2.1-3.8 seconds and render 800-frame animations in 1.4 seconds on an M3 Ultra, with the full pipeline from raw data to rendered video finishing in 3.6-5.2 seconds. The library depends only on MLX and NumPy, is released under the Apache 2.0 license, and is available at https://github.com/hanxiao/mlx-vis.",
+      "authors": [
+        "Han Xiao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-03-04T13:16:48+00:00",
+      "link": "https://arxiv.org/pdf/2603.04035v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "GPU-accelerated dimensionality reduction library for unsupervised data visualization",
+      "llm_evidence_cn": "用于无监督数据可视化的 GPU 加速降维库",
+      "llm_evidence": "用于无监督数据可视化的 GPU 加速降维库",
+      "canonical_evidence": "用于无监督数据可视化的 GPU 加速降维库",
+      "llm_tldr_en": "Introduces mlx-vis, a library for fast GPU-accelerated dimensionality reduction on Apple Silicon.",
+      "llm_tldr_cn": "介绍了 mlx-vis，一个在 Apple Silicon 上进行 GPU 加速降维的库。",
+      "llm_tldr": "介绍了 mlx-vis，一个在 Apple Silicon 上进行 GPU 加速降维的库。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised machine learning techniques",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.07073v1",
+      "title": "Interpretable Maximum Margin Deep Anomaly Detection",
+      "abstract": "Anomaly detection is a crucial machine-learning task with wide-ranging applications. Deep Support Vector Data Description (Deep SVDD) is a prominent deep one-class method, but it is vulnerable to hypersphere collapse, often relies on heuristic choices for hypersphere parameters, and provides limited interpretability. To address these issues, we propose Interpretable Maximum Margin Deep Anomaly Detection (IMD-AD), which leverages a small set of labeled anomalies and a maximum margin objective to stabilize training and improve discrimination. It is inherently resilient to hypersphere collapse. Furthermore, we prove an equivalence between hypersphere parameters and the network's final-layer weights, which allows the center and radius to be learned end-to-end as part of the model and yields intrinsic interpretability and visualizable outputs. We further develop an efficient training algorithm that jointly optimizes representation, margin, and final-layer parameters. Extensive experiments and ablation studies on image and tabular benchmarks demonstrate that IMD-AD empirically improves detection performance over several state-of-the-art baselines while providing interpretable decision diagnostics.",
+      "authors": [
+        "Zhiji Yang",
+        "Mei Huang",
+        "Xinyu Li",
+        "Xianli Pan",
+        "Qi Wang",
+        "Jianhua Zhao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-03-07T07:06:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.07073v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Deep anomaly detection method with improved interpretability and resilience to collapse",
+      "llm_evidence_cn": "具有改进可解释性和抗崩溃能力的深度异常检测方法",
+      "llm_evidence": "具有改进可解释性和抗崩溃能力的深度异常检测方法",
+      "canonical_evidence": "具有改进可解释性和抗崩溃能力的深度异常检测方法",
+      "llm_tldr_en": "Proposes IMD-AD, an interpretable deep anomaly detection method using a maximum margin objective.",
+      "llm_tldr_cn": "提出 IMD-AD，一种使用最大间隔目标的解释性深度异常检测方法。",
+      "llm_tldr": "提出 IMD-AD，一种使用最大间隔目标的解释性深度异常检测方法。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "anomaly detection in sky surveys",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.04727v1",
+      "title": "Are Multimodal LLMs Ready for Surveillance? A Reality Check on Zero-Shot Anomaly Detection in the Wild",
+      "abstract": "Multimodal large language models (MLLMs) have demonstrated impressive general competence in video understanding, yet their reliability for real-world Video Anomaly Detection (VAD) remains largely unexplored. Unlike conventional pipelines relying on reconstruction or pose-based cues, MLLMs enable a paradigm shift: treating anomaly detection as a language-guided reasoning task. In this work, we systematically evaluate state-of-the-art MLLMs on the ShanghaiTech and CHAD benchmarks by reformulating VAD as a binary classification task under weak temporal supervision. We investigate how prompt specificity and temporal window lengths (1s--3s) influence performance, focusing on the precision--recall trade-off. Our findings reveal a pronounced conservative bias in zero-shot settings; while models exhibit high confidence, they disproportionately favor the 'normal' class, resulting in high precision but a recall collapse that limits practical utility. We demonstrate that class-specific instructions can significantly shift this decision boundary, improving the peak F1-score on ShanghaiTech from 0.09 to 0.64, yet recall remains a critical bottleneck. These results highlight a significant performance gap for MLLMs in noisy environments and provide a foundation for future work in recall-oriented prompting and model calibration for open-world surveillance, which demands complex video understanding and reasoning.",
+      "authors": [
+        "Shanle Yao",
+        "Armin Danesh Pazho",
+        "Narges Rashvand",
+        "Hamed Tabkhi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-05T02:00:53+00:00",
+      "link": "https://arxiv.org/pdf/2603.04727v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "zero-shot anomaly detection in video surveillance using MLLMs",
+      "llm_evidence_cn": "使用多模态大模型进行视频监控中的零样本异常检测",
+      "llm_evidence": "使用多模态大模型进行视频监控中的零样本异常检测",
+      "canonical_evidence": "使用多模态大模型进行视频监控中的零样本异常检测",
+      "llm_tldr_en": "Evaluates multimodal LLMs for zero-shot video anomaly detection as a reasoning task.",
+      "llm_tldr_cn": "评估多模态大语言模型在零样本视频异常检测推理任务中的表现。",
+      "llm_tldr": "评估多模态大语言模型在零样本视频异常检测推理任务中的表现。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "anomaly detection in sky surveys",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.07289v1",
+      "title": "To What Extent Are Star Cluster Ages Encoded in Their Environments? Exploring the Spatial Distribution of Age-Related Information with PHANGS-HST Imaging and Convolutional Neural Networks",
+      "abstract": "The environments around star clusters evolve as stellar feedback reshapes the interstellar medium and dynamical processes reorganize the structure of the surrounding stellar field. As approximately single-age populations, star clusters can serve as clocks to trace these environmental changes. In this exploratory study, we test whether convolutional neural networks (CNNs) can identify age-dependent changes in cluster environments. We take cluster ages as given from basic SED fitting of five-band UV-optical aperture photometry from the PHANGS (Physics at High Angular resolution in Nearby GalaxieS) HST survey. We first show that CNNs can be trained on image cutouts centered on clusters to recover ages directly from imaging. This demonstration provides the foundation for this study, which examines whether the information used by CNNs to predict age is coherent and physically meaningful. We perform controlled image occlusion experiments as an explainable AI method. These show that the CNNs extract age-predictive environmental cues in the absence of cluster light and when information on SED shape is removed by combining the five filters into one image. We find that reliance on environmental information increases at the youngest (<10 Myr) and oldest (>1 Gyr) ages, where clusters can exhibit similarly red colors. Our results are consistent with the long-recognized picture that cluster environments evolve systematically with age. We demonstrate that this information is encoded at a level detectable by machine-learning and recoverable from broadband imaging. This establishes a path for using new techniques to connect image-based age inference to the physical evolution of cluster environments.",
+      "authors": [
+        "Javier Viaña",
+        "Janice C. Lee",
+        "Andrew Vanderburg",
+        "John F. Wu",
+        "M. Jimena Rodríguez",
+        "Remy Indebetouw",
+        "Médéric Boquien",
+        "Ralf S. Klessen",
+        "Sophia Rivera",
+        "Erik Rosolowsky",
+        "Oleg Y. Gnedin",
+        "Daniel A. Dale",
+        "Kirsten L. Larson",
+        "David A. Thilker",
+        "Gagandeep Anand"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.SR"
+      ],
+      "published": "2026-03-07T17:14:24+00:00",
+      "link": "https://arxiv.org/pdf/2603.07289v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "CNNs for identifying age-dependent changes in star cluster environments from imaging",
+      "llm_evidence_cn": "使用卷积神经网络从图像中识别星团环境随年龄的变化",
+      "llm_evidence": "使用卷积神经网络从图像中识别星团环境随年龄的变化",
+      "canonical_evidence": "使用卷积神经网络从图像中识别星团环境随年龄的变化",
+      "llm_tldr_en": "Explores using CNNs to extract age-related information from star cluster environments in PHANGS-HST imaging.",
+      "llm_tldr_cn": "探索使用卷积神经网络从PHANGS-HST图像中提取星团环境的年龄相关信息。",
+      "llm_tldr": "探索使用卷积神经网络从PHANGS-HST图像中提取星团环境的年龄相关信息。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.06944v1",
+      "title": "Estimating Complex Densities using Two-Stage Normalizing Flows",
+      "abstract": "In many scientific applications, the target probability distribution cannot be evaluated in closed form or sampled from directly. Instead, it can often be decomposed into multiple components, some of which are accessible only through samples generated by simulators or external datasets, while others admit tractable mathematical expressions or are specified through statistical assumptions about variable relationships. Developing inference methods that coherently integrate these heterogeneous sources of information remains an open challenge. In this paper, we propose a Two-Stage Normalizing Flows framework for approximating and sampling from such distributions. The method first learns the densities of components for which only samples are available, and then combines the outputs with the analytically specified terms to reconstruct the full target distribution in a second stage. The resulting model enables both point-wise density evaluation and efficient generation of representative samples, without requiring direct access to the full target density or joint samples from the complete model. We assess the proposed approach through simulation studies in joint density inference and Bayesian hierarchical models with inaccessible likelihoods. The proposed framework is able to accurately recover complex, highly nonlinear target structures using only partial information about the target density, providing stable and flexible approximations in settings where standard modeling assumptions do not hold (or when complete access to the target distribution is not available). Analysis of a large scale astronomy application highlights interesting differences between our method and existing approaches. Our normalizing flows procedure offers a robust and flexible approach to inference for intractable target distributions across both simulated and real-world applications.",
+      "authors": [
+        "Roxana Darvishi",
+        "David C. Stenning",
+        "Ted von Hippel",
+        "Owen G. Ward"
+      ],
+      "primary_category": "stat.ME",
+      "categories": [
+        "stat.ME"
+      ],
+      "published": "2026-03-06T23:37:26+00:00",
+      "link": "https://arxiv.org/pdf/2603.06944v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "unsupervised density estimation using normalizing flows for scientific applications",
+      "llm_evidence_cn": "用于科学应用的归一化流无监督密度估计",
+      "llm_evidence": "用于科学应用的归一化流无监督密度估计",
+      "canonical_evidence": "用于科学应用的归一化流无监督密度估计",
+      "llm_tldr_en": "Introduces a two-stage normalizing flow framework for estimating complex probability densities.",
+      "llm_tldr_cn": "引入了一种两阶段归一化流框架，用于估计复杂的概率密度。",
+      "llm_tldr": "引入了一种两阶段归一化流框架，用于估计复杂的概率密度。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised machine learning techniques",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.07545v1",
+      "title": "DreamSAC: Learning Hamiltonian World Models via Symmetry Exploration",
+      "abstract": "Learned world models excel at interpolative generalization but fail at extrapolative generalization to novel physical properties. This limitation arises because they learn statistical correlations rather than the environment's underlying generative rules, such as physical invariances and conservation laws. We argue that learning these invariances is key to robust extrapolation. To achieve this, we first introduce \\textbf{Symmetry Exploration}, an unsupervised exploration strategy where an agent is intrinsically motivated by a Hamiltonian-based curiosity bonus to actively probe and challenge its understanding of conservation laws, thereby collecting physically informative data. Second, we design a Hamiltonian-based world model that learns from the collected data, using a novel self-supervised contrastive objective to identify the invariant physical state from raw, view-dependent pixel observations. Our framework, \\textbf{DreamSAC}, trained on this actively curated data, significantly outperforms state-of-the-art baselines in 3D physics simulations on tasks requiring extrapolation.",
+      "authors": [
+        "Jinzhou Tang",
+        "Fan Feng",
+        "Minghao Fu",
+        "Wenjun Lin",
+        "Biwei Huang",
+        "Keze Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-03-08T09:09:57+00:00",
+      "link": "https://arxiv.org/pdf/2603.07545v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Unsupervised exploration strategy for learning physical invariances and conservation laws",
+      "llm_evidence_cn": "学习物理不变性和守恒定律的无监督探索策略",
+      "llm_evidence": "学习物理不变性和守恒定律的无监督探索策略",
+      "canonical_evidence": "学习物理不变性和守恒定律的无监督探索策略",
+      "llm_tldr_en": "Proposes Symmetry Exploration to help world models learn physical invariances and improve extrapolation.",
+      "llm_tldr_cn": "提出对称性探索，帮助世界模型学习物理不变性并提高外推能力。",
+      "llm_tldr": "提出对称性探索，帮助世界模型学习物理不变性并提高外推能力。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised machine learning techniques",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.07113v1",
+      "title": "Efficient Chest X-ray Representation Learning via Semantic-Partitioned Contrastive Learning",
+      "abstract": "Self-supervised learning (SSL) has emerged as a powerful paradigm for Chest X-ray (CXR) analysis under limited annotations. Yet, existing SSL strategies remain suboptimal for medical imaging. Masked image modeling allocates substantial computation to reconstructing high-frequency background details with limited diagnostic value. Contrastive learning, on the other hand, often depends on aggressive augmentations that risk altering clinically meaningful structures. We introduce Semantic-Partitioned Contrastive Learning (S-PCL), an efficient pre-training framework tailored for CXR representation learning. Instead of reconstructing pixels or relying on heavy augmentations, S-PCL randomly partitions patch tokens from a single CXR into two non-overlapping semantic subsets. Each subset provides a complementary but incomplete view. The encoder must maximize agreement between these partitions, implicitly inferring global anatomical layout and local pathological cues from partial evidence. This semantic partitioning forms an internal bottleneck that enforces long-range dependency modeling and structural coherence. S-PCL eliminates the need for hand-crafted augmentations, auxiliary decoders, and momentum encoders. The resulting architecture is streamlined, computationally efficient, and easy to scale. Extensive experiments on large-scale CXR benchmarks, including ChestX-ray14, CheXpert, RSNA Pneumonia and SIIM-ACR Pneumothorax, show that S-PCL achieves competitive performance while attaining the lowest GFLOPs and superior accuracy among existing SSL approaches.",
+      "authors": [
+        "Wangyu Feng",
+        "Shawn Young",
+        "Lijian Xu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-07T08:52:23+00:00",
+      "link": "https://arxiv.org/pdf/2603.07113v1",
+      "tags": [
+        "keyword:AI AST"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Self-supervised representation learning for medical images using contrastive learning",
+      "llm_evidence_cn": "使用对比学习进行医学图像的自监督表示学习",
+      "llm_evidence": "使用对比学习进行医学图像的自监督表示学习",
+      "canonical_evidence": "使用对比学习进行医学图像的自监督表示学习",
+      "llm_tldr_en": "Introduces Semantic-Partitioned Contrastive Learning for efficient medical image representation learning.",
+      "llm_tldr_cn": "引入语义分区对比学习，用于高效的医学图像表示学习。",
+      "llm_tldr": "引入语义分区对比学习，用于高效的医学图像表示学习。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.07952v1",
+      "title": "VisualAD: Language-Free Zero-Shot Anomaly Detection via Vision Transformer",
+      "abstract": "Zero-shot anomaly detection (ZSAD) requires detecting and localizing anomalies without access to target-class anomaly samples. Mainstream methods rely on vision-language models (VLMs) such as CLIP: they build hand-crafted or learned prompt sets for normal and abnormal semantics, then compute image-text similarities for open-set discrimination. While effective, this paradigm depends on a text encoder and cross-modal alignment, which can lead to training instability and parameter redundancy. This work revisits the necessity of the text branch in ZSAD and presents VisualAD, a purely visual framework built on Vision Transformers. We introduce two learnable tokens within a frozen backbone to directly encode normality and abnormality. Through multi-layer self-attention, these tokens interact with patch tokens, gradually acquiring high-level notions of normality and anomaly while guiding patches to highlight anomaly-related cues. Additionally, we incorporate a Spatial-Aware Cross-Attention (SCA) module and a lightweight Self-Alignment Function (SAF): SCA injects fine-grained spatial information into the tokens, and SAF recalibrates patch features before anomaly scoring. VisualAD achieves state-of-the-art performance on 13 zero-shot anomaly detection benchmarks spanning industrial and medical domains, and adapts seamlessly to pretrained vision backbones such as the CLIP image encoder and DINOv2. Code: https://github.com/7HHHHH/VisualAD",
+      "authors": [
+        "Yanning Hou",
+        "Peiyuan Li",
+        "Zirui Liu",
+        "Yitong Wang",
+        "Yanran Ruan",
+        "Jianfeng Qiu",
+        "Ke Xu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-09T04:33:56+00:00",
+      "link": "https://arxiv.org/pdf/2603.07952v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "language-free zero-shot anomaly detection via vision transformer",
+      "llm_evidence_cn": "通过视觉Transformer进行无语言零样本异常检测",
+      "llm_evidence": "通过视觉Transformer进行无语言零样本异常检测",
+      "canonical_evidence": "通过视觉Transformer进行无语言零样本异常检测",
+      "llm_tldr_en": "Introduces a purely visual framework for zero-shot anomaly detection and localization.",
+      "llm_tldr_cn": "引入了一种纯视觉框架，用于零样本异常检测和定位。",
+      "llm_tldr": "引入了一种纯视觉框架，用于零样本异常检测和定位。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "anomaly detection in sky surveys",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

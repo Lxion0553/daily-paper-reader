@@ -6,112 +6,73 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-02-11 ~ 2026-03-12
-- 运行时间：2026-03-12 08:05:37 UTC
+- 最新运行日期：2026-03-12
+- 运行时间：2026-03-12 20:11:02 UTC
 - 运行状态：成功
-- 本次总论文数：30
-- 精读区：19
+- 本次总论文数：17
+- 精读区：6
 - 速读区：11
 
 ### 今日简报（AI）
-深度解析 30 篇前沿论文，聚焦机器学习在 ZTF 瞬变源及射电辐射探测中的突破性应用。
-满分论文 AHA 与 Protege 分别展示了在实时警报流和弥散射电辐射中精准捕捉异常的卓越能力。
-建议关注自监督学习与引力波噪声识别等跨学科技术，以提升在复杂天文场中的源探测效率。
-- 详情：[/20260211-20260312/README](/20260211-20260312/README)
+今日深度解析 17 篇 AI 与物理交叉论文，重点攻克星系形态自动化编目与超新星演化模拟。
+满分推荐：galmex 结合机器学习构建的大规模星系图谱，以及利用深度 ODE 网络（SELDON）实现的高精度超新星爆发预测。
+建议关注自动化分类框架与时间序列聚类技术，探索高维天文数据背后的物理规律。
+- 详情：[/202603/12/README](/202603/12/README)
 
 ### 精读区论文标签
-1. [Anomaly Hunter for Alerts (AHA): Anomaly Detection in the ZTF Transient Alert Stream](/20260211-20260312/2602.12955v1-anomaly-hunter-for-alerts-aha-anomaly-detection-in-the-ztf-transient-alert-stream)  
+1. [Morphologies for DECaLS Galaxies through a combination of non-parametric indices and machine learning methods: A comprehensive catalog using the Galaxy Morphology Extractor (galmex) code](/202603/12/2603.04040v1-morphologies-for-decals-galaxies-through-a-combination-of-non-parametric-indices-and-machine-learning-methods-a-comprehensive-catalog-using-the-galaxy-morphology-extractor-galmex-code)  
    标签：评分：10.0/10、query:ai-ast
-   evidence：ZTF告警流中稀有瞬变源的无监督异常检测
-2. [A targeted machine learning approach for detecting diffuse radio emission with Astronomaly: Protege](/20260211-20260312/2602.15930v1-a-targeted-machine-learning-approach-for-detecting-diffuse-radio-emission-with-astronomaly-protege)  
+   evidence：在大型巡天中使用机器学习进行自动星系形态分类
+2. [SELDON: Supernova Explosions Learned by Deep ODE Networks](/202603/12/2603.04392v1-seldon-supernova-explosions-learned-by-deep-ode-networks)  
    标签：评分：10.0/10、query:ai-ast
-   evidence：用于探测稀有弥散射电发射的自监督深度学习
-3. [Deeper detection limits in astronomical imaging using self-supervised spatiotemporal denoising](/20260211-20260312/2602.17205v1-deeper-detection-limits-in-astronomical-imaging-using-self-supervised-spatiotemporal-denoising)  
+   evidence：天文光变曲线的自动特征提取与预测
+3. [EMU/GAMA: A statistical perspective on active galactic nuclei diagnostics](/202603/12/2603.05265v1-emugama-a-statistical-perspective-on-active-galactic-nuclei-diagnostics)  
    标签：评分：10.0/10、query:ai-ast
-   evidence：利用JWST数据进行天文图像的自监督去噪
-4. [Spatio-Spectroscopic Representation Learning using Unsupervised Convolutional Long-Short Term Memory Networks](/20260211-20260312/2602.18426v1-spatio-spectroscopic-representation-learning-using-unsupervised-convolutional-long-short-term-memory-networks)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：用于IFS星系巡天特征表示的无监督深度学习
-5. [Characterization of Residual Morphological Substructure Using Supervised and Unsupervised Deep Learning](/20260211-20260312/2602.18883v1-characterization-of-residual-morphological-substructure-using-supervised-and-unsupervised-deep-learning)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：用于星系子结构表征的无监督深度学习
-6. [Variational views for self-supervised learning in radio astronomy](/20260211-20260312/2602.18923v1-variational-views-for-self-supervised-learning-in-radio-astronomy)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：射电星系形态的自监督表示学习
-7. [Probing the Milky Way Halo with RR Lyrae Stars from Gaia Data Release 3](/20260211-20260312/2602.19858v1-probing-the-milky-way-halo-with-rr-lyrae-stars-from-gaia-data-release-3)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：在Gaia数据中识别银河系子结构的创新检测框架
-8. [Inspectorch: Efficient rare event exploration in solar observations](/20260211-20260312/2602.20316v1-inspectorch-efficient-rare-event-exploration-in-solar-observations)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：使用无监督概率方法识别太阳观测中的稀有事件
-9. [Identifying Evolutionary Stages of Molecular Clumps through Unsupervised and Supervised Machine Learning](/20260211-20260312/2602.22375v1-identifying-evolutionary-stages-of-molecular-clumps-through-unsupervised-and-supervised-machine-learning)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：使用HDBSCAN对分子谱线强度进行无监督聚类以进行团块分类
-10. [Uncovering Physical Drivers of Dark Matter Halo Structures with Auxiliary-Variable-Guided Generative Models](/20260211-20260312/2602.23518v1-uncovering-physical-drivers-of-dark-matter-halo-structures-with-auxiliary-variable-guided-generative-models)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：用于解耦暗物质晕图表示的深度生成模型
-11. [Deep learning-based astronomical multimodal data fusion: A comprehensive review](/20260211-20260312/2603.00699v1-deep-learning-based-astronomical-multimodal-data-fusion-a-comprehensive-review)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：巡天观测中天文多模态数据融合的深度学习综述
-12. [Autoencoder-based framework for anomaly detection in stellar spectra: application to the MaNGA Stellar Library](/20260211-20260312/2603.03734v1-autoencoder-based-framework-for-anomaly-detection-in-stellar-spectra-application-to-the-manga-stellar-library)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：基于自编码器的异常检测，用于识别不寻常的恒星光谱和稀有恒星
-13. [16 new quasars at the end of the reionization unveiled by self-supervised learning](/20260211-20260312/2603.08830v1-16-new-quasars-at-the-end-of-the-reionization-unveiled-by-self-supervised-learning)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：用于巡天观测中类星体发现的自监督对比学习
-14. [Supernova scores for active anomaly detection](/20260211-20260312/2603.09762v1-supernova-scores-for-active-anomaly-detection)  
-   标签：评分：10.0/10、query:ai-ast
-   evidence：巡天观测中用于超新星发现的主动异常检测
-15. [Searching for and characterizing halo substructures with the GALAH DR4 survey](/20260211-20260312/2602.19647v1-searching-for-and-characterizing-halo-substructures-with-the-galah-dr4-survey)  
+   evidence：基于无监督机器学习聚类的星系诊断
+4. [A Generalist Model Including Evolved Star Mass and Age](/202603/12/2603.03732v1-a-generalist-model-including-evolved-star-mass-and-age)  
    标签：评分：9.0/10、query:ai-ast
-   evidence：在恒星巡天中使用无监督机器学习算法t-SNE进行化学标记
-16. [Comparison of symbolic regression algorithms in Star/galaxy/quasar separation](/20260211-20260312/2602.24022v1-comparison-of-symbolic-regression-algorithms-in-stargalaxyquasar-separation)  
+   evidence：使用 Gaia 光谱进行恒星参数预测的天文基础模型
+5. [Augmenting representations with scientific papers](/202603/12/2603.04516v1-augmenting-representations-with-scientific-papers)  
    标签：评分：9.0/10、query:ai-ast
-   evidence：SDSS数据中恒星/星系/类星体分类的符号回归研究
-17. [A Fast Generative Framework for High-dimensional Posterior Sampling: Application to CMB Delensing](/20260211-20260312/2603.04535v1-a-fast-generative-framework-for-high-dimensional-posterior-sampling-application-to-cmb-delensing)  
-   标签：评分：9.0/10、query:ai-ast
-   evidence：用于天体物理高维贝叶斯推理的深度生成框架
-18. [POLISH'ing the Sky: Wide-Field and High-Dynamic Range Interferometric Image Reconstruction with Application to Strong Lens Discovery](/20260211-20260312/2603.09162v1-polishing-the-sky-wide-field-and-high-dynamic-range-interferometric-image-reconstruction-with-application-to-strong-lens-discovery)  
-   标签：评分：9.0/10、query:ai-ast
-   evidence：深度学习用于射电干涉成像与强透镜发现
-19. [Accurate spectroscopic redshift estimation using non-negative matrix factorization: application to MUSE spectra](/20260211-20260312/2603.09389v1-accurate-spectroscopic-redshift-estimation-using-non-negative-matrix-factorization-application-to-muse-spectra)  
-   标签：评分：9.0/10、query:ai-ast
-   evidence：使用非负矩阵分解对星系光谱进行无监督表示学习
+   evidence：多模态天文表示的对比学习
+6. [MM-algorithms for traditional and convex NMF with Tweedie and Negative Binomial cost functions and empirical evaluation](/202603/12/2603.09601v1-mm-algorithms-for-traditional-and-convex-nmf-with-tweedie-and-negative-binomial-cost-functions-and-empirical-evaluation)  
+   标签：评分：8.0/10、query:ai-ast
+   evidence：用于无监督学习和特征提取的非负矩阵分解
 
 ### 速读区论文标签
-1. [Self-Supervised Learning via Flow-Guided Neural Operator on Time-Series Data](/20260211-20260312/2602.12267v1-self-supervised-learning-via-flow-guided-neural-operator-on-time-series-data)  
-   标签：评分：8.0/10、query:ai-ast
-   evidence：无标签时间序列数据的自监督学习
-2. [OmegaNeuron: Applying GravitySpy Similarity Methods to the Search for LIGO Glitch Witnesses](/20260211-20260312/2602.23460v1-omeganeuron-applying-gravityspy-similarity-methods-to-the-search-for-ligo-glitch-witnesses)  
-   标签：评分：8.0/10、query:ai-ast
-   evidence：利用图像相似性自动识别 LIGO 干扰信号
-3. [Detection and classification of astronomical sources with Astro-RetinaNet in crowded stellar fields](/20260211-20260312/2603.00473v1-detection-and-classification-of-astronomical-sources-with-astro-retinanet-in-crowded-stellar-fields)  
-   标签：评分：8.0/10、query:ai-ast
-   evidence：密集星场中混合天文源的检测与分类
-4. [Weak Lensing by Photometric Density Ridges](/20260211-20260312/2603.04025v1-weak-lensing-by-photometric-density-ridges)  
-   标签：评分：8.0/10、query:ai-ast
-   evidence：改进均值漂移算法以定位巡天中的脊线
-5. [Time delays and stationarity in quasar light curves](/20260211-20260312/2602.11264v1-time-delays-and-stationarity-in-quasar-light-curves)  
+1. [The bliss of dimensionality: how an unsupervised criterion identifies optimal low-resolution representations of high-dimensional datasets](/202603/12/2603.05214v1-the-bliss-of-dimensionality-how-an-unsupervised-criterion-identifies-optimal-low-resolution-representations-of-high-dimensional-datasets)  
    标签：评分：7.0/10、query:ai-ast
-   evidence：用于类星体光变曲线分析和稳态测试的贝叶斯框架
-6. [GAME: Genetic Algorithms with Marginalised Ensembles for model-independent reconstruction of cosmological quantities](/20260211-20260312/2602.12870v1-game-genetic-algorithms-with-marginalised-ensembles-for-model-independent-reconstruction-of-cosmological-quantities)  
+   evidence：高维数据最优低分辨率表示的无监督准则
+2. [GALACTIC: Global and Local Agnostic Counterfactuals for Time-series Clustering](/202603/12/2603.05318v1-galactic-global-and-local-agnostic-counterfactuals-for-time-series-clustering)  
    标签：评分：7.0/10、query:ai-ast
-   evidence：用于宇宙学模型独立重构的遗传算法
-7. [Universal Transformation of One-Class Classifiers for Unsupervised Anomaly Detection](/20260211-20260312/2602.13091v1-universal-transformation-of-one-class-classifiers-for-unsupervised-anomaly-detection)  
+   evidence：无监督时间序列聚类与可解释性
+3. [Interpretable Maximum Margin Deep Anomaly Detection](/202603/12/2603.07073v1-interpretable-maximum-margin-deep-anomaly-detection)  
    标签：评分：7.0/10、query:ai-ast
-   evidence：图像异常检测的全无监督方法
-8. [Predicting New Concept-Object Associations in Astronomy by Mining the Literature](/20260211-20260312/2602.14335v1-predicting-new-concept-object-associations-in-astronomy-by-mining-the-literature)  
+   evidence：具有改进可解释性和抗崩溃能力的深度异常检测方法
+4. [To What Extent Are Star Cluster Ages Encoded in Their Environments? Exploring the Spatial Distribution of Age-Related Information with PHANGS-HST Imaging and Convolutional Neural Networks](/202603/12/2603.07289v1-to-what-extent-are-star-cluster-ages-encoded-in-their-environments-exploring-the-spatial-distribution-of-age-related-information-with-phangs-hst-imaging-and-convolutional-neural-networks)  
    标签：评分：7.0/10、query:ai-ast
-   evidence：利用矩阵分解挖掘文献以预测天文学中的概念-对象关联
-9. [Interpretable Graph-Level Anomaly Detection via Contrast with Normal Prototypes](/20260211-20260312/2602.10708v1-interpretable-graph-level-anomaly-detection-via-contrast-with-normal-prototypes)  
+   evidence：使用卷积神经网络从图像中识别星团环境随年龄的变化
+5. [DreamSAC: Learning Hamiltonian World Models via Symmetry Exploration](/202603/12/2603.07545v1-dreamsac-learning-hamiltonian-world-models-via-symmetry-exploration)  
+   标签：评分：7.0/10、query:ai-ast
+   evidence：学习物理不变性和守恒定律的无监督探索策略
+6. [VisualAD: Language-Free Zero-Shot Anomaly Detection via Vision Transformer](/202603/12/2603.07952v1-visualad-language-free-zero-shot-anomaly-detection-via-vision-transformer)  
+   标签：评分：7.0/10、query:ai-ast
+   evidence：通过视觉Transformer进行无语言零样本异常检测
+7. [Directional Neural Collapse Explains Few-Shot Transfer in Self-Supervised Learning](/202603/12/2603.03530v1-directional-neural-collapse-explains-few-shot-transfer-in-self-supervised-learning)  
    标签：评分：6.0/10、query:ai-ast
-   evidence：用于图级异常检测的可解释无监督框架
-10. [DMP-3DAD: Cross-Category 3D Anomaly Detection via Realistic Depth Map Projection with Few Normal Samples](/20260211-20260312/2602.10806v1-dmp-3dad-cross-category-3d-anomaly-detection-via-realistic-depth-map-projection-with-few-normal-samples)  
+   evidence：自监督表示学习中少样本迁移的理论分析
+8. [mlx-vis: GPU-Accelerated Dimensionality Reduction and Visualization on Apple Silicon](/202603/12/2603.04035v1-mlx-vis-gpu-accelerated-dimensionality-reduction-and-visualization-on-apple-silicon)  
    标签：评分：6.0/10、query:ai-ast
-   evidence：跨类别3D异常检测的免训练框架
-11. [Self-Supervised Learning for Speaker Recognition: A study and review](/20260211-20260312/2602.10829v1-self-supervised-learning-for-speaker-recognition-a-study-and-review)  
+   evidence：用于无监督数据可视化的 GPU 加速降维库
+9. [Are Multimodal LLMs Ready for Surveillance? A Reality Check on Zero-Shot Anomaly Detection in the Wild](/202603/12/2603.04727v1-are-multimodal-llms-ready-for-surveillance-a-reality-check-on-zero-shot-anomaly-detection-in-the-wild)  
    标签：评分：6.0/10、query:ai-ast
-   evidence：用于表示学习的自监督学习框架综述
+   evidence：使用多模态大模型进行视频监控中的零样本异常检测
+10. [Estimating Complex Densities using Two-Stage Normalizing Flows](/202603/12/2603.06944v1-estimating-complex-densities-using-two-stage-normalizing-flows)  
+   标签：评分：6.0/10、query:ai-ast
+   evidence：用于科学应用的归一化流无监督密度估计
+11. [Efficient Chest X-ray Representation Learning via Semantic-Partitioned Contrastive Learning](/202603/12/2603.07113v1-efficient-chest-x-ray-representation-learning-via-semantic-partitioned-contrastive-learning)  
+   标签：评分：6.0/10、query:ai-ast
+   evidence：使用对比学习进行医学图像的自监督表示学习
 
 
 <div class="dpr-home-promo-card">

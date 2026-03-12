@@ -1,0 +1,423 @@
+Title: SELDON: Supernova Explosions Learned by Deep ODE Networks
+
+URL Source: https://arxiv.org/pdf/2603.04392v1
+
+Published Time: Thu, 05 Mar 2026 02:33:17 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# SELDON: Supernova Explosions Learned by Deep ODE Networks 
+
+Jiezhong Wu 1,2,∗, Jack O’Brien 1,3,∗,†, Jennifer Li 1,3,4, M. S. Krafczyk 1,4,Ved G. Shah 1,5,6, Amanda R. Wasserman 1,3,4, Daniel W. Apley 1,2,Gautham Narayan 1,3,4,‡,†, Noelle I. Samia 1,7,‡,†
+
+> 1
+
+NSF-Simons AI Institute for the Sky (SkAI), Chicago, IL, USA 
+
+> 2
+
+Department of Industrial Engineering and Management Sciences, Northwestern University 
+
+> 3
+
+Department of Astronomy, University of Illinois Urbana-Champaign 
+
+> 4
+
+National Center for Supercomputing Applications (NCSA), Urbana, IL, USA 
+
+> 5
+
+Department of Physics and Astronomy, Northwestern University 
+
+> 6
+
+Center for Interdisciplinary Exploration and Research in Astrophysics (CIERA), Northwestern University 
+
+> 7
+
+Department of Statistics and Data Science, Northwestern University 
+
+> ∗
+
+Equal contribution. ‡Equal contribution. †Corresponding authors. 
+
+{jiezhongwu2021, vedshah2029, apley}@northwestern.edu {jackob, jli184, mkrafcz2, amandaw8, gsn}@illinois.edu n-samia@northwestern.edu 
+
+Abstract 
+
+The discovery rate of optical transients will explode to 10 million public alerts per night once the Vera C. Rubin Observatory’s Legacy Survey of Space and Time comes online, overwhelming the traditional physics-based inference pipelines. A continuous-time forecasting AI model is of interest because it can deliver millisecond-scale inference for thousands of objects per day, whereas legacy MCMC codes need hours per object. In this paper, we propose SELDON, a new continuous-time variational autoencoder for panels of sparse and irregularly time-sampled (gappy) astrophysical light curves that are nonstation-ary, heteroscedastic, and inherently dependent. SELDON combines a masked GRU-ODE encoder with a latent neural ODE propagator and an interpretable Gaussian-basis decoder. The encoder learns to sum-marize panels of imbalanced and correlated data even when only a handful of points are observed. The neural ODE then integrates this hidden state forward in continuous time, extrapolating to future unseen epochs. This extrapolated time series is further encoded by deep sets to a latent distribution that is de-coded to a weighted sum of Gaussian basis functions, the parameters of which are physically meaningful. Such parameters (e.g., rise time, decay rate, peak flux) directly drive downstream prioritization of spec-troscopic follow-up for astrophysical surveys. Beyond astronomy, the architecture of SELDON offers a generic recipe for interpretable and continuous-time sequence modeling in any time domain where data are multivariate, sparse, heteroscedastic, and irregularly spaced. 
+
+Code: https://github.com/skai-institute/seldon 
+
+# 1 Introduction 
+
+The arrival of the Rubin Observatory’s Legacy Survey of Space and Time (LSST) will transform time-domain astronomy into a data-deluge era as it is expected to issue ∼10 million public alerts per night [Ivezi´ c1
+
+> arXiv:2603.04392v1 [astro-ph.IM] 4 Mar 2026
+
+et al., 2019], overwhelming the capacity of traditional physics-driven analysis codes that rely on hours-long Markov-chain Monte Carlo (MCMC) runs per source. To support scientific discovery and maximize the return on limited spectroscopic resources, a new continuous-time forecasting AI model that can deliver millisecond-scale inference for hundreds of objects per day and extrapolate light curves from early, partial observations is urgently needed. Modeling astronomical time-domain light curves presents fundamental challenges. These nonstationary time series are sparse (often containing few measurements per object), heteroscedastic (exhibiting varying uncertainties across epochs), limited (covering only part of the event evolution), and irregularly spaced in time [Bianco et al., 2022]. Classic ARMA/ARIMA families are designed for evenly spaced and inherently stationary time series, and treating Rubin’s highly irregular cadence as missing data degrades both statistical power and interoperability. Also, their i.i.d. Gaussian-error assumption ignores the band-dependent pho-tometric uncertainties, violating homoscedasticity assumptions and biasing parameter estimates [Feigelson et al., 2018]. Even when continuous-time generalizations (e.g., CARMA/CARFIMA) are used, inference scales cubically in the number of points, so a single supernova light curve can still take minutes to hours – orders of magnitude slower than the millisecond budget required for ∼10 million alerts-per-night [Kelly et al., 2014]. There has been a growing body of work applying deep learning to transient light curves, but most existing models target either classification or coarse parameter regression rather than full multiband flux forecasting. For example, S UPER NN OVA employs recurrent neural networks to assign supernova sub-types from partial photometry [Möller and de Boissière, 2020], while RAPID leverages a recurrent neural network architecture to deliver near-real-time supernova type and rough peak-epoch estimates [Muthukr-ishna et al., 2019]. PELICAN augments sparse LSST-like sequences with domain adaptation to improve classification under distribution shift [Pasquet et al., 2019], and ORACLE extends this line to a hierarchical, broker-scale classifier aimed at Rubin alert streams [Shah et al., 2025]. Autoencoders offer a powerful framework for learning compact task-agnostic representations for com-plex data, and the autoencoder families that operate on a fixed temporal grid have long been the default solution for sequence modeling. Early examples such as STORN [Bayer and Osendorfer, 2014], VRNN [Chung et al., 2015], SRNN [Fraccaro et al., 2016], and the Deep Kalman Filter [Krishnan et al., 2017] combine a recurrent (or state–space) encoder with a generative decoder, delivering strong likelihoods on densely sampled videos and speech. More sophisticated variants embed a Gaussian-process prior in latent space [Fortuin et al., 2019] or add score-based time extrapolation [Tóth et al., 2020], but all of these methods assume an equispaced input grid. When confronted with gappy, irregularly-spaced, and highly heteroscedas-tic Rubin-like light curves, they fail to make accurate predictions on critical quantities such as peak time and flux. Continuous-time latent models offer a principled route around the fixed-grid limitation. The seminal Neural ODE of Chen et al. [2018] replaces the discrete RNN update with a differential flow ˙z = fθ(z, t ), al-lowing predictions at arbitrary time stamps. From the encoder side, variants such as ODE–RNN [Rubanova et al., 2019] and GRU-ODE-Bayes [Li et al., 2020] integrate this flow only between arrivals and therefore cope well with sparsity, but they decode with an unconstrained multilayer perceptron. In contrast, Latent ODE [Chen et al., 2018] and ODE2VAE [Yildiz et al., 2019] generate directly in continuous time, yet still lack band-specific, physically interpretable outputs. We combine the strength of previous work and provide SELDON, a novel architecture that marries a gap-aware encoder with a continuous-time latent propaga-tor, condenses the resulting trajectory into a fixed-length summary, and channels that summary through an analytic decoder whose parameters are directly interpretable. More specifically, our architecture has a masked GRU-ODE encoder that processes the sparse, irregularly-spaced, and heteroscedastic time series. At each observation, it performs a GRU update, then continuously propagates the hidden state between ob-servations with a neural ODE, advancing the hidden state to the time of the next observation in the time series. The encoder’s final latent vector serves as the initial condition for a downstream hidden ODE. Then, a continuous-time flow ˙z = fθ(z, t ) evolves an initial latent vector forward to a static regularly sampled 2Realistic  Rubin  Observatory                 
+
+> format compliant Light Curve (t) f
+> Restore time-o ff set and
+> fl ux-scaling amplitude
+> Restore
+> per-band
+> shape
+> information
+> Decoupled Parametric Decoder
+> reconstructs model Light Curve
+> (t) ,from latent space vectors ̂f
+> MLP
+> MLP
+> MLP
+
+A
+
+t                        
+
+> Reconstructed
+> Light Curve (t) ̂f
+> GRU-ODE Encoder
+> Converts Light Curve (t) ,to
+> hidden state sequence h, and
+> evolves on regular time grid
+> f
+> t
+> t0titi+1 tN
+> (t 0)f
+> (t i)f
+> (t i+1 )f(t N)f
+> hi
+> hi+1
+> hN
+> Deep  Sets
+> Deep Sets
+> converts hidden
+> state
+> to latent space
+> vectors  ⃗ z
+
+⃗
+
+z      
+
+> Days
+> FLUXCAL
+> 020 40 60 80 100 120
+> 100
+> 0
+> 200
+> 300
+> 400
+> 500
+> 600
+
+Figure 1: Architecture of our proposed SELDON, a customized VAE with band-aware GRU-ODE encoder and interpretable Gaussian-basis decoder. A light curve described by a series of flux observations in various filter bands is encoded to an initial hidden state with the GRU-ODE. The hidden state is evolved with the neural ODE forward in time to form a trajectory on a regularly-sampled grid. This trajectory is then interpreted by a Deep Sets layer to an approximate posterior latent vector. The latent vector is then decoded into a series of basis function parameters representing the history and future evolution of the light curve at all times in all filter bands. grid, producing a dense trajectory {h(tj )}. The trajectory is passed through a network ϕ and aggregated by a permutation-invariant pooling ρ, leading to a fixed-length representation z = ρ({ϕ(h(tj )) }). A R ES NET 
+
+takes z, together with a learnable embedding and returns for each band amplitudes, centers, and (inverse) widths of K Gaussian basis functions. These Gaussian bases can deliver both pointwise predictions and inference about physically interpretable light curve attributes such as rise time, decay rate, peak time and flux that downstream schedulers use to prioritize scarce spectroscopic resources for followup in real time. 
+
+# 2 Methods 
+
+2.1 Data 
+
+Our work is driven by a new, publicly released data source, the ELAsTiCC astronomical multivariate time-series dataset [Narayan and ELAsTiCC Team, 2023], hosted in Astro-ORACLE [Shah et al., 2025]. The library realistically simulated transients into a single HDF5 file with the canonical schema {MJD, band, FLUXCAL, FLUXCALERR} , representing the time of observation, the photometric filter with which the observation was taken, the calibrated flux in a given filter band, and the associated error with that flux measurement respectively. Focusing on the Type Ia supernova (SN Ia) class of transient events, every event is a multi-band ( u, g, r, i, z, y) photometric time series. For an overview of supernovae physics and evolution, see Alsabti and Murdin [2017]. We represent these data as panels of dependent time-domain light curves LC j , such that each light curve contains a total of Nj flux observations denoted by fj,t i,b i where bi is the photometric filter band at time point ti, where i indicates the ith observation in the light curve. Due to the fact that filters are changed between observations, we can only observe the flux in a single filter band, at any given time for a single supernova. The data are irregularly spaced (gappy), sparse with few observations, and limited in that they often cover only part of the evolution of the light curve. Figure 2 is an illustration of a light curve observed over time across six bands, where the total number of observations is in the 99 th percentile of all light curves. Typically, the total number of observations per light curves across all bands have a mean of 18 and a median of 14. Each point in a light curve has an observed flux error indicated as an error bar in Figure 2. LSST is more sensitive in some filter bands (e.g., bands g and r) than others (e.g., u and y) [Olivier et al., 2008], resulting in an imbalance of the data – biased towards the more sensitive bands – and varying 3Figure 2: An illustration of a light curve observed over time across six bands indicated in distinct colors, where the total number of observations is in the 99 th percentile of all light curves. The error bars for each observation represent the observed flux errors. signal-to-noise ratio between bands. In addition, data corresponding to each light curve are correlated within and between bands [Filippenko, 1997]. These irregularly-sampled, inherently-dependent light curves are nonstationary, heteroscedastic, and nonlinear (Figure 2), thus posing substantial challenges in performing real-time prediction of light curves per band, in addition to recovering information across bands. 
+
+Preprocessing 
+
+For each light curve, we set the temporal origin of every light curve as follows. If an observed flux is below the acceptable signal-to-noise threshold for the survey, this observation is labeled as a non-detection point. Some non-detection points may have a negative flux due to systematic errors from background subtraction, and hence are noise dominated. The flux of every non-detection point is then fixed at zero and its observed flux error remains unchanged. For each light curve, all non-detection points are omitted from our data except for up to 8 non-detection points immediately preceding the first detection point. This is needed to gain information about the point in time at which the light curve begins to rise. The upper limit of 8 non-detection points is set at the median number of such points across all light curves. We take the first of those non-detections as t0. If there are no non-detections prior to the detection point, we set t0 to be the time of the first detection point which coincides with the discovery time at which we observe the first detection point. Then, we rescale time by tnorm = 2 σ, where σ is the standard deviation of full-curve durations over the training set. The resulting ˜ti = ( ti − t0)/t norm keeps gradient magnitudes well scaled. From the training data, we set tnorm to be 71 .9 days. Raw flux measurements span several orders of magnitude and carry heteroscedastic errors. To bring all measurements onto a numerically stable scale for training purposes, we apply a signed logarithmic com-pression followed by symmetric scaling. Specifically, we use the log-modulus transformation 
+
+g(f ) = sgn( f ) log 10 
+
+ |f | + 1 , σg = σf
+
+(|f | + 1) ln 10 . (1) This transformation makes the flux distribution approximately symmetric and keeps magnitudes O(1) for stable optimization. We then scale (g, σ g) by the dataset-wide maximum absolute value gmax = max train |g|
+
+and recenter 
+
+˜g = ggmax 
+
+− 0.5. (2) 4In practice this maps ˜g close to [−0.5, 0.5] while preserving relative magnitudes. The inverse transform uses 
+
+g = (˜ g + 0 .5) gmax followed by f = sgn( g) (10 |g| − 1) .
+
+Augmentation 
+
+At each training step, the model is trained on a partial light curve, which is a freshly generated, incomplete version of full light curve. More precisely, we keep only the first K measurements, where K is drawn uniformly between a minimum of 10 points and the full length of the light curve. Because K is almost always smaller than the phase of maximum flux, these cut-offs mainly contain the rising part of the light curve, which is exactly the scenario faced by survey schedulers who must decide follow-up strategy before the peak. By generating these partial curves on the fly, the model encounters a new mix of truncated curves in every mini-batch and learns to make reliable predictions from whatever segment of the light curve it happens to receive. 
+
+2.2 Architecture 
+
+We develop a customized variational autoencoder (VAE) in which a band-aware GRU-ODE encoder with deep sets maps each partial light curve to a latent Gaussian N (μ, diag σ2) of dimension Dz (we use Dz =64 ), and a parametric basis decoder reconstructs flux values on any provided continuous time grid from a linear combination of Gaussian basis functions. Figure 1 provides an overview of our developed architecture pipeline. Below we describe the various components of our proposed VAE in detail. Hyperparameter values for the models described below are shown in Table 1. 
+
+Embedding 
+
+Every measurement is represented as a fixed-width six-channel vector [˜ ti, ˜gi, e⊤ 
+
+> i
+
+]⊤, where ˜ti is the nor-malized time, ˜gi is the log-scaled flux after rescaling, and ei ∈ R4 is a learnable band embedding. The band information is essential for capturing the color evolution of the supernovae. Each photometric band 
+
+u, g, r, i, z, y is assigned an integer index that retrieves ei from an embedding matrix E ∈ R6×4 initialized randomly and learned jointly with the network. To mitigate band-frequency imbalance, gradients of each embedding vector are scaled by the inverse occurrence frequency of its band by dividing the gradients in each embedding by the number of corresponding samples in each mini-batch. Thus every observation is encoded as 
+
+zi = [˜ ti, ˜gi, e⊤ 
+
+> i
+
+]⊤ ∈ R6,
+
+providing a compact representation that combines time, flux, and band information for input to the encoder. 
+
+Encoder 
+
+The encoder takes a sparse irregular light curve and returns a Gaussian posterior over an initial latent state 
+
+z0. We implement three competing variants: a traditional GRU encoder [Cho et al., 2014], a permutation-invariant Deep Sets network model [Zaheer et al., 2017], and a GRU-ODE network model [Rubanova et al., 2019] with Deep Sets. 
+
+Gated Recurrent Unit 
+
+The GRU is a lightweight gated-RNN architecture proposed to mitigate the vanishing or exploding gradient problems that plague vanilla RNNs. We consider a single-layer GRU with hidden_dim hidden units that processes the six-dimensional input [˜ ti, ˜gi, e⊤ 
+
+> i
+
+]⊤ and outputs a hidden_dim -dimensional hidden state that memorizes the entire light curve for the downstream decoder. 5Deep Sets 
+
+Deep Sets provides a simple way to encode a variable-length order-agnostic collection of items. To imple-ment it, we use an element-wise network ϕ that maps each observation to a hidden_dim -dimensional space, followed by a sum pooling, P 
+
+> t
+
+ϕ(xt), and a second MLP ρ outputting μ and log σ2. This encoder is permutation invariant and preserves the association between flux observations and time as they are initially passed as pairs to this encoder. 
+
+GRU-ODE Encoder with Deep Sets 
+
+A single-layer, unidirectional GRU with hidden_dim hidden units takes five-dimensional inputs [˜ gi, e⊤ 
+
+> i
+
+]⊤
+
+in reverse chronological order, omitting time since temporal evolution is handled explicitly by the contin-uous ODE between observations. Between observation times, the hidden state h(˜ t) is propagated by an autonomous latent ODE dh˜t
+
+d˜ t = fθ(h˜t), (3) and updated by the GRU at each measurement, ensuring smooth trajectories for irregularly spaced light curves. The final hidden state serves as the initial condition for a forward ODE, which evolves this state on a regularly sampled time grid of 50 points for ˜t ∈ [0 , 1] , producing a hidden_dim ×50 hidden-state trajectory. This corresponds to a ≈72 day evolution which adequately encompasses the evolution of SN Ia optical light curves. This trajectory is concatenated with the corresponding time grid and encoded by a Deep Sets module with sum aggregation to yield the approximate posterior 
+
+qϕ(z | x) = N (μ, diag σ2).
+
+Latent Neural-ODE Solver 
+
+We integrate the latent flow ˙z = fθ(z) with the adaptive T SIT 5 solver from T ORCH ODE [Lienen and Günnemann, 2023] with a maximum step size dt of 0.01 in normalized time space. The entire solver is wrapped in an ODES OLVER module that is torch.compile -optimized, giving a ∼ 2× speed-up over the default eager-mode PyTorch execution. At run time, we can switch between the AutoDiffAdjoint path, which stores the forward trajectory and is fastest when memory allows, and the memory-lean BacksolveAdjoint 
+
+path, which recomputes states during the backward sweep. Both adjoint choices deliver gradients accurate up to solver tolerances and discretization error, and the solver naturally parallelizes over a batch of latent trajectories, allowing us to propagate hundreds of light curves per second on a single GPU. 
+
+Decoder 
+
+During training we use the re-parameterization trick, drawing z = μ + σ ⊙ ϵ with ϵ ∼ N (0, I) [Kingma and Welling, 2014]. At test time, we set z = μ to obtain a single deterministic reconstruction. We use a parametric Gaussian basis decoder, for which the flux in band b is modeled as a sum of K Gaussian basis functions 
+
+ˆfb(t) = 
+
+> K
+
+X
+
+> k=1
+
+wbk exp 
+
+h
+
+− (( t − μbk )σbk )2i
+
+. (4) In (4), for each band b and basis component k, the decoder predicts three parameters: the amplitude wb,k ,the center time μb,k , and the rate σb,k that controls its spread. Together, these parameters let the sum of K
+
+Gaussians flexibly trace the rise and fall of the light curve in band b.The Gaussian basis decoder takes [z], passing it through a four-layer R ES NET with hidden size hidden_dim ,and outputs the parameters of a band–specific analytic light-curve model that can be evaluated on any query 6grid {tj }. We multiply the latent vector of basis function parameters element-wise with the band embedding and sum them to a set of K = 8 basis parameters for each band, reducing the input dimensionality with-out halting gradient flow. The MLP weights are shared across bands, while band-to-band variation enters through another learned embedding eb,decoder with 16 output dimensions. Amplitudes and centroids are mapped through a learnable exponential or normal inverse transform map-ping, respectively. These enforce the parameter distributions to be well behaved during early training epochs. By initializing the learnable parameters of these mappings, we tune the network to make initial predictions close to reasonable values for these parameters. We scale the amplitudes by dividing each amplitude by the mean of the set of K amplitudes. We center the centroids by subtracting the mean of the set of K centroids from each centroid. A global amplitude and centroid are then decoded from a decoupled segment of the latent vector, each from their own independent R ES NET , and projected onto their own respective inverse transform sampler. The individual basis amplitudes are then multiplied by the global amplitude, and the global centroid is added to the individual centroids. Of the 64 components of the latent vector, the individual basis parameters are decoded from the first 48 components. The global centroid is decoded from the next 8 components of the latent vector, and the global amplitude is decoded from the final 8 components of the latent vector. The independence of the global parameters allows for a decoupling between the overall amplitude of the light curve and its time offset, providing scale and time invariance to the individual components. 
+
+Learnable Inverse Transform Mapping 
+
+We use a learnable distribution mapping for certain basis parameters in order to improve training perfor-mance by enforcing a restricted initial distribution for early epochs which is then relaxed during training. Particularly, an inverse transform is used to learn the parameters μ and σ of a normal distribution applied to the individual and global centroids with initial respective values of 0.0 and 2.0 for μ and an initial value of 0.1 for σ. For the case of individual and global amplitudes, an exponential distribution is applied with the initial values for λ set to 0.25 and 8.0, respectively. 
+
+Loss For each light curve LC j observed at time ti, let ˆfj,t i,b i be the reconstructed flux, fj,t i,b i the observed flux, and σj,t i,b i the reported flux error. A binary mask mi ∈ { 0, 1} identifies valid (unpadded) samples at the ith observation in the light curve. With numerical safeguard ε = 10 −6 and Huber scale δ = 1 , we apply Huber loss ℓj,t i,b i to the standardized residual rj,t i,b i = fj,t i,b i − ˆfj,t i,b i  
+
+> max( σj,t i,b i,ε )
+
+.
+
+Masking out padded entries and averaging over the valid points of each sequence yields the per-curve loss 
+
+Lrec ,j =
+
+X
+
+> i
+
+mj,i ℓj,t i,b i
+
+X
+
+> i
+
+mj,i + ε . (5) To regularize the latent space, we add the Kullback–Leibler divergence between the approximate posterior 
+
+qϕ(z | x) ∼ N (μ, diag σ2) and the unit Gaussian prior p(z) ∼ N (0, I) given by 
+
+DKL 
+
+ qϕ(z | x) ∥ p(z) = 12
+
+> Dz
+
+X
+
+> d=1
+
+ μ2 
+
+> d
+
++ σ2 
+
+> d
+
+− log σ2 
+
+> d
+
+− 1, (6) where Dz is the latent dimensionality (set to 64 in our experiments). The total per-curve objective is therefore 
+
+Lj = Lrec ,j + β D KL 
+
+ qϕ(z | x) ∥ p(z), (7) 7Model Masked-GRU Deep Sets SELDON 
+
+hidden_dim 256 256 128 Learning Rate 0.0001 0.002 0.002 Batch Size 2048 2048 2048 Table 1: Hyperparameters for the three encoder models compared within this work. Hyperparameters were optimized through grid search. with β = 10 −4 used as a fixed constant throughout training. The scalar training objective is the mean over a batch of size B, given by 
+
+L = 1
+
+B
+
+> B
+
+X
+
+> j=1
+
+Lj . (8) This formulation combines a robust, uncertainty-aware reconstruction term with a variational regularizer, yielding stable training and a well-behaved latent prior. 
+
+Figure 3: Out-of-sample forecasting performance as a function of the fraction of the light curve that has been observed. Left : mean absolute Z-score ( mean |Z|). Center : worst-case absolute Z-score ( max |Z|,log-scale). Right : normalised RMSE. Lower is better in all panels. SELDON (i.e., GRU-ODE) (green) consistently produces the lowest tail and aggregate errors. A plain masked-GRU (orange) has the best median at 10% observed but is outperformed by SELDON afterward. Deep Sets (blue) shows competitive medians, yet the heaviest tails. 
+
+Training 
+
+SELDON was trained for 180 epochs on a Nvidia H100 GPU using the Adam optimizer with β1 = 0.9, β2 =0.999, and ϵ = 10 −8. A single training step took 7.5 seconds with 1.1 seconds for inference. Training used batch accumulation over 4 mini-batches of size 512 and required 45GB of GPU memory. The model was trained until the validation loss stopped improving. 
+
+# 3 Results 
+
+Performance metrics 
+
+We adopt the following three metrics to evaluate the model forecasting performance of a panel of inherently-dependent time-domain light curves LC j , such that each light curve contains a total of Nj flux predictions given by ˆfj,t i,b i , with observed flux fj,t i,b i and observed flux error σj,t i,b i . For simplicity, we denote the ith 
+
+flux observation of LC j by fj,i with observed flux error σj,i and the associated predicted flux as ˆfj,i . While 8we are using simpler notations for this section, it is important to note that the ith flux observation of a light curve LC j implicitly refers to a filter band bi and time point ti.Define the standardized Z-score for the ith flux observation of light curve LC j as follows 
+
+|Zj,i | := 
+
+fj,i − ˆfj,i 
+
+σj,i 
+
+. (9) Then, the mean absolute Z-score and the maximum absolute Z-score are defined as 
+
+|Z|j := 1
+
+NjNj
+
+X
+
+> i=1
+
+|Zj,i | , Max |Z|j := max 
+
+> 1≤i≤Nj
+
+|Zj,i | . (10) Assuming the test set has M curves, then the overall metrics are defined as Mean |Z| := 1
+
+M
+
+> M
+
+X
+
+> j=1
+
+|Z|j , Max |Z| := max  
+
+> 1≤j≤M
+
+Max |Z|j , (11) The normalized root mean-square error NRMSE is defined as 
+
+NRMSE := 1
+
+M
+
+> M
+
+X
+
+> j=1
+
+q 1
+
+> Nj
+
+PNj
+
+> i=1
+
+ fj,i − ˆfj,i 
+
+2
+
+max i fj,i 
+
+, (12) which is the average of the root-mean-square reconstruction errors normalized by the curves’ maximum observed fluxes, yielding a dimensionless quantity. 
+
+3.1 Forecasting Performance 
+
+Mean |Z| ↓ Max |Z| ↓ NRMSE ↓
+
+Fraction Deep Sets Masked-GRU SELDON Deep Sets Masked-GRU SELDON Deep Sets Masked-GRU SELDON 0.1 11.885 10.315 10.513 848.772 168.496 159.292 0.076 0.066 0.052 
+
+0.2 9.862 10.237 8.929 309.186 164.536 151.551 0.065 0.067 0.045 
+
+0.3 7.966 10.031 7.089 224.164 156.688 144.667 0.058 0.072 0.049 
+
+0.4 6.525 9.792 5.673 220.531 149.150 115.359 0.051 0.072 0.041 
+
+0.5 5.193 9.526 4.295 185.677 147.793 104.237 0.044 0.073 0.034 
+
+0.6 4.218 9.103 3.418 138.518 133.256 87.474 0.037 0.068 0.031 
+
+0.7 3.469 9.002 2.794 110.469 110.968 77.439 0.039 0.069 0.029 
+
+0.8 2.872 8.884 2.266 76.708 96.979 66.972 0.033 0.067 0.027 
+
+0.9 2.329 9.209 1.906 56.891 75.786 34.789 0.034 0.085 0.028 
+
+Table 2: Out–of–sample performance per fraction of observed values. Down arrows next to the metrics indicate lower values are better. Bold values indicate best overall performance across all models. We evaluate the performance of our proposed SELDON against the two other models with the masked-GRU encoder and the Deep Sets encoder, on out-of-sample predictions cutoff at a given percentage of sequential data points that are assumed to be observed. Table 2 reports two sets of aggregate metrics divided into two categories, absolute and relative metrics. The results show that SELDON with Deep Sets model achieves the best performance of the three we have tested across all columns of Table 2 (except at 10% observed fraction 9where the Mean |Z| of GRU is slightly better) and with increasing performance over other models at earlier times in the sequence. This is also illustrated in Figure 3, which displays the out-of-sample forecasting performance as a function of the percentage observed which is consistently favoring our SELDON model against the masked-GRU model and the Deep Sets model. Figure 4 reports the violin plots of the signed standardized residuals for out-of-sample forecasts per percentage observed, in each of the three models. The violin plots demonstrate that the masked-GRU encoder has consistently poor performance regardless of the percentage of the light curve revealed. While the Deep Sets model has poor performance for low percentages, it does improve as more data is revealed though not as quickly as SELDON. For our applications, it is most crucial to have accurate real-time predictions at the early stages of the time series before the peaks are observed, a task that is best achieved by our SELDON and consistently across all the metrics used. 
+
+Figure 4: Violin plots of the signed standardized residuals for out-of-sample forecasts per fraction observed, in each of the three models. These residuals are clipped between ±5 for visual clarity. When only 10% of the light curve is revealed, the task is essentially extrapolation from a handful of early points. In that regime the masked-GRU model attains the smallest mean |Z| (i.e., 10 .3σ), edging SELDON by < 2% . The difference disappears once ≥ 20% of the curve is available: SELDON takes the lead and keeps it through 90% coverage, cutting the average error by 10-35% relative to GRU and by 15-45% relative to Deep Sets. The gain grows with the fraction because the latent-ODE decoder can exploit every additional observation to tighten its continuous trajectory, whereas the discrete-time masked-GRU is limited to fixed-step updates. The Max |Z| highlights a contrast. Deep Sets occasionally produces catastrophic residuals, hundreds of σ at 20% coverage and nearly 900 σ at 10% . A vanilla masked-GRU removes the worst spikes but still exhibits excursions above 160 σ. SELDON caps the worst error below 160 σ in the sparsest slice and below 
+
+90 σ thereafter, delivering the tightest upper tail throughout. Every standardized residual in the NRMSE is weighted quadratically, and therefore it penalizes both bias and heavy tails. SELDON achieves the lowest NRMSE at every percentage of observed values, 20 − 35% 
+
+lower than masked-GRU and 30 − 50% lower than Deep Sets, showing that it not only reduces the mean error but also suppresses large deviations effectively. 
+
+# 4 Discussion 
+
+We developed a forecasting VAE model for SNe Ia optical light curve evolution based on a combination of GRU-ODE encoder and Deep Sets with a Gaussian basis decoder, accounting for band-frequency imbal-ance. In comparison to a pure masked-GRU encoder and a pure Deep Sets encoder, we find that our model demonstrates superior performance consistently across a variety of forecasting metrics. The Gaussian basis decoder provides flexibility in forecasting by allowing evaluation to be performed at any point in time from 10 a functional representation produced from encoded observations. By decoupling global parameters of the basis function in the latent dimension, we provide local scale- and time-invariant intrinsic basis parameters describing the evolution of the supernova. SELDON is capable of handling sparse, heteroscedastic, band-frequency-imbalanced multivariate time series with irregular sampling. These panels of gappy time series are inherently dependent and exhibit a nonlinear and nonstationary behavior. We have shown that forecasting such data can be achieved using our GRU-ODE plus Deep Sets encoder model. In particular, SELDON has a unique crucial feature in predict-ing light curves in the early times before the peak is observed with exceptionally limited amount of data observed. Developing such a framework is useful in other fields of astronomy as well as those outside as-tronomy. In the age of the Vera C. Rubin Observatory, SELDON is easily capable of keeping up with the expected LSST alert rate, helping provide predictions for optimal spectroscopic followup scheduling. 
+
+# 5 Acknowledgments 
+
+We gratefully acknowledge the support of the NSF-Simons AI-Institute for the Sky (SkAI) via grants NSF AST-2421845 and Simons Foundation MPS-AI-00010513. This research used the DeltaAI advanced computing and data resource, which is supported by the Na-tional Science Foundation (award OAC 2320345) and the State of Illinois. DeltaAI is a joint effort of the University of Illinois Urbana-Champaign and its National Center for Supercomputing Applications. This research was supported in part through the computational resources and staff contributions provided for the Quest high performance computing facility at Northwestern University, which is jointly supported by the Office of the Provost, the Office for Research, and Northwestern University Information Technology. This research was supported in part by the Illinois Computes project which is supported by the University of Illinois Urbana-Champaign. We are grateful to Nabeel Rehemtulla for valuable discussions. We thank the anonymous reviewers for their constructive feedback. 
+
+# References 
+
+Athem W. Alsabti and Paul Murdin. Handbook of Supernovae . 2017. doi: 10.1007/978-3-319-21846-5. Justin Bayer and Christian Osendorfer. Learning stochastic recurrent networks. In Proceedings of the International Conference on Learning Representations (ICLR) , 2014. URL https://arxiv.org/ abs/1411.7610 .Federica B. Bianco, Željko Ivezi´ c, R. Lynne Jones, Melissa L. Graham, Phil Marshall, Abhijit Saha, Michael A. Strauss, Peter Yoachim, Tiago Ribeiro, Timo Anguita, A. E. Bauer, Franz E. Bauer, Eric C. Bellm, Robert D. Blum, William N. Brandt, Sarah Brough, Márcio Catelan, William I. Clarkson, An-drew J. Connolly, Eric Gawiser, John E. Gizis, Renée Hložek, Sugata Kaviraj, Charles T. Liu, Michelle Lochner, Ashish A. Mahabal, Rachel Mandelbaum, Peregrine McGehee, Eric H. Neilsen, Jr., Knut A. G. Olsen, Hiranya V. Peiris, Jason Rhodes, Gordon T. Richards, Stephen Ridgway, Megan E. Schwamb, Dan Scolnic, Ohad Shemmer, Colin T. Slater, Anže Slosar, Stephen J. Smartt, Jay Strader, Rachel Street, David E. Trilling, Aprajita Verma, A. K. Vivas, Risa H. Wechsler, and Beth Willman. Opti-mization of the Observing Cadence for the Rubin Observatory Legacy Survey of Space and Time: A Pioneering Process of Community-focused Experimental Design. ApJS , 258(1):1, January 2022. doi: 10.3847/1538-4365/ac3e72. 11 Tian Qi Chen, Yulia Rubanova, Jesse Bettencourt, and David Duvenaud. Neural ordinary dif-ferential equations. In Advances in Neural Information Processing Systems (NeurIPS) , pages 6572–6583, 2018. URL http://papers.nips.cc/paper/7892-neural-ordinary-differential-equations .Kyunghyun Cho, Bart van Merriënboer, Dzmitry Bahdanau, and Yoshua Bengio. On the properties of neural machine translation: Encoder–decoder approaches. In Dekai Wu, Marine Carpuat, Xavier Carreras, and Eva Maria Vecchi, editors, Proceedings of SSST-8, Eighth Workshop on Syntax, Semantics and Structure in Statistical Translation , pages 103–111, Doha, Qatar, October 2014. Association for Computational Linguistics. doi: 10.3115/v1/W14-4012. URL https://aclanthology.org/W14-4012/ .Junyoung Chung, Kyle Kastner, Laurent Dinh, Kratarth Goel, Aaron Courville, and Yoshua Bengio. Arecurrent latent variable model for sequential data. In Advances in Neural Information Processing Systems 28 , pages 2980–2988, 2015. Eric D. Feigelson, G. Jogesh Babu, and Gabriel A. Caceres. Autoregressive time-series methods for time-domain astronomy. Frontiers in Physics , 6:80, 2018. doi: 10.3389/fphy.2018.00080. Alexei V. Filippenko. Optical Spectra of Supernovae. ARA&A , 35:309–355, January 1997. doi: 10.1146/ annurev.astro.35.1.309. Vincent Fortuin, Dmitry Baranchuk, Gunnar Rätsch, and Stephan Mandt. Gp-vae: Deep probabilistic time series imputation. In Proceedings of the 36th International Conference on Machine Learning (ICML) ,pages 2280–2290, 2019. URL http://proceedings.mlr.press/v97/fortuin19a.html .Marco Fraccaro, Søren Kaae Sønderby, Ulrich Paquet, and Ole Winther. Sequential neural models with stochastic layers. In Proceedings of the 30th Advances in Neural Information Processing Systems (NeurIPS) , pages 2199–2207, 2016. URL https://papers.nips.cc/paper/2016/hash/ 1d72310edc3f8f4f60fb6c8fab6b5e36-Abstract.html .Željko Ivezi´ c, Steven M. Kahn, J. Anthony Tyson, Bob Abel, Emily Acosta, Robyn Allsman, David Alonso, Yusra AlSayyad, Scott F. Anderson, John Andrew, James Roger P. Angel, George Z. Angeli, Reza Ansari, Pierre Antilogus, Constanza Araujo, Robert Armstrong, Kirk T. Arndt, Pierre Astier, Éric Aubourg, Nicole Auza, Tim S. Axelrod, Deborah J. Bard, Jeff D. Barr, Aurelian Barrau, James G. Bartlett, Amanda E. Bauer, Brian J. Bauman, Sylvain Baumont, Ellen Bechtol, Keith Bechtol, Andrew C. Becker, Jacek Becla, Cristina Beldica, Steve Bellavia, Federica B. Bianco, Rahul Biswas, Guillaume Blanc, Jonathan Blazek, Roger D. Blandford, Josh S. Bloom, Joanne Bogart, Tim W. Bond, Michael T. Booth, Anders W. Borgland, Kirk Borne, James F. Bosch, Dominique Boutigny, Craig A. Brackett, An-drew Bradshaw, William Nielsen Brandt, Michael E. Brown, James S. Bullock, Patricia Burchat, David L. Burke, Gianpietro Cagnoli, Daniel Calabrese, Shawn Callahan, Alice L. Callen, Jeffrey L. Carlin, Erin L. Carlson, Srinivasan Chandrasekharan, Glenaver Charles-Emerson, Steve Chesley, Elliott C. Cheu, Hsin-Fang Chiang, James Chiang, Carol Chirino, Derek Chow, David R. Ciardi, Charles F. Claver, Johann Cohen-Tanugi, Joseph J. Cockrum, Rebecca Coles, Andrew J. Connolly, Kem H. Cook, Asantha Cooray, Kevin R. Covey, Chris Cribbs, Wei Cui, Roc Cutri, Philip N. Daly, Scott F. Daniel, Felipe Daruich, Guil-laume Daubard, Greg Daues, William Dawson, Francisco Delgado, Alfred Dellapenna, Robert de Peyster, Miguel de Val-Borro, Seth W. Digel, Peter Doherty, Richard Dubois, Gregory P. Dubois-Felsmann, Josef Durech, Frossie Economou, Tim Eifler, Michael Eracleous, Benjamin L. Emmons, Angelo Fausti Neto, Henry Ferguson, Enrique Figueroa, Merlin Fisher-Levine, Warren Focke, Michael D. Foss, James Frank, Michael D. Freemon, Emmanuel Gangler, Eric Gawiser, John C. Geary, Perry Gee, Marla Geha, Charles J. B. Gessner, Robert R. Gibson, D. Kirk Gilmore, Thomas Glanzman, William Glick, Tatiana Goldina, 12 Daniel A. Goldstein, Iain Goodenow, Melissa L. Graham, William J. Gressler, Philippe Gris, Leanne P. Guy, Augustin Guyonnet, Gunther Haller, Ron Harris, Patrick A. Hascall, Justine Haupt, Fabio Her-nandez, Sven Herrmann, Edward Hileman, Joshua Hoblitt, John A. Hodgson, Craig Hogan, James D. Howard, Dajun Huang, Michael E. Huffer, Patrick Ingraham, Walter R. Innes, Suzanne H. Jacoby, Bhu-vnesh Jain, Fabrice Jammes, M. James Jee, Tim Jenness, Garrett Jernigan, Darko Jevremovi´ c, Kenneth Johns, Anthony S. Johnson, Margaret W. G. Johnson, R. Lynne Jones, Claire Juramy-Gilles, Mario Ju-ri´ c, Jason S. Kalirai, Nitya J. Kallivayalil, Bryce Kalmbach, Jeffrey P. Kantor, Pierre Karst, Mansi M. Kasliwal, Heather Kelly, Richard Kessler, Veronica Kinnison, David Kirkby, Lloyd Knox, Ivan V. Ko-tov, Victor L. Krabbendam, K. Simon Krughoff, Petr Kubánek, John Kuczewski, Shri Kulkarni, John Ku, Nadine R. Kurita, Craig S. Lage, Ron Lambert, Travis Lange, J. Brian Langton, Laurent Le Guillou, Deborah Levine, Ming Liang, Kian-Tat Lim, Chris J. Lintott, Kevin E. Long, Margaux Lopez, Paul J. Lotz, Robert H. Lupton, Nate B. Lust, Lauren A. MacArthur, Ashish Mahabal, Rachel Mandelbaum, Thomas W. Markiewicz, Darren S. Marsh, Philip J. Marshall, Stuart Marshall, Morgan May, Robert McK-ercher, Michelle McQueen, Joshua Meyers, Myriam Migliore, Michelle Miller, and David J. Mills. LSST: From Science Drivers to Reference Design and Anticipated Data Products. ApJ , 873(2):111, March 2019. doi: 10.3847/1538-4357/ab042c. Brandon C. Kelly, Andrew C. Becker, Malgosia Sobolewska, Aneta Siemiginowska, and Phil Uttley. Flex-ible and scalable methods for quantifying stochastic variability in the era of massive time-domain astro-nomical data sets. The Astrophysical Journal , 788(1):33, 2014. doi: 10.1088/0004-637X/788/1/33. Diederik P. Kingma and Max Welling. Auto-encoding variational bayes. In Proceedings of the 2nd Inter-national Conference on Learning Representations (ICLR) , 2014. URL https://arxiv.org/abs/ 1312.6114 .Rahul G. Krishnan, Uri Shalit, and David Sontag. Structured inference networks for nonlinear state space models. In Proceedings of the 31st AAAI Conference on Artificial Intelligence , pages 2101–2109, 2017. URL https://arxiv.org/abs/1609.09869 .Shi Li, Zhenpeng Zhu, Lin Ning, Wenyang Yang, Richard E. Turner, Emilien Dupont, and Arnaud Doucet. GRU-ODE-Bayes: Continuous modeling of sporadically-observed time series. In Proceedings of the 37th International Conference on Machine Learning (ICML) , pages 6020–6031, 2020. URL http: //proceedings.mlr.press/v119/li20i.html .Marten Lienen and Stephan Günnemann. torchode: A parallel ODE solver for PyTorch. In Proceedings of the 11th International Conference on Learning Representations (ICLR) , 2023. Daniel Muthukrishna, Gautham Narayan, Kaisey S. Mandel, Rahul Biswas, and Renée Hložek. Rapid: Early classification of explosive transients using deep learning. Publications of the Astronomical Society of the Pacific , 131(1004):118002, 2019. doi: 10.1088/1538-3873/ab1609. Anais Möller and Thibault de Boissière. Supernnova: An open-source framework for bayesian, neural-network based supernova classification. Monthly Notices of the Royal Astronomical Society , 491(3): 4277–4293, 2020. doi: 10.1093/mnras/stz3312. Gautham Narayan and ELAsTiCC Team. The Extended LSST Astronomical Time-series Classification Challenge (ELAsTiCC). In American Astronomical Society Meeting Abstracts , volume 241 of American Astronomical Society Meeting Abstracts , page 117.01, January 2023. Scot S. Olivier, Lynn Seppala, and Kirk Gilmore. Optical design of the LSST camera. In Eli Atad-Ettedgui and Dietrich Lemke, editors, Advanced Optical and Mechanical Technologies in Telescopes and Instru-
+
+13 mentation , volume 7018 of Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Se-ries , page 70182G, July 2008. doi: 10.1117/12.790264. Jérémy Pasquet, Jean Pasquet, Marc Chaumont, and Guillaume Fouché. Pelican: deep architecture for the light curve analysis. Astronomy & Astrophysics , 627:A21, 2019. doi: 10.1051/0004-6361/201834473. Yulia Rubanova, Ricky T. Q. Chen, and David Duvenaud. Latent ODEs for Irregularly-Sampled Time Series. 
+
+arXiv e-prints , art. arXiv:1907.03907, July 2019. doi: 10.48550/arXiv.1907.03907. Yulia Rubanova, Ricky T. Q. Chen, and David Duvenaud. Latent ODEs for irregularly-sampled time series. In Proceedings of the 33rd Conference on Neural Information Processing Systems (NeurIPS) , pages 5321–5331, 2019. URL https://papers.nips.cc/paper/2019/hash/ 42a6845a557bef7a7f5bf0ec5e64b4f2-Abstract.html .Ved G. Shah, Alex Gagliano, Konstantin Malanchev, Gautham Narayan, and LSST Dark Energy Science Collaboration. Oracle: A real-time, hierarchical, deep-learning photometric classifier for the lsst. arXiv e-prints , art. arXiv:2501.01496, 2025. URL https://arxiv.org/abs/2501.01496 .Ved G. Shah, Alex Gagliano, Konstantin Malanchev, Gautham Narayan, and The LSST Dark Energy Sci-ence Collaboration. ORACLE: A Real-Time, Hierarchical, Deep-Learning Photometric Classifier for the LSST. arXiv e-prints , art. arXiv:2501.01496, January 2025. doi: 10.48550/arXiv.2501.01496. Peter Tóth, Milan Cvitkovic, Isabelle Lozano, Alexander Klushyn, and Marcel Vogt. Timegrad: Modeling the subdistribution of future trajectories. In Proceedings of the 34th Advances in Neural Information Processing Systems (NeurIPS) , 2020. URL https://arxiv.org/abs/2007.05162 .Cagatay Yildiz, Markus Heinonen, Pasi Rai, and Samuel Kaski. ODE2VAE: Deep generative second-order odes for irregular time series. In Proceedings of the 36th International Conference on Machine Learning (ICML) , pages 7104–7113, 2019. URL http://proceedings.mlr.press/v97/yildiz19a. html .Manzil Zaheer, Satwik Kottur, Siamak Ravanbakhsh, Barnabas Poczos, Ruslan Salakhutdinov, and Alexan-der Smola. Deep Sets. arXiv e-prints , art. arXiv:1703.06114, March 2017. doi: 10.48550/arXiv.1703. 06114. 14

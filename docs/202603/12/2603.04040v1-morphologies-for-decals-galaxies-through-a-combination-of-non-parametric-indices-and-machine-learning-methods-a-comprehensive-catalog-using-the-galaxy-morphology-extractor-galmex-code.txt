@@ -1,0 +1,1436 @@
+Title: Morphologies for DECaLS Galaxies through a combination of non-parametric indices and machine learning methods: A comprehensive catalog using the Galaxy Morphology Extractor (galmex) code
+
+URL Source: https://arxiv.org/pdf/2603.04040v1
+
+Published Time: Thu, 05 Mar 2026 02:02:13 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+Astronomy & Astrophysics manuscript no. aa58260-25 ©ESO 2026 March 5, 2026 
+
+# Morphologies for DECaLS Galaxies through a combination of non-parametric indices and machine learning methods 
+
+# A comprehensive catalog using the Galaxy Morphology Extractor ( galmex ) code 
+
+V. M. Sampaio 1, 2,, Y. Ja ff é1, 2, C. Lima-Dias 3, S. Véliz Astudillo 3, M. Martínez-Marín 4, 2, H. Méndez-Hernández 3, R. Herrera-Camus 4, 2, and A. Monachesi 3 
+
+> 1
+
+Instituto de Física, Universidad Técnica Federico Santa María, Av. España 1680, Valparaíso, Chile e-mail: vitorms999@gmail.com  
+
+> 2
+
+Millennium Nucleus for Galaxies (MINGAL), Chile  
+
+> 3
+
+Departamento de Astronomía, Universidad de La Serena, Avda. Raúl Bitrán 1305, La Serena, Chile  
+
+> 4
+
+Departamento de Astronomía, Facultad Ciencias Físicas y Matemáticas, Universidad de Concepción, Av. Esteban Iturra s /n Barrio Universitario, Casilla 160, Concepción, Chile Received 11 /2025; accepted 02 /26, in original form 03 /2026 
+
+ABSTRACT 
+
+Context. Galaxy morphology encodes key information about formation and evolution. Large imaging surveys require automated, reproducible methods beyond visual inspection. Non–parametric indices provide an useful framework, but their performance must be quantitatively assessed. 
+
+Aims. We present a homogeneous catalog of non–parametric morphological indices for DECaLS galaxies with e ff ective radii larger than 2 arcsec. Our goal is to evaluate the reliability of indices in separating spirals and ellipticals, test their consistency with existing classification schemes, and establish their applicability for the upcoming surveys focused in the southern hemisphere. 
+
+Methods. We developed galmex , a modular Python package for preprocessing images and measuring a variety of non–parametric indices. Using bona-fide spirals and ellipticals as control samples, we assessed the discriminatory power of each index, and compared them with CNN-based T-Types and Galaxy Zoo DECaLS labels. We use the indices as input for a Light Gradient Boosted Machine (LightGBM) to obtain probabilistic classifications. 
+
+Results. Concentration is the most reliable parameter from the Concentratiom + Asymmetry + Smoothness system (CAS), while asymmetry–based indices (A and S) are limited to detecting disturbed morphologies. MEGG indices (M20, Entropy, Gini, G2) provide stronger separation and trace a gradient with T–Type. By using a simple binary (0 /1) label for ellipticals /spirals, classifiers trained on non–parametric indices achieve high accuracy and well–calibrated probabilities, dominated by entropy, concentration, and Gini. 
+
+Conclusions. We release the first public catalog of CA[A S]S +MEGG indices for DECaLS, together with galmex . We combine the non-parametric indices with machine learning framework to derive spiral /elliptical separation for galaxies below z ∼ 0.15 through a probabilistic approach. 
+
+Key words. galaxies: general; galaxies: structure; galaxies: spiral; galaxies: elliptical and lenticular, cD 
+
+1. Introduction 
+
+Early galaxy classification schemes (e.g. Hubble 1926) estab-lished the distinction between ellipticals, spirals, and lenticulars, emphasizing that structural appearance is not merely descrip-tive but encodes a galaxy’s formation and evolutionary history. During formation, the angular momentum of progenitor molec-ular clouds plays a decisive role in determining the initial mor-phology of galaxies. Systems with high specific angular momen-tum preferentially settle into rotationally supported disks, while low-angular-momentum clouds are more prone to collapse into spheroid-dominated structures (e.g. Peebles 1969; Teklu et al. 2015). However, morphology is not static. Over cosmic time, both internal processes and environmental interactions can re-structure galaxies, altering their stellar distributions, kinemat-ics, and star formation activity. These transformations can be gradual—through secular processes—or rapid, driven by violent interactions or gas removal events (e.g. Toomre & Toomre 1972; Barnes & Hernquist 1991; Kormendy & Kennicutt 2004; Wetzel et al. 2013). It is now well known that morphology reflects the inter-play between internal and environmental mechanisms. Internal drivers include bar-driven secular evolution (Kormendy & Ken-nicutt 2004; Sanchez-Janssen & Gadotti 2013), disk instabilities (Dekel et al. 2009; Bournaud 2016), and stellar or AGN feedback (Dalla Vecchia & Schaye 2008; Fabian 2012), which can redis-tribute angular momentum, trigger or quench star formation, and alter bulge-to-disk ratios. Environmental processes are particu-larly relevant in dense regions of the cosmic web, where galaxy– galaxy interactions, harassment, and ram-pressure stripping can significantly reshape systems (Gunn & Gott 1972; Larson et al. 1980; Abadi et al. 1999; Johnston et al. 1999; Balogh et al. 2000; Springel & Hernquist 2005). The morphology–density relation 
+
+Article number, page 1 of 20  
+
+> arXiv:2603.04040v1 [astro-ph.GA] 4 Mar 2026 A&A proofs: manuscript no. aa58260-25
+
+(Dressler 1980; Dressler et al. 1997) encapsulates these environ-mental trends, and drastic environmental-driven morphological transition are observed as, for example, in “jellyfish” galaxies (Poggianti et al. 2017; Ja ff é et al. 2018; Bellhouse et al. 2019). The cumulative e ff ects of these mechanisms suggest a broad evolutionary pathway in which many galaxies migrate from star-forming, disk-dominated systems to quiescent, spheroidal ones. However, the build of this bimodality and the connection be-tween star formation and morphology can depend on redshift. In the local universe, star-forming spirals populate the “blue cloud,” while quiescent ellipticals dominate the “red sequence,” with transitional systems lying in the “green valley” (Strateva et al. 2001; Baldry et al. 2004; Schawinski et al. 2014). Towards higher redshift, z ∼ 2 star-forming galaxies have clumpy mor-phologies (Förster Schreiber et al. 2011), with galactic winds that are mainly driven by outflows from prominent star-forming clumps (Genzel et al. 2011) and have not yet formed a stable disc (or any disc at all). On the other hand there’s observational evidence of the relation of colour and morphology at high red-shift (e.g. Cassata et al. 2005) and suggestion of disk galaxies at very high redshifts (e.g. Ferreira et al. 2022). This highlights how the investigation of galaxy structural transformation is complex, with the signatures of the underlying mechanisms can be subtle and hard to disentangle observationally. Despite its importance, there is no universal method to classify galaxy morphology. Visual classification remains intu-itive and e ff ective at low redshift (Sandage & Tammann 1987; Sandage & Bedke 1994; Nair & Abraham 2010), but is limited by subjectivity (especially at higher redshifts) and applicabil-ity to very large samples. Parametric approaches, such as Sér-sic profile fitting (Sérsic 1963; Sersic 1968; Peng et al. 2002; Simard et al. 2002; Peng et al. 2010; Simard et al. 2011), al-though simple in form, are not directly applicable to all types of galaxies due to assumed symmetries. Degeneracies between fitted parameters (e.g. bulge-to-disk ratios, e ff ective radii, Sérsic index) often produce multiple statistically acceptable but phys-ically distinct solutions (Lotz et al. 2004). Substructures such as compact nuclei, bars, or spiral arms can further bias fits, while even bulges themselves are not uniformly well described by high Sérsic indices (Carollo 1999). Finally, these methods assume galaxies follow smooth, symmetric light profiles, an assumption that breaks down in irregular, clumpy, or merg-ing systems, yielding degenerate structural parameters (Andrae et al. 2011). Non-parametric indices—including Concentration, Asymmetry, and Smoothness (CAS; Conselice 2003)—provide a model-independent approach, enabling structural characteri-zation across diverse morphologies. The shape asymmetry (A S,Pawlik et al. 2016) can also be relevant to define disturbed sys-tems, thus forming the CA[A S]S system. Beyond the CA[A S]S, the combination of M20 (Lotz et al. 2004), Shannon Entropy (E, Ferrari et al. 2015), Gini index (G Lotz et al. 2004), and gradient pattern asymmetry (G2 Rosa et al. 2018)—the MEGG system—has demonstrated improved performance in separating early- and late-type galaxies in the z ≤ 0.1 universe (Kolesnikov et al. 2024). Still, the measurement of non-parametric indexes is heavily dependent on image pre-processing steps (e.g. ob-ject detection, cleaning, and segmentation mask). More recently, Machine- and deep-learning methods now enable automated classification of millions of galaxies (e.g. Barchi et al. 2020; Walmsley et al. 2022), though their interpretability depends strongly on the adopted training sets and classification schema, thus requiring extra caution. In this first paper, we provide a homogeneous, publicly avail-able, catalog of non-parametric morphological indices for all galaxies below z ≤ 0.15 in the Dark Energy Camera Legacy Survey (DECaLS, Dey et al. 2019) observed in the r band. The measurements are produced with the newly developed Galaxy Morphology Extractor ( galmex ) package, that, di ff erently from the available codes in the literature, it has a modular structure that allows fine-tuning of every image pre-processing steps, and metric definitions. This structure is particularly suitable for de-livering reliable CA[A S]S + MEGG indices with flexible op-tions. Focusing on this catalog, we limit this first paper to the fundamental separation between spirals and ellipticals. Using Galaxy Zoo classifications as training labels, we employ Light Gradient Boosted Machines (LightGBM) to derive probabilis-tic classifications for all galaxies in DECaLS, calibrated directly in the non-parametric parameter space. The treatment of dis-turbed systems—including mergers, tidally perturbed, and ram-pressure-stripped galaxies—will be presented in forthcoming work (Sampaio et al. in prep), just as the extension of this method towards higher redshifts (Vélliz Astudillo et al. in prep.). This paper is organized as follows. Section 2 describes our data selection from DECaLS, the definition of our labeled spiral and elliptical and spiral control samples, and the adopted mor-phological indicators. Section 3 introduces the galmex package and its preprocessing and measurement procedures. Section 4 evaluates the performance of the indices and their consistency with previous classifications. Section 5 applies these metrics to a Light Gradient Boosting Machine (LightGBM) to derive probabilistic classifications up to z = 0.15. Section 6 summa-rizes our conclusions. We assume a flat ΛCDM cosmology with [ΩM , ΩΛ, H0] = [0 .27 , 0.73 , 72 , km , s−1, Mpc −1] (Planck Collab-oration et al. 2016), and report magnitudes in the AB system. 
+
+2. Data 
+
+To develop our galaxy classification technique, we select galax-ies from the DECaLS 1, in the r band. The choice of the Legacy sample is motivated by the combination of large sky coverage, good depth and multi-wavelength coverage achieved by the sur-vey in the southern hemisphere. Additionally, it also has a sub-stantial overlap with upcoming 4MOST spectroscopic surveys (e.g. CHileAN Cluster Evolution Survey – CHANCES, Haines et al. 2023; WHT Enhanced Area Velocity Explorer – WEAVE, Jin et al. 2024), thus being fundamental a reliable morphological classification of systems in the southern hemisphere. Given that LS–DR10 reaches a median 5 σ depth of 23.5 in the r-band, with nearly uniform image quality across the foot-print, we impose a bright magnitude limit of mr ≤ 21. This places our galaxies more than 2 magnitudes above the nominal survey depth, ensuring high S /N per pixel in both the central regions and the outskirts. Furthermore, non-parametric indices are in-trinsically pixel–based measurements, and their reliability dete-riorates rapidly as the number of galaxy pixels decreases. Thus, by requiring e ff ective radius 2 greater than 2 arcsec we minimize the biases and increased scatter that arise when these indices are estimated for barely resolved, undersampled systems. Finally, to avoid galaxies dominated by the e ff ect of the PSF, which can also deeply influence the non-parametric indices estimation (Walms-ley et al. 2022), we only select galaxies with K ≥ 20, where K is          
+
+> 1Data products were retrieved from the Legacy Surveys Data Re-lease 10, available at https://www.legacysurvey.org
+> 2The e ff ective radius is provided by the Legacy Survey database in the column shape_r
+> Article number, page 2 of 20 Sampaio et al.(2026): Morphology in DECaLS 0.5 1.0 1.5 2.0 2.5 3.0
+
+Detection threshold             
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4
+> Completeness
+> Selected
+> Threshold
+> S/N=5
+> S/N=8
+> S/N=12
+> S/N=20
+> S/N=40
+> S/N=80
+> Fig. 1. Detection completeness as a function of the SE xtractor detec-tion threshold k(in units of the background rms) for simulated Sérsic galaxies at di ff erent S /N. Solid lines show the median completeness across 1000 realizations per S /N; shaded bands indicate the 1 σscat-ter. The vertical dashed line marks our adopted threshold k=1, which maintains ≳70% completeness for S /N≥8 while limiting spurious detections.
+
+defined as 
+
+K = 4 × Re
+
+FWHM 
+
+!2
+
+, (1) where Re and FWHM are the e ff ective radius and the point spread function full width at half maximum ( ∼ 1.3 arcsec for DECam in the r-band), respectively. This results in an initial sample of 6,716,178 galaxies. 
+
+2.1. Observational limits of DECam 
+
+To investigate the completeness and the limiting surface bright-ness that we provide reliable classifications, we carried out controlled simulations of galaxies modeled with Sérsic profiles spanning a wide range of Sérsic indices ( n), ellipticities, po-sition angles, and redshifts. We first quantify how detection completeness depends on the SE xtractor detection threshold. For each S /N ∈ { 5, 8, 12 , 20 , 40 , 80 } we simulate 1000 Sér-sic galaxies with parameters drawn uniformly from 1 ≤ n ≤ 5, 1 ≤ Reff ≤ 10 arcsec, axis ratio 0 .3 ≤ q ≤ 1, and position angle 0◦ ≤ θ ≤ 90 ◦. Completeness is defined as the fraction of input sources recovered by the detection algorithm (SE xtractor ). As shown in Fig. 1, increasing the threshold suppresses detections at low S /N, while high-S /N sources remain nearly una ff ected. Guided by these curves, we adopt a threshold of k = 1 (in units of the background rms), which preserves a completeness ≳ 95% for S/N ≥ 20 while limiting spurious detections from background fluctuations. Thus, we remove galaxies with S /N smaller than 20 from our sample (2%). Second, we investigate how the combination of detection threshold and object surface brightness can a ff ect both detec-tion completeness and shape parameters estimates (central coor-dinate – r, eccentricity – e – and position angle – θ). In Fig. 2 we show the variations of such parameters in the mean surface brightness within 2 Re (⟨μ2R eff ⟩, in mag arcsec −2) vs. the detec-tion threshold. Each cell is colored with the average di ff erence (across di ff erent Sérsic indexes) between true and measured val-ues. The vertical black dashed line marks the threshold adopted in our pipeline. Furthermore, we also highlight that the main dif-ferences between true and measured properties occur for objects with ⟨μ2R eff ⟩ fainter than 26 mag arcsec −2. Therefore, we limit our analysis to objects brighter than ⟨μ2R eff ⟩ = 26 mag arcsec −2,which is highlighted by the horizontal red dashed line, and re-duces our sample to 6,088,103 galaxies. 
+
+2.2. Defining labeled subsamples 
+
+Despite providing morphology for all galaxies, the morpholog-ical classification using non-parametric indexes relies on a la-beled dataset to define the separations between di ff erent mor-phological types. In this subsection we describe the definition of spiral and elliptical subsamples, which will be used as the basis to derive morphological probabilities for our entire galaxy set. 
+
+2.2.1. Visual morphologies from Galaxy Zoo 
+
+A natural first step in morphological analysis is the binary clas-sification between spirals and ellipticals. In the context of DE-CaLS, the Galaxy Zoo-DECaLS (GZ DECaLS, hereon) project (Walmsley et al. 2022) provides large-scale visual classifica-tions. However, the classification scheme adopted in GZ DE-CaLS classify galaxies between "smooth" or "disk /feature", which is not a direct mapping onto "spiral" or "elliptical". No-tably, the separation between "smooth" vs "disk /feature" is con-siderably subjective and not necessarily exclusive. For example, a disk-dominated system may be classified as “smooth” if the disk lacks clear features, while some bulge-dominated galaxies may still receive non-negligible “disk /feature” votes. We therefore turn to the original Galaxy Zoo 1 (GZ1, here-after) project (Lintott et al. 2008), which provides explicit spi-ral and elliptical classifications for SDSS galaxies. Hereafter, we define the spiral (simply "Sp" hereon) and elliptical ("Ell" hereafter) subsamples according to the GZ 1 project 3, and that are also on the DECaLS footprint. Since the di ff erence between SDSS and DECam pixels scales are somewhat small (0.396 vs. 0.261 px, respectively), and they have comparable PSFs in the r-band (1.18" for DECaLS vs. 1.32" for SDSS) we don’t expect these labels to change between surveys. This is reinforced by Fig. 3, in which we show the distribution of the elliptical and spiral subsamples in the top-level classification scheme of GZ DECaLS. Namely, we define fsmooth (x-axis), and fdisk (y-axis) as the debiased fraction 4 of votes that the object is "smooth" or "disk /feature", respectively, in the GZ DECaLS. Both the Sp and Ell samples lie well within the anti-correlation line (black dashed line), even though ellipticals show a larger spread, highlighting that these are robust subsamples even though having their label defined in a di ff erent survey. We use Sp and Ell galaxies as control samples, and also as benchmarks for calibrating non-parametric morphological in-dices. In this first paper, we will focus on providing the mor-phology for galaxies within the redshift coverage of both GZ 1 and GZ DECaLS 5, namely systems below redshift 0.15. Im-posing this redshift cut, we end up with a control sample of           
+
+> 3The GZ 1 project provides direct classifcation of spirals and ellipti-cals, avoiding the need to adopt a threshold in the vote fraction.
+> 4In practice, galaxies are binned by absolute magnitude and physical size; within each bin and for each answer ("smooth" or "features /disk"), the vote-fraction distributions at each redshift are shifted to match those of the lowest-redshift slice (0 .02 <z<0.03), yielding the fraction expected if every galaxy were observed at z∼0.02 and keeping the fraction above any chosen threshold constant with redshift.
+> 5In the original GZ DECaLS catalog, z is the spectroscopic redshift retrieved from the Nasa-Sloan Atlas catalog (NSAtlas Blanton et al. 2011). Article number, page 3 of 20
+
+A&A proofs: manuscript no. aa58260-25 0.5 1.0 1.5 2.0 2.5  
+
+> Detection Threshold
+> 18
+> 20
+> 22
+> 24
+> 26
+> 28
+> 2 R e (mag/arcsec 2)
+> Limiting 2 Re
+> Selected thresh.
+
+(a)         
+
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Detected Fraction
+> 1.0 1.5 2.0 2.5
+> Detection Threshold
+
+(b)        
+
+> 0.1 0.2 0.3 0.4
+> r(Pixels)
+> 1.0 1.5 2.0 2.5
+> Detection Threshold
+
+(c)      
+
+> 0.1 0.2 0.3
+> q
+> 1.0 1.5 2.0 2.5
+> Detection Threshold
+
+(d)    
+
+> 10 20 30 40
+> (degrees)
+
+Fig. 2. Panel (a): Detection completeness in the ⟨μ2Re ⟩ vs. detection threshold. Panels (b), (c), and (d) average di ff erence between true and measured central position, eccentricity, and position angle, respectively, in the same grid as panel (a). We also highlight two di ff erent lines: 1) the black dashed line shows the detection threshold adopted in our pipeline; and 2) the red dashed line shows the conservative threshold in surface brightness, such that we can still recover reliable galaxy properties. 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> Smooth Fraction Debiased
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Disk/Feature Fraction Debiased  Sp (67343)
+> Ell (13179)
+
+Fig. 3. Distribution of GZ 1 selected spiral and elliptical sub-samples in the fsmooth versus fdisk (see text for the definition) diagram, according to GZ DECaLS results. The dashed black line shows the expected anti-correlation line. 
+
+80,516 galaxies 6. For completeness, a detailed comparison be-tween GZ1 and GZ DECaLS is presented in Appendix C. In a few words, our analysis shows that di ff erences in the Galaxy Zoo classification schemes can significantly impact the purity of selected samples. Furthermore, the extension of our method to higher redshifts (up to 0.5) and the impact of redshift in the non-parametric indices will be discussed in a future paper (Vélliz Astudillo et al. in prep.). Yet, by artificially redshifting galaxies closer than z < 0.03 to z = 0.15, in steps of 0 .03, we find that the metrics do not vary by more than 10%, thus ensuring consistency across the entire redshift range. Finally, the redshift limit in the control sample implies that, for consistency, we must limit the galaxies that we classify to the same redshift range. Although spectroscopic redshift is only available for 7% of our sample, we apply this cut using the pho-tometric redshift, which is shown to be consistent with the spec z (see Appendix D). A caveat of adopting the labels from GZ 1 is that it is limited in magnitude to 17.78 in the r-band, whereas the DECaLS is able to provide deeper observations. Therefore, we adopt the upcomming CHANCES low-z sub survey conserva-tive magnitude limit of 18.5 (Méndez-Hernández et al. in prep.)  
+
+> 6
+
+Although the number of spiral galaxies is about six times that of ellipticals (13,179 Ell and 67,343 Sp), we explain how we address this imbalance in Sec. 5.1 
+
+for our sample, resulting in a final sample of 1,744,454 galaxies (from which 80,516 are labeled between "spiral" or "elliptical"). 
+
+2.2.2. Automated classifications from deep learning 
+
+Beyond direct visual classifications, we also incorporate auto-mated morphological estimates obtained with convolutional neu-ral networks (CNNs), in order to compare the indices perfor-mance with both visual inspection from GZ DECaLS, and as a function of T-Type (Sec. 4.2). To this end, we adopt the catalog of Domínguez Sánchez et al. (2018), that train CNNs on Galaxy Zoo 2 questions to predict a continuous T-Type for SDSS galax-ies, encompassing both our Sp and Ell subsamples. T-Type is es-timated as a continuous numerical proxy for the classical Hubble sequence, through the equation: T-Type = −4.6P(Ell) − 2.4P(S0) + 2.5P(Sab) + 6.1P(Scd) , (2) where P(X) denotes the CNN attributed probability of a galaxy being classified as a given morphology, with X representing El-liptical (Ell), lenticular (S0), A-B spiral (Sab), and C-D spi-ral (Scd). This provides a quantitative mapping onto the clas-sical Hubble sequence, ranging from ellipticals (T-Type ≈ − 3) through lenticulars (T-Type ≈ − 0) and spirals (T-Type ≈ 1 − 5). We highlight that we do not use the T-Type as a label in any step of our method, being included in the catalog only for connecting non-parametric indices to previous machine-learning classifica-tions of galaxy morphology. 
+
+3. Non-parametric morphological estimation 
+
+We chose a non-parametric method to characterize the struc-ture of galaxies, given that they do not rely on any assump-tion about the light profile of the observed galaxies, have direct physical interpretation and extensive use in the literature to con-nect structural parameters and galaxy evolution related mecha-nisms (Abraham et al. 1996; Conselice et al. 2000; Lotz et al. 2008; Conselice et al. 2008). However, a fundamental step when measuring non-parametric indexes is the need for image prepro-cessing. Here we present our own python package (Sec. 3.1) to perform image processing and metrics measurements. The choice of creating our own code is to ensure transparency and the need for fine-tuning, which is not found in non-modular existing codes with the same purpose (e.g. Ferrari et al. 2015; Rodriguez-Gomez et al. 2019). 
+
+Article number, page 4 of 20 Sampaio et al.(2026): Morphology in DECaLS  
+
+> 3.1. The
+
+galmex package 
+
+The Galaxy Morphology Extractor 7 (galmex ) is a user-friendly Python package designed to reliably estimate non-parametric morphological indices from imaging surveys. The code is de-signed with a modular architecture, allowing each stage (pre-processing, segmentation, measurement, output) to be accessed independently. Users can therefore customize the workflow, in-tegrate new routines, or apply only a subset of the available tools. In addition to a command-line interface (CLI) optimized for large-scale processing, galmex also includes a graphical user interface (GUI) for more interactive analysis and visualization. This design makes the package suitable both for bulk catalog production and for detailed inspection of individual galaxies. Next we detail the pre-processing steps adopted prior to mea-suring the indexes: 1. Cutout creation – For each target we read right ascension, declination, and a prior Petrosian angular scale from the in-put catalog, and then request the stamp in the r-band from the Legacy Survey (DR10) cutout service. The linear size of the cutout in pixels is set as the the reported e ff ective radius multiplied by a factor of 20 (10 e ff ective radius around the galaxy); 2. Background subtraction – We estimate and remove the sky using a frame-based statistic around the image edges, since our cutouts are made with size given as a function of the eff ective radius of the galaxy (10 × Re f f ). Specifically, we select a border containing a fixed fraction of the image area and compute background statistics on those pixels with sigma-clipping enabled to suppress contamination from sec-ondary sources near the image border. In practice we set the frame width by an image-area fraction of 0.2, enable sigma-clipping, and reject pixels above a 2 .5σ threshold; the result-ing background model is subtracted from the science image to produce a background-subtracted frame for all subsequent steps; 3. Object detection – Sources are identified on the background-subtracted image with the analogue of Source Extractor (Bertin & Arnouts 1996), transcribed to python – SEP (SExtractor-in-Python, Barbary et al. 2016) – using amatched-filter option. We adopt a per-pixel detection thresh-old of 1 .0σ relative to the measured background noise, re-quire a minimum footprint of 10 connected pixels, and de-blend with 32 thresholds at a contrast parameter of 0.005; we pass SEP the measured background standard deviation so its internal thresholding is on the correct noise scale. SEP returns a normalized catalog (centroid x, y; ellipse a, b; posi-tion angle θ (in radians); npix; mag) and a first segmentation map. The primary galaxy is selected as the label at the cutout center; if the center falls on background, an error is raised highlighting that no object was detected at the image center. 4. Cleaning (removal of secondaries) – To mitigate contam-ination from stars and neighboring galaxies, we generate a cleaned image using an isophotal "painting" procedure that respects the target’s geometry. Starting from the de-tection segmentation, all labels other than the main object are treated as contaminants; their pixels are replaced via elliptical-isophote interpolation oriented by the galaxy’s po-sition angle θ. Operationally, the algorithm scans concentric elliptical annuli and replaces masked pixels with interpolated values from adjacent pixels along the same isophote, which  
+
+> 7A full tutorial and description are available in "read the docs" or github.
+
+preserves the target’s radial structure while suppressing flux from secondaries. This yields a “galaxy-only” image used for all light-profile quantities that follow; 5. Characteristic radii estimation – We compute Petrosian pro-files on the cleaned image using both circular and elliptical annuli, anchored to the SEP-measured center (x, y), axes (a, b), and position angle θ. The Petrosian radius ( RP) follows the standard η(R) = 0.2 threshold with an optimized search: a guided (bisection-style) evaluation of the curve with cu-bic interpolation and taking into account neighboring points (crossing point ±3). After RP is determined, we derive the cir-cular and elliptical half-light radii by integrating the growth curve to the 50% level, restricting the search to 2 × RP, with a 1-pixel step. We also report a Kron-style radius computed within the same outer bound. This procedure is executed twice—first with circular annuli and then with elliptical an-nuli—so di ff erent analyses can use the most appropriate ge-ometry. An example of the pre-processing procedure is shown in Fig. F.  
+
+> 3.2. Robustness of
+
+galmex applied to DECam images 
+
+In this section we test how well galmex recover galaxy proper-ties using the DECam-like simulated Sérsic profiles described in Sec. 2.1. In particular we focus on the radii encompassing 20, 50, and 80% of total flux, due to its tracing of the growth curve and direct relation to the Concentration index, and the Petrosian radius 8, which is extensively used in the literature to define the segmentation mask – i.e. the region that will be taken into ac-count in metrics computation. In Fig. 4, we show the average di ff erence between true and measured R20 (panel a), R50 (panel b), R80 (panel c), and RP (panel d), in the apparent magnitude 
+
+vs. eff ective radius grid. For these computations, we use ellipti-cal apertures, and discuss in Appendix G how the use of circular apertures to calculate characteristic radii can introduce signifi-cant bias in the analysis. Notably, the combination of apparent magnitude and e ff ective radius define an average surface bright-ness 9, which is shown by the red dashed lines. The red hatched region denotes the region fainter than our adopted limit in aver-age surface brightness (26 mag arcsec −2). Noteworthy, this is the region where we find the larger o ff sets (particularly in panel d), again reinforcing that our adopted thresholds ensure that we are providing reliable metrics for all the objects. In particular, Fig 4 reveals that we recover the characteristic radii with average dif-ferences smaller than 0.6 arcsec in most of the cases, which cor-responds for a di ff erence of 2.3 pixels in the DECam resolution (∼ 0.262 pixels /arcsec). Finally, a key step in the computation of non-parametric in-dices is the definition of the segmentation mask. To ensure con-sistency across galaxies of di ff erent magnitudes and redshifts, we compared the mean pixel intensity in the r-band as a function of radius, written as a function of the Petrosian radius ( k × Rp). By scaling the mask with Rp, we guarantee a relative aperture size that adapts to the galaxy’s intrinsic light profile, providing a homogeneous basis for comparison. Following Kolesnikov et al. (2024); Lotz et al. (2004), we define the conservative threshold        
+
+> 8Notably, galmex rely only on the shape properties estimated during object detection step to reliably calculate the Petrosian radius, whereas
+> statmorph (Rodriguez-Gomez et al. 2019) estimate may depend also on the segmentation mask used as input.
+> 9The surface brightness depends on the eccentricity of the object, but we adopt a simple case of circular Sérsic profile ( q=1). Article number, page 5 of 20
+
+A&A proofs: manuscript no. aa58260-25 2 4 6 8 10  
+
+> Re(arcsec)
+> 16
+> 17
+> 18
+> 19
+> 20
+> 21
+> Magnitude within 2 Re
+
+# R20 
+
+(a)            
+
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> R20 (arcsec)
+> 246810
+> Re(arcsec)
+
+# R50 
+
+(b)           
+
+> 0.2 0.4 0.6 0.8 1.0
+> R50 (arcsec)
+> 246810
+> Re(arcsec)
+
+# R80 
+
+(c)           
+
+> 0.2 0.4 0.6 0.8 1.0
+> R80 (arcsec)
+> 246810
+> Re(arcsec)
+
+# RP
+
+(d)      
+
+> 0.2 0.4 0.6 0.8 1.0
+> RP(arcsec)
+
+Fig. 4. Recovery of characteristic radii across size–flux space. Each panel shows the map of the average absolute di ff erence (in arcsec) between the measured and reference values of a given radius – R20 (a), R50 (b), R80 (c), RP (d) in the apparent magnitude vs. R e. The dashed red lines define the approximate average surface brightness when assuming a circular (q = 1) Sérsic profile. The hatched region above the ⟨μ2Re ⟩ denotes the adopted threshold in this work. Galaxies with surface brightness smaller than 26 mag s −2 can yield unreliable shape parameters and characteristic radii. In particular, the hatched region overlaps significantly with the region in which the error in RP exceeds 1 arcsec ( ∼ 4 pixels). This e ff ect is more visible in RP due to it being the most outter radii in comparison to the others, thus being more prone to background contamination. 
+
+of k = 1. We highlight that, di ff erently from statmorph , we use the same segmentation mask for all the metrics, which also ensure a more direct interpretability of their performance in sep-arating ellipticals and spirals. For completeness, we show in Ap-pendix H how segmentation a ff ects our results, in particular on how segmentation a ff ect the separation bewteen spirals and el-lipticals in the non-parametric indices diagrams. 
+
+4. Results 
+
+4.1. Non-parametric morphological properties of galaxies 
+
+Figure 5 shows the one and two-dimensional distributions of spi-ral and elliptical control samples across the CAS and MEGG pa-rameter spaces. The contours highlight the normalized density distributions for each class (15, 25, 50, 60, 70, 80, 90, and 95%), enabling a quantitative comparison of their separation. Overall, the C[A S]AS parameters retain their classical behavior. Concen-tration shows the strongest discriminatory power, with ellipti-cals occupying systematically higher values than spirals, consis-tent with their centrally concentrated light profiles. Asymmetry (A and A S) and Smoothness are more e ff ective at rejecting ex-treme outliers (e.g. mergers), but their distributions overlap sig-nificantly between spirals and ellipticals, limiting their power as stand-alone classifiers. This behavior has been reported in pre-vious works (e.g. Kolesnikov et al. 2024), and is confirmed here with the larger DECaLS samples. The MEGG parameters provide complementary information. The Gini index and entropy exhibit clear trends, with ellipticals clustering at high G and low E, while spirals show the oppo-site behavior. The M20 parameter retains sensitivity to bright off -center regions, helping to separate star-forming disks from smooth spheroids, although with substantial overlap. The E in-dex stands out as the most e ff ective single discriminator: spirals and ellipticals are distributed with minimal overlap. This cor-roborates previous results that the MEGG system provide robust morphological separation in both local and intermediate-redshift samples (Barchi et al. 2020; Kolesnikov et al. 2024, 2025). To move beyond a purely visual comparison, we quantified the degree of overlap between the spiral and elliptical distribu-tions using the overlap coe ffi cient (OVL). For a single index X,we computed normalized histograms on shared bin edges for each class and defined the 1D overlap as OVL 1D (X) =
+
+> K
+
+X
+
+> k=1
+
+min pk(X), qk(X), (3) where pk and qk are the spiral and elliptical probabilities in bin 
+
+k. Values close to unity indicate nearly indistinguishable distri-butions, while values near zero indicate strong separation. For a indices-pair ( X, Y), we applied an empirical probability–integral transform to each axis, mapping both classes onto the unit square (0 , 1) 2, and then computed a two-dimensional histogram inter-section, OVL 2D (X, Y) =
+
+X 
+
+> i,j
+
+min Pi j (U, V), Qi j (U, V), (4) with Pi j and Qi j being the spiral and elliptical probabilities in bin ( i, j). This normalization ensures that OVL values are com-parable across di ff erent index pairs. Quantitatively, the most e ff ective single indices are Concen-tration, Entropy, and Gini, with OVL 1D ≃ 0.18 − 0.21, followed by M20 and G2 with OVL 1D ≃ 0.26 − 0.27. Asymmetry, Shape Asymmetry, and Smoothness show substantially larger overlaps (≳ 0.5), confirming that they are better suited to identifying dis-turbed morphologies than to separating spirals from ellipticals. Among all 2D projections, the best separation is found for the in-volving the Gini index, showcasing that this flux-inequality mea-sure is reliable when separating late- and early-type galaxies. While empirical linear divisions in each 2D plane to sepa-rate spirals and ellipticals thresholds can be drawn, the overlap between the distributions, particularly in A , AS and S, suggests that no single cut provides a reliable classification. Instead, the joint use of CA[A S]S +MEGG indices in a probabilistic frame-work (Sect. 5) provides a more robust approach to assigning morphological classes. In summary, the CA[A S]S parameters re-produce the expected trends but with considerable overlap, while the MEGG indices—especially E and G—deliver superior dis-criminatory power. 
+
+4.2. Comparison to previous classifications 
+
+In this subsection we compare the CA[A S]S +MEGG indices with two independent morphological classification schemes in order to place them on a common scale and test their consis-tency. First, we investigate their variation as a function of the 
+
+Article number, page 6 of 20 Sampaio et al.(2026): Morphology in DECaLS 2 4                                      
+
+> C
+> 0.0
+> 0.5
+> 1.0
+> Density
+> OVL=0.26
+> 0.0
+> 0.2
+> A
+> OVL=0.22
+> 0.0 0.2
+> A
+> OVL=0.64
+> 0.1
+> 0.2
+> AS
+> OVL=0.21 OVL=0.52
+> 0.1 0.2
+> AS
+> OVL=0.72
+> 0.0
+> 0.2
+> 0.4
+> S
+> OVL=0.12 OVL=0.35 OVL=0.41
+> 0.0 0.2 0.4
+> S
+> OVL=0.46
+> 2.5
+> 2.0
+> 1.5
+> M20
+> OVL=0.20 OVL=0.30 OVL=0.30 OVL=0.19
+> 2.5 2.0 1.5
+> M20
+> OVL=0.36
+> 0.2
+> 0.6
+> 1.0
+> E
+> OVL=0.17 OVL=0.18 OVL=0.18 OVL=0.14 OVL=0.17
+> 0.2 0.6 1.0
+> E
+> OVL=0.21
+> 0.3
+> 0.5
+> 0.7
+> Gini
+> OVL=0.15 OVL=0.14 OVL=0.13 OVL=0.09 OVL=0.15 OVL=0.15
+> 0.3 0.5 0.7
+> Gini
+> OVL=0.16
+> 24
+> C
+> 0.0
+> 0.4
+> 0.8
+> G2
+> OVL=0.20
+> 0.0 0.2
+> A
+> OVL=0.27
+> 0.1 0.2
+> AS
+> OVL=0.28
+> 0.0 0.2 0.4
+> S
+> OVL=0.23
+> 2.5 2.0 1.5
+> M20
+> OVL=0.25
+> 0.2 0.6 1.0
+> E
+> OVL=0.19
+> 0.3 0.5 0.7
+> Gini
+> OVL=0.13
+> 0.0 0.4 0.8
+> G2
+> OVL=0.30
+
+Fig. 5. Distribution of Spiral (blue curves) and Elliptical (red curve) galaxies in 2D diagrams combing the di ff erent non-parametric indices. In each panel, we also include the overlap between the spiral and elliptical distributions, which is calculated using equations 3 and 4 for histograms and 2D diagrams, respectively. 
+
+CNN based T-Type from Domínguez Sánchez et al. (2018). This allows us to assess whether the indices trace the expected early– to–late morphological sequence in a monotonic way. Second, we examine how the same indices vary across the GZ-DECaLS top-level separation ( fsmooth vs. fdisk ). 
+
+4.2.1. C[ AS]AS+MEGG vs. CNN based T-Type 
+
+Figure 6 shows the median values and 1 σ scatter of the C[A S]AS and MEGG indices as a function of CNN-based T-Type. For ro-bustness, medians and scatters are computed only for T-Type bins containing at least 1% of the corresponding control subsam-ple (Sp or Ell). As a first check, we confirm that the GZ 1 control samples are fully consistent with this scheme: spiral galaxies lie dominantly at T-Type > 0, while ellipticals occupy T-Type < 0. The CAS indices show the expected broad separation be-tween early- and late-type morphologies. Concentration shows a discontinuity separation between early- and late-type morpholo-gies, varying from ⟨C⟩ ∼ 4.0 at T-Type = −3 to ∼ 3.0 at T-Type = 5, clearly distinguishing Ell from Sp. This discontinu-ity may indicate that the T-Type is not as continuous as expected, which may follow from one or a combination of the following reasons: 1) Domínguez Sánchez et al. (2018) use di ff erent CNN models for the T-Type ∼ 0 region; 2) the T-Type estimation car-ries bias from the training dataset; and 3) the equation used to map T-Type continuously is somewhat arbitrary, and not neces-sarily reflect the continuous transition expected from negative to positive T-Type values. In contrast, A, A S, and S remain nearly constant across T-Type < 0, but increase slightly toward later types. Their variation is modest ( ∆A, ∆AS , ∆S ≲ 0.08), consis-tent with their limited discriminatory power for separating Sp from Ell. The MEGG indices exhibit both clear early–late separation and strong internal trends within the spiral sequence. M20 in-
+
+Article number, page 7 of 20 A&A proofs: manuscript no. aa58260-25 3.0     
+
+> 3.5
+> 4.0
+> 4.5
+> C
+> (a)
+> Spirals
+> Ellipticals
+> 0.05
+> 0.10
+> A
+> (b)
+> 0.05
+> 0.10
+> AS
+> (c)
+> 0.05
+> 0.10
+> S
+> (d)
+> 20246
+
+T-Type     
+
+> 2.4
+> 2.2
+> 2.0
+> 1.8
+> M20
+> (e)
+> 20246
+
+T-Type     
+
+> 0.5
+> 0.6
+> 0.7
+> E
+> (f)
+> 20246
+
+T-Type     
+
+> 0.4
+> 0.5
+> 0.6
+> G
+> (g)
+> 20246
+
+T-Type 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> G2
+> (h)
+
+Fig. 6. Metrics variations with respect to CNN based T-Type for the Sp (blue) and Ell (red) subsamples. We highlight that, although both the Sp /Ell classification and T-Type are based on SDSS data (Galaxy Zoo 1 and 2, respectively), our results show consistency even when using DECam observations. 0.0 
+
+> 0.5
+> 1.0
+> fdisk
+
+(a)   
+
+> 3.00
+> 3.25
+> 3.50
+> 3.75
+> 4.00
+> 4.25 C
+> 0.0
+> 0.5
+> 1.0
+
+(b)   
+
+> 0.04
+> 0.05
+> 0.06
+> 0.07
+> 0.08
+> 0.09 A
+> 0.0
+> 0.5
+> 1.0
+
+(c)   
+
+> 0.04
+> 0.06
+> 0.08 AS
+> 0.0
+> 0.5
+> 1.0
+
+(d)    
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0 S
+> 0.0 0.5 1.0
+
+fsmooth 
+
+> 0.0
+> 0.5
+> 1.0
+> fdisk
+
+(e)    
+
+> 2.4
+> 2.2
+> 2.0
+> 1.8 M20
+> 0.0 0.5 1.0
+
+fsmooth  
+
+> 0.0
+> 0.5
+> 1.0
+
+(f)    
+
+> 0.60
+> 0.65
+> 0.70
+> 0.75
+> 0.80 E
+> 0.0 0.5 1.0
+
+fsmooth  
+
+> 0.0
+> 0.5
+> 1.0
+
+(g)    
+
+> 0.55
+> 0.60
+> 0.65 Gini
+> 0.0 0.5 1.0
+
+fsmooth 
+
+> 0.0
+> 0.5
+> 1.0
+> fdisk
+
+(h)  
+
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6 G2
+
+Fig. 7. Metrics variation in the Smooth Debiased vs. Disk /Feature Debiased diagram. In this case we merge the spiral and elliptical subsamples in order to get a full picture of the metrics variation across this diagram. 
+
+creases from ⟨M20 ⟩ ≃ −2.3 at T-Type = −3 to ≃ −1.8 at T-Type = 5, possibly due to the increasing prominence of bright off -center regions in late-type spirals. E and Gini display steep, opposite variations: ellipticals cluster at high Gini ( ≳ 0.6) and low entropy ( ≲ 0.6), while spirals reach ⟨G⟩ ≃ 0.45 and ⟨E⟩ ≃ 
+
+0.8 at T-Type ∼ 5. The G2 index provides the sharpest discrim-ination: it remains near zero for ellipticals, increases steadily through early spirals, and reaches ⟨G2 ⟩ ≳ 0.45 for the latest types. This steep gradient at T-Type > 0 demonstrates that M20, E, and G not only separates ellipticals from spirals (with a con-fidence of more than 3-sigma), but also e ff ectively resolves sub-structure within the spiral sequence. 
+
+4.2.2. Non parametric indices vs. Visual Classification 
+
+Fig 7 presents the variation of C[A S]AS and MEGG indices across the GZ-DECaLS fdisk vs. fsmooth plane. Particularly for Fig. 7, we merge the spiral and elliptical subsamples rather than analyzing them separately, in order to provide a complete view of the parameters variation. We restrict the hexbin maps to bins containing at least ten galaxies, and we scale the colorbars in a consistent way such that regions dominated by ellipticals appear in redder tones. Overall, the indices vary across this diagram in good agree-ment with the Galaxy Zoo classifications. Concentration C in-creases steadily toward the smooth-dominated corner, while E decreases and Gini increases, reproducing the contrast between bulge-dominated and disk-dominated systems. A, A S, and S peak in the high fdisk regime, consistent with the visual impres-sion of clumpier and more irregular morphologies. M20 also in-creases in this region, reflecting the prominence of bright o ff -center structures in spiral galaxies. Finally, G2 shows a marked gradient from smooth to disk-dominated systems, again under-scoring its e ff ectiveness as a discriminator. These trends demonstrate that non-parametric indices are broadly consistent with human visual assessments from Galaxy Zoo, capturing the same underlying morphological di ff erences directly from the pixel data. In other words, CA[A S]S +MEGG indices to some extent mimic what classifiers perceived by eye. This motivates the next step of our analysis, where we employ these indices as input features for a machine-learning framework (Sect. 5) to assign probabilistic classifications across the full DE-CaLS sample. 
+
+Article number, page 8 of 20 Sampaio et al.(2026): Morphology in DECaLS 0.0 0.2 0.4 0.6 0.8 1.0 
+
+False Positive Rate 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> True Positive Rate
+
+(a) ROC curve      
+
+> ROC
+> (AUC=0.996±0.001)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Recall (Sp) 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Precision (Sp)
+
+(b) Precision-Recall      
+
+> Mean PR
+> (AP=0.999±0.000)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Predicted P(Sp) 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Observed freq (Sp)
+
+(c) Calibration curve  
+
+> Brier=0.022
+> [0.021,0.024]
+> Ell Sp
+
+Predicted 
+
+> Ell
+> Sp
+> True
+> 87.5% ± 0.6
+> (2301/2631)
+> 12.5% ± 0.6
+> (330/2631)
+> 1.4% ± 0.1
+> (228/16643)
+> 98.6% ± 0.1
+> (16415/16643)
+
+(d) Confusion Matrix     
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100 Row %
+> 0200 400 600
+
+Boosting iterations (trees) 
+
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> Binary log loss
+
+(e) Loss function      
+
+> Train
+> Validation
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Predicted P(Sp) 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> Percentage
+
+(f) Results for test sample 
+
+> True Sp
+> True Ell
+
+Fig. 8. Results of LightGBM using the non-parametric indexes as input, and trained in the GZ 1 selected spirals and ellipticals. Panel (a) and (b) shows the ROC curve and the Precision-recall curve, respectively. Within these two panels, we also add the area under the curve (AUC) and the mean AP. Panel (c) shows the calibration curve, highlighting that our method aligns well with the expected 1 to 1 line, thus ensuring that our method is able to provide calibrated probabilities. Panel (d) shows the row-normalized confusion matrix. Panel (e) shows the log-loss function. See the text for a description on why there is a di ff erence between the train and validation. Panel (f) show the predicted spiral probability for galaxies in our test subsample. Notably, our method shows high accuracy. 0.00 0.25 0.50 0.75 1.00       
+
+> False Positive Rate
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> True Positive Rate
+> (a) ROC by RP(arcsec)
+> 4.00 10.00
+> AUC=0.991±0.003
+> 10.00 15.00
+> AUC=0.994±0.002
+> 15.00 20.00
+> AUC=0.995±0.005
+> 20.00 30.00
+> AUC=0.996±0.003
+> 0.00 0.25 0.50 0.75 1.00
+> False Positive Rate
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> True Positive Rate
+> (b) ROC by r-band mag.
+> 17.00 18.00
+> AUC=0.977±0.016
+> 16.00 17.00
+> AUC=0.987±0.004
+> 15.00 16.00
+> AUC=0.990±0.003
+> 14.00 15.00
+> AUC=0.994±0.004
+
+Fig. 9. Sanity check of classifier performance as a function of obser-vational regime. Receiver operating characteristic (ROC) curves for the spiral-vs.-smooth classifier evaluated in bins of (a) apparent size, us-ing the Petrosian radius (arcsec), and (b) r-band Petrosian magnitude. Curves show the mean ROC across cross-validation folds, with shaded regions indicating the ±1σ scatter between folds; the corresponding AUC values (mean ± standard deviation) are listed in the legend for each bin. Performance remains high across the full range, with the expected mild degradation toward the smallest /faintest galaxies where morphology measurements are noisier and resolution is lower. 
+
+5. CA[A S]S + MEGG indices as input for Machine Learning classification 
+
+To move beyond qualitative trends and improve the accuracy of separating spirals and ellipticals, we combine the measured non-parametric indices with the visual classifications from GZ 1 to train a supervised machine-learning model. This approach use the discriminatory power of the CA[A S]S + MEGG param-8 6 4 2 0 2 4
+
+> SHAP value (impact on model output)
+> As
+> G2
+> M20
+> S
+> A
+> C
+> G
+> E
+> SHAP Summary (Spiral class)
+> Low
+> High
+> Feature value
+
+Fig. 10. SHAP summary plot for the LightGBM model predicting Spi-ral galaxy classification. Each point represents the SHAP value of a single feature for one galaxy, showing its impact on the model output. The horizontal axis indicates the contribution (positive or negative) to the prediction, while the vertical axis lists the most important features ranked by overall impact. The color gradient encodes the feature value from low (blue) to high (red), highlighting how di ff erent ranges of fea-ture values drive the prediction toward or away from the Spiral class. 
+
+eter space, while adopting the decision boundaries from reliable visual labels, and enabling the derivation of probabilistic mor-phological classifications. By doing so, we transform the indices from descriptive diagnostics into quantitative predictors, allow-ing us to assign each galaxy a probability of being spiral or el-liptical in a homogeneous way. 
+
+Article number, page 9 of 20 A&A proofs: manuscript no. aa58260-25 
+
+5.1. Defining a training set 
+
+We use our spiral and elliptical subsamples as training set for the machine learning. We use the GZ1 label (elliptical vs. spiral) as the target y ∈ { 0, 1}, with spiral as the positive class (1). The combined sample is then divided into pool (60%), calibration (15%) and test sample (25%). Because spirals largely outnum-ber ellipticals in our sample, we address class imbalance in two ways. First, all splits preserve the class ratio in the pool, calibra-tion /validation, and test sets. Second, we apply SMOTE 10 (Syn-thetic Minority Over-sampling Technique, Chawla et al. (2011)) only within the training sets of the cross-validation and in the training portion of the pool set: synthetic minority examples are generated by interpolating between nearest neighbors of the mi-nority class in the C[A S]AS +MEGG feature space. No over-sampling is applied to calibration /validation or test sets, ensuring unbiased performance estimates and well-calibrated probabili-ties. 
+
+5.2. Results using Light Gradient Boosting Machine 
+
+To assess the discriminative power of the full set of non– parametric morphological indices, we employed the Light Gra-dient Boosting Machine (LightGBM; Ke et al. 2017). LightGBM is a decision–tree–based ensemble algorithm that implements gradient boosting in a highly e ffi cient manner. In contrast to clas-sical classifiers that rely on a linear or logistic boundary in the feature space, gradient boosting iteratively builds an ensemble of weak learners (decision trees), where each subsequent tree cor-rects the residual errors of the previous ensemble. LightGBM improves on standard implementations of gradient boosting by using a leaf–wise tree growth strategy and histogram–based bin-ning of features, allowing for faster training, lower memory us-age, and the ability to handle large, imbalanced datasets. These properties make LightGBM particularly suitable for our morpho-logical classification problem, where the input feature space is moderately high–dimensional and the class distribution between spirals and ellipticals is not balanced. Furthermore, the algorithm provides well–calibrated probabilistic outputs and interpretable measures of feature importance, both of which are essential for a robust scientific interpretation. Figure 8 summarizes the performance of the LightGBM clas-sifier. We detail each panel, from leftmost top row, to rightmost bottom row, in the following: 1. The ROC curve, which quantifies the trade–o ff between true positive rate and false positive rate for varying classifica-tion thresholds. The resulting Area Under the Curve (AUC 
+
+= 0.995 ± 0.001) indicates near–perfect separability between spiral and elliptical galaxies; 2. The Precision–Recall (PR) curve, focusing on the perfor-mance for the spiral class. The extremely high average preci-sion ([AP] = 0.999 ± 0.000) further confirms that the classi-fier maintains excellent purity across the full range of recall values;   
+
+> 10 SMOTE generates synthetic samples through nearest-neighbor in-terpolation in the minority class feature space, which helps avoid the overfitting associated with simple duplication. Nonetheless, as with any resampling technique, it can introduce bias if classes are highly over-lapping in the full space. Since (most) of the metrics show very clear distinction between Ell and Sp (Fig.5), it is a safe procedure. We also computed the results without using the SMOTE, for which we find sim-ilar results. Namely, the overall accuracy decreases by 0.5%, which follows from a decrease in the accuracy specifically for Ell (also small 2%), while the spirals remain "untouched".
+
+3. The probability calibration curve. This diagnostic compares the raw model outputs (predicted probability of being a spi-ral) against the empirical fraction of true spirals in corre-sponding probability bins. If the classifier is perfectly cal-ibrated, points will fall along the one–to–one diagonal: for example, among all galaxies assigned a spiral probability of 70%, about 70% should actually be spirals. The plotted blue points represent the mean observed frequencies in probabil-ity bins, with errorbars denoting the 95% confidence interval. The close alignment with the diagonal line indicates that the LightGBM predictions are almost perfectly calibrated across the full probability range. In the same panel, we show the Brier score (Brier 1950), which provides a quantitative sum-mary of calibration and refinement. It measures the mean squared error between predicted probabilities and the true binary outcomes, taking values between 0 (perfect) and 1 (worst possible). Our measured Brier score of 0 .020 +0.002  
+
+> −0.002
+
+is extremely low, meaning that the probabilities are not only discriminative but also reliable. This complements the ROC and PR curves: a model can achieve high AUC or [AP] while still producing poorly calibrated probabilities, but in this case LightGBM achieves both high discrimination and excellent calibration; 4. The confusion matrix expressed in row–normalized percent-ages. LightGBM correctly identifies 98 .6% ± 0.3 of spiral galaxies and 87 .5% ± 0.6 of ellipticals. Misclassifications are rare, amounting to only ∼ 1.4 ± 0.3% of spirals classified as ellipticals and ∼ 12 .5 ± 0.9% of ellipticals classified as spi-rals. The latter can follow from the presence of S0s within the elliptical label in GZ1; 5. The learning (loss) curves of the LightGBM classifier, show-ing the binary cross–entropy (log loss) as a function of boost-ing iterations (trees). We plot loss on the raw training fold (no SMOTE) and on an independent validation fold. The validation curve drops rapidly and then flattens without an upturn, indicating no overfitting. The training curve remains below the validation curve, as expected from the generaliza-tion gap 11 . The training loss remains strictly above zero be-cause we optimize probabilistic log loss under regularization and early stopping; pushing log loss to zero would require assigning probabilities of exactly 0 /1 to every training ob-ject—a behavior typical of overfitting and inconsistent with the probabilistic approach we adopt; 6. The distribution of predicted spiral probabilities for the true spiral and elliptical systems in the test sample. The strong bi-modality, with spirals peaking near unity and ellipticals near zero, highlights the high confidence of the model predictions. Only a negligible fraction of objects occupy the intermediate regime, reinforcing the robustness of the classification. The very high performance (AUC ≃ 0.99, AP ≃ 1) largely reflects the fact that our target label is intentionally simple (“spi-ral” vs. “early-type” as defined by GZ1) and that the adopted non-parametric morphology vector is designed to separate these two regimes e ffi ciently. We understand that it would be better to have a good separation between ellipticals, lenticulars and spirals, however separating ellipticals and lenticulars is a long-standing problem in the literature, and for the current exercise, the labels from GZ1 are the most robust we can use. To address  
+
+> 11 In supervised learning the loss evaluated on the data used for fitting is systematically lower than the loss on unseen data. This di ff erence is the generalization gap. A nonzero separation between train and validation curves is therefore expected and, within bounds, an evidence of a model that fits the data while still generalizing. Article number, page 10 of 20 Sampaio et al.(2026): Morphology in DECaLS
+
+the concern that the result could be driven by a restricted sub-set of large, high-S /N systems, we performed a sanity check by measuring ROC performance in bins of apparent size and bright-ness (Fig. 9). Using out-of-fold calibrated probabilities, the clas-sifier remains highly performant across the full range probed: for RP (arcsec) the AUC varies only mildly from 0 .991 ± 0.003 (4–10 arcsec) up to 0 .996 ± 0.003 (20–30 arcsec), and as a func-tion of r magnitude it decreases smoothly from 0 .994 ± 0.004 (14–15) to 0 .977 ± 0.016 (17–18). This controlled degradation toward the faintest /smallest bins—where morphology is intrinsi-cally harder due to lower resolution and surface-brightness sensi-tivity—supports the interpretation that the high global AUC /AP is not an artifact of a single easy regime, but rather that the sep-aration remains robust over most of the parameter space while behaving as expected where the task becomes observationally more challenging. Moreover, since we feed the LightGBM with eight di ff erent indexes, it is important also to investigate which are contribut-ing the most to define the desired probability. Thus, we applied SHAP (SHapley Additive exPlanations; Lundberg & Lee 2017) values to the LightGBM model, shown in Figure 10. Each point in the summary plot corresponds to a galaxy, with its horizontal position encoding the SHAP value (i.e. the marginal contribution of that feature to the probability of being classified as a spiral), and the color denoting the normalized feature value. Negative SHAP values (to the left) lower the spiral probability, while pos-itive values (to the right) increase it. For instance, galaxies with low G (blue points) tend to shift the classification toward spiral, reflecting the clumpy light distribution of disks. Similarly, high entropy increases spiral likelihood, while low values support el-liptical classifications. Overall, the SHAP values not only cor-roborate the feature importance ranking but also provide physi-cal interpretability by linking specific morphological traits to the classifier’s decision process. Yet, we highlight one particular caveat of the adopted pro-cedure. Because GZ1 provides only a binary spiral vs. elliptical label for bright SDSS galaxies, the “elliptical” class inevitably contains a non-negligible fraction of lenticular (S0) systems: in single-band imaging, S0s share the smooth, centrally con-centrated appearance of ellipticals, yet they are physically disk galaxies, often with weak spiral structure and subtle lenses /bars. This mixing is important for calibration: the model is trained (and isotonic-calibrated) to reproduce GZ1’s operational def-inition of “elliptical”, so the resulting P(Sp) should be inter-preted as the probability of being spiral versus a mixed early-type (E +S0) class, rather than a pure E vs. Sp separation. Not by chance, the accuracy in the confusion matrix for ellipticals is smaller than the one for spirals, as we expect most of S0’s to be included within the ellipticals subset. Nevertheless, S0’s can also be misclassified as a disk galaxy, particularly with an edge-on line-of-sight. In summary, the LightGBM model is able to provide a high accuracy for spiral probability through the use of structural fea-tures of galaxies, quantified through the non-parametric indexes. In this regard, the most important set to define the spiral proba-bility are G, C, and E, all of which show a great separation be-tween GZ 1 selected spirals and ellipticals. We incorporate the P(spiral) for all the galaxies in our sample in the provided cat-alog, for which the columns and respective descriptions can be found in Appendix J. 
+
+6. Conclusions and summary 
+
+In this work we provide the first homogeneous catalog of non–parametric morphological indices for galaxies in the Dark Energy Camera Legacy Survey (DECaLS, part of the Legacy survey, data release 10), limited to systems with e ff ective radius larger than 2 arcsec and brighter than 18.5 in the r-band apparent magnitude. Using our newly developed Python package galmex ,we measure the full CA[A S]S +MEGG set of non–parametric indices in a uniform way for more than one million DECaLS galaxies, and derive probabilistic spiral /elliptical classifications for about 1.7 million objects at z ≤ 0.15. The modular, trans-parent design of galmex ensures that every preprocessing and measurement step can be inspected, reproduced, and adapted, turning the catalog and the code into a long–lived resource for the community. Compared to previous morphology catalogs based on visual inspection or parametric profile fitting, our work delivers: (i) a deeper and wider–area dataset in the southern hemisphere, fully processed with a single, well–tested pipeline; (ii) a consistent set of C[A S]AS +MEGG indices measured with segmentation and Petrosian apertures tuned on realistic DECam simulations; and (iii) calibrated probabilistic classifications directly in the non–parametric parameter space. This combination provides a more homogeneous and physically interpretable view of galaxy structure than either visual labels alone or purely Sérsic–based decompositions. Our main conclusions about the reliability and use of non–parametric indices for morphology are: 1. C[A S]AS and MEGG indices – Using bona fide samples of spirals and ellipticals defined from Galaxy Zoo 1, we confirm that concentration is the most reliable CAS parameter for separating early and late types, whereas asymmetry–based indices ( A, AS , and S ) exhibit substantial overlap between the two classes and are therefore best suited to separating strongly disturbed systems rather than to performing a clean spiral–elliptical split (Fig. 5). In contrast, all indices in the MEGG system ( M20 , entropy, Gini, and G2) provide strong and consistent separation, highlighting their robustness as tracers of bulge– versus disk–dominated morphologies. 2. Connection with T–Type and visual classification – When compared with CNN–based T–Types (Fig. 6), the indices not only recover the global spiral–elliptical division, but also trace a continuous gradient along the Hubble sequence. The trend is particularly steep for M20 , E, Gini, and G2, which respond to substructure and clumpiness in spiral galaxies. Moreover, the indices reproduce the distributions obtained from Galaxy Zoo visual classifications (Fig. 7), demonstrat-ing that non–parametric indices capture, to first order, the same morphological traits perceived by human classifiers. 3. Machine–learning classification – Using their discrimina-tory power, we provide the indices as input features to a binary LightGBM classifier (Figs. 8 and 10), focused in dis-criminating between spirals and early-type systems (E +S0s). The model achieves high accuracy (97%) and produces well–calibrated probabilities of a galaxy being spiral, with entropy, concentration, and Gini consistently emerging as the most influential features. An important caveat that emerges from our analysis is that the reliability of control samples depends strongly on the adopted visual classification scheme. In particular, the top– level separation in Galaxy Zoo DECaLS into “smooth” versus “disk /feature” categories is not equivalent to the classical early– 
+
+> Article number, page 11 of 20
+
+A&A proofs: manuscript no. aa58260-25 
+
+versus late–type division. We show that the distributions of non–parametric indices for these DECaLS classes di ff er signifi-cantly from those of ellipticals and spirals selected from Galaxy Zoo 1, with the largest discrepancies appearing when comparing “smooth” to ellipticals. This mismatch reflects the subjectivity of the “smooth” category, which can include both bulge–dominated disks and genuine ellipticals, and leads to systematically di ff er-ent metric distributions. Moreover, training a machine–learning classifier on the DECaLS smooth /disk labels results in degraded performance compared to using the GZ1 spiral /elliptical sub-samples, directly a ff ecting both the reliability and purity of the resulting classifications. These biases are further compounded by the dependence of vote fractions on redshift, luminosity, and Petrosian radius, which imprint observational e ff ects onto the la-bels themselves. Together, these results highlight that the choice of training set and classification scheme is not a neutral decision: it can propagate systematic biases into automated classifications, underscoring the need for careful sample definition when bridg-ing visual projects and machine–learning frameworks. In summary, this work establishes a transparent and repro-ducible framework for morphological classification in wide– field imaging surveys. The combination of a publicly available catalog, a modular software package, and a calibrated machine– learning classifier provides the community with an extremely versatile toolset to study galaxy evolution. Because the cata-log covers the full DECaLS footprint and overlaps with ma-jor spectroscopic programs in the southern hemisphere (e.g. 4MOST /CHANCES and WEAVE), it enables a broad range of new science: from mapping morphology as a function of envi-ronment, mass, and star–formation activity, to selecting rare dis-turbed systems, such as mergers and jellyfish galaxies, in a uni-form way. The natural next step is to move beyond the simple spiral–elliptical dichotomy and explicitly incorporate disturbed and transitioning systems, as well as to extend the methodol-ogy toward higher redshifts. This will allow us to probe more directly the dynamical processes that drive morphological trans-formation, providing a more complete picture of galaxy evolu-tion across environments and cosmic time. 
+
+Acknowledgements. The full acknowledgements are available in Appendix 
+
+References 
+
+Abadi, M. G., Moore, B., & Bower, R. G. 1999, MNRAS, 308, 947 Abraham, R. G., Tanvir, N. R., Santiago, B. X., et al. 1996, MNRAS, 279, L47 Andrae, R., Jahnke, K., & Melchior, P. 2011, MNRAS, 411, 385 Astropy Collaboration, Price-Whelan, A. M., Lim, P. L., et al. 2022, The Astro-physical Journal, 935, 167 Astropy Collaboration, Price-Whelan, A. M., Sip˝ ocz, B. M., et al. 2018, The Astronomical Journal, 156, 123 Astropy Collaboration, Robitaille, T. P., Tollerud, E. J., et al. 2013, Astronomy & Astrophysics, 558, A33 Baldry, I. K., Glazebrook, K., Brinkmann, J., et al. 2004, ApJ, 600, 681 Balogh, M. L., Navarro, J. F., & Morris, S. L. 2000, ApJ, 540, 113 Barbary, K., Boone, K., McCully, C., et al. 2016, kbarbary /sep: v1.0.0 Barchi, P. H., de Carvalho, R. R., Rosa, R. R., et al. 2020, Astronomy and Com-puting, 30, 100334 Barnes, J. E. & Hernquist, L. E. 1991, ApJ, 370, L65 Bellhouse, C., Ja ff é, Y. L., McGee, S. L., et al. 2019, MNRAS, 485, 1157 Bershady, M. A., Jangren, A., & Conselice, C. J. 2000, AJ, 119, 2645 Bertin, E. & Arnouts, S. 1996, A&AS, 117, 393 Blanton, M. R., Kazin, E., Muna, D., Weaver, B. A., & Price-Whelan, A. 2011, AJ, 142, 31 Bournaud, F. 2016, in Astrophysics and Space Science Library, Vol. 418, Galac-tic Bulges, ed. E. Laurikainen, R. Peletier, & D. Gadotti, 355 Brier, G. W. 1950, Monthly Weather Review, 78, 1 Carollo, C. M. 1999, ApJ, 523, 566 Cassata, P., Cimatti, A., Franceschini, A., et al. 2005, MNRAS, 357, 903 Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P. 2011, arXiv e-prints, arXiv:1106.1813 Conselice, C. J. 2003, ApJS, 147, 1 Conselice, C. J., Bershady, M. A., & Jangren, A. 2000, ApJ, 529, 886 Conselice, C. J., Rajgor, S., & Myers, R. 2008, MNRAS, 386, 909 Dalla Vecchia, C. & Schaye, J. 2008, MNRAS, 387, 1431 Dekel, A., Birnboim, Y., Engel, G., et al. 2009, Nature, 457, 451 Dey, A., Schlegel, D. J., Lang, D., et al. 2019, AJ, 157, 168 Domínguez Sánchez, H., Huertas-Company, M., Bernardi, M., Tuccillo, D., & Fischer, J. L. 2018, MNRAS, 476, 3661 Dressler, A. 1980, ApJ, 236, 351 Dressler, A., Oemler, Augustus, J., Couch, W. J., et al. 1997, ApJ, 490, 577 Fabian, A. C. 2012, ARA&A, 50, 455 Ferrari, F., de Carvalho, R. R., & Trevisan, M. 2015, ApJ, 814, 55 Ferreira, L., Adams, N., Conselice, C. J., et al. 2022, ApJ, 938, L2 Förster Schreiber, N. M., Shapley, A. E., Erb, D. K., et al. 2011, ApJ, 731, 65 Genzel, R., Newman, S., Jones, T., et al. 2011, ApJ, 733, 101 Gunn, J. E. & Gott, J. Richard, I. 1972, ApJ, 176, 1 Haines, C., Ja ff é, Y., Tejos, N., et al. 2023, The Messenger, 190, 31 Harris, C. R., Millman, K. J., van der Walt, S. J., et al. 2020, Nature, 585, 357 Hubble, E. P. 1926, ApJ, 64, 321 Hunter, J. D. 2007, Computing in Science & Engineering, 9, 90 Ja ff é, Y. L., Poggianti, B. M., Moretti, A., et al. 2018, MNRAS, 476, 4753 Jin, S., Trager, S. C., Dalton, G. B., et al. 2024, MNRAS, 530, 2688 Johnston, K. V., Sigurdsson, S., & Hernquist, L. 1999, MNRAS, 302, 771 Ke, G., Meng, Q., Finley, T., et al. 2017, Advances in neural information pro-cessing systems, 30 Kolesnikov, I., Sampaio, V. M., de Carvalho, R. R., & Conselice, C. 2025, MN-RAS, 539, 2765 Kolesnikov, I., Sampaio, V. M., de Carvalho, R. R., et al. 2024, MNRAS, 528, 82 Kormendy, J. & Kennicutt, Jr., R. C. 2004, ARA&A, 42, 603 Larson, R. B., Tinsley, B. M., & Caldwell, C. N. 1980, ApJ, 237, 692 Lintott, C. J., Schawinski, K., Slosar, A., et al. 2008, MNRAS, 389, 1179 Lotz, J. M., Davis, M., Faber, S. M., et al. 2008, ApJ, 672, 177 Lotz, J. M., Primack, J., & Madau, P. 2004, AJ, 128, 163 Lundberg, S. M. & Lee, S.-I. 2017, in Advances in Neural Information Process-ing Systems, ed. I. Guyon, U. V. Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan, & R. Garnett, Vol. 30 (Curran Associates, Inc.) McKinney, W. 2010, in Proceedings of the 9th Python in Science Conference, ed. S. van der Walt & J. Millman, 56–61 Nair, P. B. & Abraham, R. G. 2010, ApJS, 186, 427 Pawlik, M. M., Wild, V., Walcher, C. J., et al. 2016, MNRAS, 456, 3032 Peebles, P. J. E. 1969, ApJ, 155, 393 Peng, C. Y., Ho, L. C., Impey, C. D., & Rix, H.-W. 2002, AJ, 124, 266 Peng, C. Y., Ho, L. C., Impey, C. D., & Rix, H.-W. 2010, AJ, 139, 2097 Planck Collaboration, Ade, P. A. R., Aghanim, N., et al. 2016, A&A, 594, A13 Poggianti, B. M., Moretti, A., Gullieuszik, M., et al. 2017, ApJ, 844, 48 Reback, J., Jbrockmendel, McKinney, W., et al. 2022, Zenodo Rodriguez-Gomez, V., Snyder, G. F., Lotz, J. M., et al. 2019, MNRAS, 483, 4140 Rosa, R., De Carvalho, R., Sautter, R., et al. 2018, Monthly Notices of the Royal Astronomical Society: Letters, 477, L101 Sanchez-Janssen, R. & Gadotti, D. A. 2013, MNRAS, 432, L56 Sandage, A. & Bedke, J. 1994, The Carnegie atlas of galaxies, Vol. 638 Sandage, A. & Tammann, G. A. 1987, A Revised Shapley-Ames Catalog of Bright Galaxies Schawinski, K., Urry, C. M., Simmons, B. D., et al. 2014, MNRAS, 440, 889 Sérsic, J. L. 1963, Boletin de la Asociacion Argentina de Astronomia La Plata Argentina, 6, 41 Sersic, J. L. 1968, Atlas de Galaxias Australes Simard, L., Mendel, J. T., Patton, D. R., Ellison, S. L., & McConnachie, A. W. 2011, ApJS, 196, 11 Simard, L., Willmer, C. N. A., Vogt, N. P., et al. 2002, ApJS, 142, 1 Springel, V. & Hernquist, L. 2005, ApJ, 622, L9 Strateva, I., Ivezi´ c, Ž., Knapp, G. R., et al. 2001, AJ, 122, 1861 Teklu, A. F., Remus, R.-S., Dolag, K., et al. 2015, ApJ, 812, 29 Toomre, A. & Toomre, J. 1972, ApJ, 178, 623 Van Rossum, G. & Drake, F. L. 2009, Python 3 Reference Manual (Scotts Valley, CA: CreateSpace) Virtanen, P., Gommers, R., Oliphant, T. E., et al. 2020, Nature Methods, 17, 261 Walmsley, M., Lintott, C., Géron, T., et al. 2022, MNRAS, 509, 3966 Wetzel, A. R., Tinker, J. L., Conroy, C., & van den Bosch, F. C. 2013, MNRAS, 432, 336 
+
+Article number, page 12 of 20 Sampaio et al.(2026): Morphology in DECaLS 
+
+Appendix A: Acknowledgements 
+
+We thank the referee for the suggestions that helped improv-ing this paper. This research made use of the Python program-ming language (Van Rossum & Drake 2009) and the packages NumPy (Harris et al. 2020), SciPy (Virtanen et al. 2020), As-tropy (Astropy Collaboration et al. 2013, 2018, 2022), pandas (McKinney 2010; Reback et al. 2022), and Matplotlib (Hunter 2007). This work has been supported by the Agencia Na-cional de Investigación y Desarrollo (ANID) through the Mil-lennium Science Initiative Program NCN2024_112 (VMS, YLJ, HME); the BASAL project FB210003 (YLJ, HME, AM); the FONDECYT Regular projects 1241426 and 1230441 (YLJ) and 1251882 (AM); and the FONDECYT project 3250511 (CLD). VMS acknowledges additional support from ESO through grant ORP026 /2021, and CLD from the ESO Comité Mixto through grant ORP037 /2022. AM further acknowledges funding from the HORIZON-MSCA-2021-SE-01 Research and Innovation Pro-gramme under the Marie Sklodowska-Curie grant agreement No. 101086388. VMS thanks RRdC and IK for the fruitful discus-sions. 
+
+Appendix B: Data Availability 
+
+The data underlying this article can be requested to the corre-sponding author. We also make the separated elliptical and spiral catalogs available here and here, respectively, and the full ∼ 1.7million galaxies catalog here. A readme file can be found here. It will also be provided in the Strasbourg astronomical Data Cen-ter (CDS), and accessible from the Astrophysics Data System (ADS). All the codes used to generate results and plots of this paper are available at https://github.com/vitorms99 .
+
+Appendix C: Comparison between Galaxy Zoo 1 and Galaxy Zoo DECALS 
+
+In this Appendix, we present a comparison between the Galaxy Zoo 1 and Galaxy Zoo DECaLS. In Fig. C.1, we show the vari-ation of fsmooth for ellipticals, and fdisk for spirals, as a function of redshift, absolute magnitude in the r-band and Petrosian ra-dius. First, fsmooth is always smaller than fdisk . Irrespective of considered panel, the Galaxy Zoo 1 ellipticals is classified as "smooth" by roughly 70% of the voters. This may indicate a di-rect influence of the adopted scheme in Galaxy Zoo DECaLS, in which the top-level question ("smooth" or "disk /feature") is considerably subjective, and the concept of an "smooth" is somewhat vague. Thus, even in elliptical galaxies (according to Galaxy Zoo 1), the vote fraction does not reach high percentages (≥ 80%). This has relevant implications to CNN models that use the Galaxy Zoo DECaLS as training samples. To investigate the variations in the metrics when using sub-samples selected directly from the Galaxy Zoo DECaLS, we se-lect galaxies "smooth" and "disk /feature" subsamples as it fol-lows: 
+
+– Smooth: ( fsmooth ≥ 0.7) and ( fdisk ≤ 0.3); 
+
+– Disk /Feature: ( fsmooth ≤ 0.3) and ( fdisk ≥ 0.7). In Fig. C.2, we show the CA[A S]S +MEGG distributions for the "smooth" and "disk /feature" samples (dashed lines), besides the Galaxy Zoo 1 Spiral and Elliptical samples (solid lines). Quan-titatively, we compare the smooth with the elliptical, and the disk /feature with the disk distributions using the energy distance 0.00 0.02 0.04 0.06 0.08 0.10 0.12 
+
+> Redshift
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> 1.1
+> Vote Fraction
+> (fsmooth  or  fdisk )
+
+(a)       
+
+> Spirals Ellipticals
+> 24 23 22 21 20 19
+> r-band Absolute magnitude
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> 1.1
+> Vote Fraction
+> (fsmooth  or  fdisk )
+
+(b)     
+
+> 510 15 20 25
+> r-band Petrosian radius (arcseconds)
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> 1.1
+> Vote Fraction
+> (fsmooth  or  fdisk )
+
+(c)      
+
+> Fig. C.1. Variation of fsmooth for ellipticals, and fdisk for spirals, as a function of (from top to bottom) redshift, absolute magnitude in the r-band and Petrosian radius (in arcseconds).
+
+parameter. The energy distance between two probability distri-butions P and Q is defined as 
+
+DE (P, Q) = 2 E∥X − Y∥ − E∥X − X′∥ − E∥Y − Y′∥, (C.1) where X, X′ ∼ P and Y, Y′ ∼ Q are independent random vari-ables, and E denotes the expectation of each comparison. This metric is non–negative and equals zero if and only if P = Q,making it a useful tool for quantifying di ff erences. Notably, the larger di ff erences are found in the comparison between smooth and elliptical subsamples, reinforcing that classifying galaxies as "smooth" or "disk /feature" is not equivalent to the first or-der separation between ellipticals and spirals. Moreover, panels  
+
+> Article number, page 13 of 20 A&A proofs: manuscript no. aa58260-25
+
+(a), (f), and (g) show the results for the metrics pointed as the most relevant for the LightGBM method, with the di ff erence in C (second in feature importance) being the largest among all non-parametric indexes. Finally, we show in Fig. C.3 the lightGBM performance when using the "smooth" and "disk /feature" subsamples as train-ing set. Notably, the performance is considerably worse than when we use the elliptical /spiral subsamples. While the accu-racy for disk /feature is similar between Figs.8 and C.3, the major di ff erence is found in the counterpart. Again, this rein-forces our suggestion that the separation between "smooth" and "disk /feature" is considerably subjective, and does not link di-rectly to the elliptical /spiral separation, especially in the case of ellipticals. 
+
+Appendix D: Comparison between spectroscopic and photometric redshifts 
+
+In this appendix, we present the comparison between spectro-scopic and photometric redshift, which justifies our choice of applying a redshift threshold in our sample, even though using a photometric redshift. In Fig. D.1, we show the normalized den-sity of galaxies in the zspec vs. zphot diagram. The plot encom-passes a total of 819,043 galaxies. The red dashed lines denote the interquartile range (IQR), the solid red line shows the me-dian at each zspec , and the white dotted line shows the threshold we adopt in this work. Notably, in the local universe ( z < 0.3) both quantities show excellent agreement, ensuring that we are not introducing bias in our morphological classifications due to uncertainties in the photometric redshift. 
+
+Appendix E: Metrics definition 
+
+The galmex package computes a comprehensive set of non-parametric morphological indices, each designed to capture dif-ferent aspects of galaxy structure. Below we summarize their definitions: 
+
+– Concentration (C): Quantifies how centrally concentrated the light distribution is (Bershady et al. 2000). It is defined as 
+
+C = 5 log r80 
+
+r20 
+
+!
+
+, (E.1) where r20 and r80 are the radii enclosing 20% and 80% of the total flux, respectively. Larger values correspond to more bulge-dominated systems. 
+
+– Asymmetry (A): Measures the degree of 180 ◦ rotational symmetry (Conselice et al. 2000). It is computed as 
+
+A = min 
+
+> (xc,yc)
+
+P |I(i, j) − I180 (i, j)|
+
+P |I(i, j)|
+
+!
+
+−
+
+P |B(i, j) − B180 (i, j)|
+
+P |I(i, j)|
+
+!
+
+,
+
+(E.2) where I(i, j) is the galaxy flux, I180 (i, j) is the image rotated by 180 ◦ about a center ( xc, yc), and the second term subtracts the contribution from background noise estimated in a rep-resentative segment ( B) in the image containing only back-ground pixels. The galaxy center is iteratively adjusted to minimize the galaxy term. 
+
+– Shape Asymmetry (A S): Similar to A, but applied to the bi-nary segmentation map instead of the flux image (Pawlik et al. 2016). Measures rotational asymmetry in the segmenta-tion mask rather than in the flux distribution, thereby enhanc-ing sensitivity to faint asymmetric structures such as tidal features (Pawlik et al. 2016). The shape asymmetry is de-fined as 
+
+AS = 12Npix 
+
+> Npix
+
+X
+
+> i=1
+
+|M(i, j) − M180 (i, j)| , (E.3) where M(i, j) is the binary segmentation map, M180 (i, j) is its 180 ◦ rotation about the galaxy center, and Npix is the num-ber of pixels in the mask. AS ranges from 0 for perfectly symmetric masks to 1 for completely asymmetric ones, and is particularly e ff ective at identifying mergers and disturbed morphologies. 
+
+– Smoothness (S): this measures the fraction of light in high-frequency structures (Conselice 2003). It is defined as 
+
+S =
+
+P |I(i, j) − IS (i, j)|
+
+P |I(i, j)| , (E.4) where IS (i, j) is a smoothed version of the image (in this case, convolved with a boxcar filter of width 0 .25 RP). There-fore, high values of smoothness actually means a higher de-gree of clumpiness. Unlike the original definition, we omit the factor of 10 to ensure that it will be in range 0 to 1, simi-lar to the other metrics. 
+
+– Second-order moment of light (M20): Measures the spatial distribution of the brightest regions (Lotz et al. 2004). The total second-order moment is 
+
+Mtot =
+
+X
+
+> i
+
+fi
+
+h(xi − xc)2 + (yi − yc)2i , (E.5) where fi is the flux in pixel i, and ( xc, yc) is the galaxy center. 
+
+M20 is then 
+
+M20 = log 
+
+Pi Mi
+
+Mtot 
+
+!
+
+, with 
+
+X
+
+fi ≤ 0.2Ftot . (E.6) More negative values indicate compact, bulge-like struc-tures, while higher values trace extended or clumpy star for-mation. 
+
+– Shannon Entropy (E): Quantifies the uniformity in the flux distribution (Ferrari et al. 2015). Let pi = fi/ P j f j be the normalized flux distribution. Then 
+
+E = −
+
+> Np
+
+X
+
+> i=1
+
+pi log pi, (E.7) where Np is the number of bins used in computation. Dif-ferently from previous works, instead of fixing the number of bins for all galaxies, we define the bin width for each galaxy using the relation IQR /N1/3, where IQR is the inter-quartile range ( Q75 − Q25 ) and N is the number of pixels in the segmentation mask. Lower entropy values correspond to centrally concentrated systems, while higher values indicate more uniform, disk-like distributions. 
+
+– Gini Index (G): Measures the inequality of the flux distribu-tion across pixels (Lotz et al. 2004). For pixel fluxes fi sorted in ascending order, 
+
+G = 1¯f N p(Np − 1) 
+
+> Np
+
+X
+
+> i=1
+
+(2 i − Np − 1) fi, (E.8) where ¯ f is the mean pixel flux. G ranges from 0 (uniform dis-tribution) to 1 (all flux in one pixel). Bulge-dominated sys-tems tend to have high G.
+
+> Article number, page 14 of 20
+
+Sampaio et al.(2026): Morphology in DECaLS 2 3 4 5
+
+C
+
+0.0 
+
+0.5 
+
+1.0 
+
+1.5 
+
+> Density
+
+(a) 
+
+0.08 
+
+0.42 
+
+> Spiral
+> Ellipticals
+> Disk/Feature
+> Smooth
+
+0.0 0.1 0.2 
+
+A
+
+0
+
+5
+
+10 
+
+15 
+
+20 
+
+> Density
+
+(b) 
+
+0.01 
+
+0.02 
+
+0.0 0.1 0.2 0.3 
+
+AS
+
+0
+
+5
+
+10 
+
+15 
+
+20 
+
+> Density
+
+0.05 
+
+0.03 
+
+(c) 
+
+0.0 0.1 0.2 0.3 
+
+S
+
+0
+
+5
+
+10 
+
+15 
+
+20 
+
+> Density
+
+0.12 
+
+0.05 
+
+(d) 
+
+3 2 1
+
+M20 
+
+0
+
+1
+
+2
+
+3
+
+> Density
+
+0.02 
+
+0.21 
+
+(e) 
+
+0.4 0.6 0.8 1.0 
+
+E
+
+0
+
+5
+
+10 
+
+> Density
+
+0.05 
+
+0.15 
+
+(f) 
+
+0.2 0.4 0.6 
+
+G
+
+0
+
+5
+
+10 
+
+15 
+
+> Density
+
+0.09 
+
+0.13 
+
+(g) 
+
+0.0 0.5 1.0 
+
+G2 
+
+0
+
+2
+
+4
+
+6
+
+> Density
+
+0.09 
+
+0.17 
+
+(g) 
+
+Fig. C.2. Non parametric indices distribution for the smooth (red dashed), disk /feature (blue dashed), elliptical (red solid), and spiral (blue solid) subsamples. In each panel we also show the energy distance value for the comparison between smooth and elliptical distributions (in red), and between disk /feature and spiral distributions (in blue). Notably, even though adopting a considerable restrictive threshold for the smooth and disk /feature subsamples, there are significant di ff erences in the metrics distribution. 0.0 0.2 0.4 0.6 0.8 1.0 
+
+False Positive Rate 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> True Positive Rate
+
+(a) ROC curve      
+
+> ROC
+> (AUC=0.910±0.013)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Recall (Spiral) 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Precision (Spiral)
+
+(b) Precision-Recall      
+
+> Mean PR
+> (AP=0.986±0.002)
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Predicted P(Spiral) 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Observed freq (Spiral)
+
+(c) Calibration curve  
+
+> Brier=0.069
+> [0.063,0.076]
+> Smooth Disk/Feat.
+
+Predicted   
+
+> Smooth
+> Disk/Feat.
+> True
+> 40.3% ± 3.9 59.7% ± 3.9
+> 1.8% ± 0.4 98.2% ± 0.4
+
+(d) Confusion Matrix     
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100 Row %
+> 0200 400 600
+
+Boosting iterations (trees) 
+
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> Binary log loss
+
+(e) Loss function      
+
+> Train
+> Validation
+> 0.0 0.2 0.4 0.6 0.8 1.0
+
+Predicted P(Spiral) 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> Percentage
+
+(f) Results for test sample 
+
+> True Disk/Feat.
+> True Smooth
+
+Fig. C.3. Similar to Fig. 8, but using the the smooth and disk /feature as training samples. 
+
+– Gradient Pattern Asymmetry (G2): Based on Gradient Pat-tern Analysis, G2 measures bilateral asymmetries in the im-age gradient field (Rosa et al. 2018). The gradient vector field is constructed across the image, pairing vectors equidistant from the galaxy center. Symmetric pairs are discarded, while asymmetric vectors are used to define the “confluence” pa-rameter 
+
+c f =
+
+Pi via
+
+Pi |via| , (E.9) where via are the asymmetric vectors. The G2 index is then given by 
+
+G2 = VA
+
+V (1 − c f ), (E.10) where VA is the number of asymmetric vectors, V the total number of pixels, and c f the confluence correction. 
+
+Article number, page 15 of 20 A&A proofs: manuscript no. aa58260-25 0.0 0.1 0.2 0.3 
+
+zspec 
+
+0.00 
+
+0.05 
+
+0.10 
+
+0.15 
+
+0.20 
+
+0.25 
+
+0.30 
+
+> zphot
+> Median
+> IQR
+
+0.0 
+
+0.2 
+
+0.4 
+
+0.6 
+
+0.8 
+
+1.0 Normalised Density           
+
+> Fig. D.1. Number density of galaxies in the zspec vs. zphot diagram. The solid and dashed red lines denote the median and IQR of the distribution at a given zspec . The agreement between zspec vs. zphot ensures that we are not introducing bias in our morphological classification due to adopting a cut in photometric redshift.
+
+Appendix F: Description of adopted image pre-processing 
+
+In this appendix, Fig. F.1 shows an example of the performance of the pre-processing pipeline adopted. 
+
+Appendix G: The effect of aperture geometry in petrosian radius estimate 
+
+The Petrosian radius is commonly defined as the radius rP at which the ratio between the mean surface brightness in an annu-lus around r and the mean surface brightness within r reaches a fixed value ηcrit (typically ηcrit = 0.2): 
+
+η(r) ≡ ⟨I⟩[0 .8 r, 1.25 r]
+
+⟨I⟩<r
+
+= ηcrit . (G.1) In practice, most implementations use circular apertures, i.e. r is the circular radius and the annulus is a circular ring. However, galaxies are generally not circularly symmetric. For an intrinsi-cally flattened galaxy with semi–major axis a and semi–minor axis b = qa (q = b/a < 1), the isophotes are better described by ellipses. In that case, the “natural” Petrosian radius is an ellipti-cal semi–major axis rP,ell measured in elliptical coordinates. When circular apertures are used for an intrinsically elliptical system, the Petrosian annulus inevitably includes a substantial fraction of pixels that belong mostly to the sky background or to unrelated sources (“trash” pixels). A simple way to see this is to compare a circular annulus with radius r = a to an elliptical an-nulus with the same semi–major axis a and axis ratio q. The area of the circular annulus scales as Acirc ∝ πr2, whereas the area of the corresponding elliptical annulus scales as Aell ∝ πab = πqa 2.For a given a, only a fraction ≃ q of the circular annulus over-laps the galaxy isophotes, while a fraction ≃ 1−q samples mainly background. For a highly flattened system with q = 0.3, this im-plies that roughly 70 % of the pixels in the circular annulus are eff ectively “trash” pixels, whereas for a round galaxy q ≈ 1 this eff ect is negligible. Because the Petrosian ratio η(r) is defined as a mean sur-face brightness in the annulus, the inclusion of a large and q-dependent fraction of background pixels systematically lowers 
+
+⟨I⟩[0 .8 r, 1.25 r] with respect to the elliptical case. The mean sur-face brightness within r, ⟨I⟩<r, is less a ff ected because it is dom-inated by high S /N galaxy pixels. As a consequence, η(r) com-puted from circular apertures declines more rapidly with increas-ing r than the corresponding elliptical ηell (r), and the condition 
+
+η(r) = ηcrit is reached at a smaller radius: 
+
+RP,circ < RP,ell , (G.2) with the bias increasing as the axis ratio q decreases. This be-havior is highlighted in Fig. G.1, which shows the di ff erence be-tween the circular and elliptical Petrosian radius as a function of the axis ratio (b /a) of the object. This is calculated using our joint Sp and Ell samples. Notably, the use of circular apertures for ob-jects with small axis ratio can introduce bias up to 5 arcseconds, which in the DECam resolution means ∼ 20 pixels, and can di-rectly a ff ect the creation of the segmentation mask, for instance. The bias is driven by geometry: for a flattened system, a circular annulus with radius equal to the semi-major axis inevitably in-cludes a substantial number of pixels that lie beyond the galaxy isophotes, especially toward the galaxy’s outskirts. In contrast, an elliptical annulus with the same semi-major axis but matched axis ratio traces the isophotes and therefore better follows the true light distribution. 
+
+Appendix H: Effect of segmentation in metrics estimation 
+
+In this appendix we present how segmentation masks can af-fect the observed separation between Ell and Sp for each non-parametric index. Notably, the only index that does not rely on segmentation is C, thus it is not included in this analysis. In Fig. H.1 we show how the overlap (calculated through Eq. 3) be-tween Sp and Ell distributions vary as a function of chosen seg-mentation. We considered four methods to define the segmenta-tion mask, and parametrized the segmentation mask through the parameter k as follows: 
+
+– Circular aperture (red curve) – circle with radius k × Rp;
+
+– Elliptical aperture (green curve) – elliptise with semi-major axis k × Rp;
+
+– Intensity limited (blue curve) – only pixels with intensity greater than I(k × RP) are kept in the segmentation mask; 
+
+– k-sigma (magenta curve) – the segmentation mask retrieved from the SExtractor detection when using a detection thresh-old equal to k (note that in this case, in opposition to the others, larger k means more restrict!); In addition, we highlight using di ff erent symbols the segmenta-tion masks used in previous works: 1) Conselice (2003) (C03, empty red circle) – where the CAS parameters are defined; 2) Lotz et al. (2004) (L04, empty blue circle) – inclusion of Gini index and M20; 3) Barchi et al. (2020) (B20, empty magenta cir-cle) – where they included Shannon Entropy, and G2; and 4) this work – where we adopt the CA[A S]S + MEGG sytem as input for a machine learning method to estimate spiral probabilities (empty blue square). In particular for the A S parameter (panel b), we show only the intensity limited and k-sigma results, as, by definition, the other two yields a shape asymmetry equals to 0, as can be seen from equation E.3. 
+
+> Article number, page 16 of 20 Sampaio et al.(2026): Morphology in DECaLS
+
+(a) Original 
+
+Image 
+
+(b) Detected 
+
+Objects 
+
+(e) Detection 
+
+Mask 
+
+(c) Clean 
+
+Image      
+
+> 510 15 20 25 30
+> R (pixels)
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> (R)
+
+(d) Profile Rp
+
+> Rkron
+> R50
+
+(f) Segmentation 
+
+Mask            
+
+> Fig. F.1. Illustration of the galmex pre-processing steps. Panels show: (a) the original image; (b) object detection; (c) clean image; (d) Petrosian profile with key radii marked ( Rp,Rkron ,R50 ); (e) detection mask; and (f) the final segmentation mask used for morphological measurements. 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+
+Axis ratio (b/a)  
+
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> RP[Ellip.  Circ] (arcsec)
+> Fig. G.1. Di ff erence between the Petrosian radius estimated using ellip-tical and circular apertures, as a function of the axis ratio of the galaxy. Notably, the di ff erence increases for decreasing axis ratio, highlighting the e ff ect of adopting mismatching geometry when calculating the char-acteristic radii.
+
+Comparison between the di ff erent panels shows that A, A S,and S are the indices more sensitive to the choice of the segmen-tation mask. On the other hand, panels (d), (e), and (g) shows that M20, E, and G2 are the most stable with respect to the seg-mentation mask choice, which highlights these indexes as more robust with respect to variations in the pixel values distribution considered. Particularly for Gini index, shown in panel (f), over-lap increases with k for the ellipse and intensity limited cases, which can be explained by the inclusion of pixels ”close´´ to the background, thus setting smaller values for the "lowest income" of a pixel. In overall, our selection of intensity ensures that we are always sampling the same portion of the galaxy luminosity profile, and the choice of k = 1.0 guarantees that we are not get-ting any artificial increased overlap between Sp and Ell galaxies. 
+
+Appendix I: Metrics comparison with Statmorph 
+
+In this Appendix, we show a simple comparison between the metrics C, G, and M20 estimated using galmex and statmorph 
+
+for a sample of 50 randomly selected galaxies. The C index is select due to its independence of the segmentation mask, while G and M20 are selected due to statmorph measuring those in-dexes within a segmentation mask analogue to the one adopted in this work. In overall, the comparison, shown in Fig.I.1, re-veals agreement between the codes, and deviations from 1-to-1 line can be explained due to small deviations in the provided segmentation mask. Notably, the major advantage of galmex 
+
+over statmorph is the flexibility of the first. For each metric, in galmex , the user can select the "rule" used to define the seg-mentation mask, whilst this is hard coded in statmorph . Ad-ditionally, all the pre-processing steps can be easily fine tuned within the galmex graphical interface. Therefore, this test shows that the flexibility of galmex comes with no cost with respect to reliability of the metrics. 
+
+Appendix J: Example table 
+
+In this appendix we present the structure of the catalog contain-ing galaxy properties and non-parametric indices measured with 
+
+galmex for the ∼ 1.7 million galaxies described in Section 2. Table J.1 shows the description of each column of the catalog 
+
+> Article number, page 17 of 20
+
+A&A proofs: manuscript no. aa58260-25 0.0 
+
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Normalized Overlap
+
+(a) Asymmetry 
+
+> Circle
+> Ellipse
+> Intensity
+> k-sigma
+> This Work
+> C03
+> L04
+> B20
+
+(b) Shape 
+
+Asymmetry 
+
+(c) Smoothness    
+
+> 0.5 1.0 1.5 2.0
+> k
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Normalized Overlap
+
+(d) M20    
+
+> 0.5 1.0 1.5 2.0
+> k
+
+(e) Shannon Entropy    
+
+> 0.5 1.0 1.5 2.0
+> k
+
+(f) Gini Index    
+
+> 0.5 1.0 1.5 2.0
+> k
+
+(g) Gradient Pattern 
+
+Asymmetry (G2) 
+
+Fig. H.1. Variation of the overlap between Sp and Ell galaxies distributions for each segmentation-mask dependent non-parametric index (each panel). We present the results for 4 di ff erent types of segmentation (each colored curve), and highlight the choice of previous works in the literature in comparison to the adopted in this work (non-filled symbols). See the text for the definition of the meaning of k for each segmentation method. 
+
+Fig. I.1. Comparison between the C (top panel), G (middle panel), and M20 (bottom panel) metrics estimated using the galmex (y-axis) and 
+
+statmorph (x-axis) packages. Notably, both show good agreement with respect to the estimated values, irrespective of the panel considered. 
+
+made public, whereas Tables J.2 and J.3 show the description of warnings and errors, respectively. 
+
+Article number, page 18 of 20 Sampaio et al.(2026): Morphology in DECaLS  
+
+> Table J.1. Description of the columns of the provided catalog.
+
+Name Description Units ls_id Unique object identifier in the Legacy Surveys /DECaLS database. N/Ara Right ascension (ICRS /J2000 as provided by the survey catalog). degrees dec Declination (ICRS /J2000 as provided by the survey catalog). degrees a Object semi-major axis (from detection /segmentation ellipse). Pixels b Object semi-minor axis (from detection /segmentation ellipse). Pixels theta Object position angle (from +x to major axis). Radians npix Number of pixels in the detection segmentation mask. N/Arp Petrosian radius computed with an elliptical aperture. arcsec r50 Radius containing 50% of the flux computed with an elliptical aperture. arcsec rkron Kron radius. arcsec maingalaxy_flag 1 if no object is detected at the image center (e.g., center pixel label ≤ 0). 0/1rflag_pixels Radius of the circular aperture used in flagging /neighbor checks (1 .5 Rp). Pixels edge_flag 1 if there are zero /NaN-valued pixels within the flagging area. 0/1N_rcheck Number of secondary objects within the flagging area. N/ANsec_flag 1 if there are more than 4 objects within the flagging area. 0/1N_deltaMAG Number of secondary objects with magnitude di ff erence smaller than 1. N/AminMAG_di ff Magnitude di ff erence to the brightest secondary object. N/Adist_minMAG_di ff Distance to the brightest secondary object. Pixels BrightObj_flag 1 if there is a bright object within the flagging radius (as defined in the pipeline). 0/1normDist_closest Distance to the closest secondary object, normalized by Rp. N/Amup Average pixel value at 1 Rp (surface-brightness proxy at the Petrosian scale). Image units C Concentration index (e.g., based on r80 and r20 ). N/Ar20 Radius containing 20% of the flux (elliptical aperture). Pixels r80 Radius containing 80% of the flux (elliptical aperture). Pixels A Asymmetry index. N/AAshape Shape asymmetry index (“ A3” in the warning bitmask). N/AS Smoothness index. N/AM20 M20 index. N/Axc_M20 Pixel x coordinate that minimizes the total second-order moment. Pixel yc_M20 Pixel y coordinate that minimizes the total second-order moment. Pixel E Shannon entropy index. N/AGini Gini index. N/AG2 Gradient pattern asymmetry index (GPA). N/Apspiral LightGBM probability that the galaxy is spiral (only available for the 1.7 million catalog). N/Astatus Processing status: 0 = full success; 1 = not success (failed); 2 = success with warnings. 0/1/2warn_mask Warning bitmask (decoded in Table J.2). see Table J.2 err_code Error code explaining why processing failed (decoded in Table J.3). see Table J.3           
+
+> Table J.2. Decoding of the warn_mask bitmask. A non-zero warn_mask indicates one or more warnings were raised during processing. Example:
+> warn_mask =3 means FLAG_FAIL (1) +CUTOUT_FAIL (2).
+
+Bit (1 ≪ n) Decimal Name Meaning (when it gets set in the code) – 0 NONE No warnings (special value). 1 ≪ 0 1 FLAG_FAIL Flagging step failed . 1 ≪ 1 2 CUTOUT_FAIL Cutout extraction failed. 1 ≪ 2 4 A1_FAIL Conselice asymmetry computation failed. 1 ≪ 3 8 A2_FAIL Ferrari asymmetry computation failed. 1 ≪ 4 16 A3_FAIL Shape asymmetry (Ashape / “A3”) computation failed. 1 ≪ 5 32 S1_FAIL Conselice smoothness computation failed. 1 ≪ 6 64 S2_FAIL Ferrari smoothness computation failed. 1 ≪ 7 128 M20_FAIL M20 computation failed. 1 ≪ 8 256 ENTROPY_FAIL Shannon entropy computation failed. 1 ≪ 9 512 GINI_FAIL Gini computation failed. 1 ≪ 10 1024 G2_FAIL G2 (GPA) computation failed.     
+
+> Article number, page 19 of 20 A&A proofs: manuscript no. aa58260-25
+> Table J.3. Meaning of the err_code values.
+
+Decimal value Name Meaning 0 OK Completed the pipeline (even if there were warnings). 10 FITS_READ Couldn’t open /read the FITS image. 20 SEP_FAIL SEP /detection failure. 21 NO_CENTER_OBJ No galaxy detected at the image center. 22 SEG_EMPTY Empty /no pixels in segmentation mask. 23 SEP_PIXSTACK SEP “pixstack /internal pixel bu ff er full” type failure. 24 TOO_MANY_DETECTIONS Too many detections ( ≥ 1000). 30 PETRO_BAD Petrosian radii invalid ( Rp not finite or ≤ 0). 31 RECENTER_FAIL Recentering would exceed image bounds. 32 CUTOUT_FAIL Cutout failure. 40 ASYM_FAIL Asymmetry failure. 41 SMOOTH_FAIL Smoothness failure. 50 M20_FAIL M20 failure. 51 ENTROPY_FAIL Entropy failure. 52 GINI_FAIL Gini failure. 53 G2_FAIL G2 failure. 60 FLAG_FAIL Flagging failure. 99 UNKNOWN Anything not classified into one of the above.

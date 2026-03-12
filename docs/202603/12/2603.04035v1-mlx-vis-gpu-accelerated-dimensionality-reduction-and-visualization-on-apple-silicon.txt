@@ -1,0 +1,116 @@
+Title: mlx-vis: GPU-Accelerated Dimensionality Reduction and Visualization on Apple Silicon
+
+URL Source: https://arxiv.org/pdf/2603.04035v1
+
+Published Time: Thu, 05 Mar 2026 02:01:38 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# mlx-vis: GPU-Accelerated Dimensionality Reduction and Visualization on Apple Silicon 
+
+Han Xiao han.xiao@jina.ai 
+
+Jina AI by Elastic 
+
+Editor: 
+
+Abstract 
+
+mlx-vis is a Python library that implements six dimensionality reduction methods and a k-nearest neighbor graph algorithm entirely in MLX, Apple’s array framework for Ap-ple Silicon. The library provides UMAP, t-SNE, PaCMAP, TriMap, DREAMS, CNE, and NNDescent, all executing on Metal GPU through a unified fit transform interface. Beyond embedding computation, mlx-vis includes a GPU-accelerated circle-splatting ren-derer that produces scatter plots and smooth animations without matplotlib, composing frames via scatter-add alpha blending on GPU and piping them to hardware H.264 encod-ing. On Fashion-MNIST with 70,000 points, all methods complete embedding in 2.1–3.8 seconds and render 800-frame animations in 1.4 seconds on an M3 Ultra, with the full pipeline from raw data to rendered video finishing in 3.6–5.2 seconds. The library depends only on MLX and NumPy, is released under the Apache 2.0 license, and is available at 
+
+https://github.com/hanxiao/mlx-vis .
+
+Keywords: dimensionality reduction, visualization, Apple Silicon, MLX, Metal, GPU acceleration, neighbor embedding 
+
+1 Introduction 
+
+Dimensionality reduction is a core operation in exploratory data analysis, transforming high-dimensional data into two-dimensional representations that reveal cluster structure, continuity, and outliers. The field has produced a rich family of methods: t-SNE (van der Maaten and Hinton, 2008) and UMAP (McInnes et al., 2018a) preserve local neighbor-hoods through neighbor embedding, PaCMAP (Wang et al., 2021) and TriMap (Amid and Warmuth, 2019) use triplet-based objectives to balance local and global structure, DREAMS (Kury et al., 2026) hybridizes t-SNE with PCA regularization, and CNE (Dam-rich et al., 2023) unifies neighbor embedding under contrastive learning. Other notable methods include PHATE (Moon et al., 2019), which captures trajectory structure through diffusion potentials, and StarMAP (Watanabe et al., 2025), which adds PCA centroid at-traction to UMAP. We selected the six methods above to cover the major algorithmic families – neighbor embedding, triplet-based, hybrid, and contrastive – while keeping the library focused. Diffusion-based methods like PHATE require matrix exponentiation and MDS, introducing architectural complexity that would compromise the pure MLX design. Reference implementations of these methods are distributed across independent Python packages with heterogeneous dependencies. The umap-learn package (McInnes et al., 2018b) relies on numba and pynndescent ; openTSNE (Poliˇ car et al., 2019) wraps C and Cython extensions; pacmap and trimap each carry their own dependency trees. All are            
+
+> arXiv:2603.04035v1 [cs.LG] 4 Mar 2026 Xiao
+> X∈Rn×dNNDescent
+> UMAP t-SNE PaCMAP
+> TriMap DREAMS CNE
+> Y∈Rn×2
+> GPU Renderer PNG / MP4
+> Metal GPU (Apple Silicon Unified Memory)
+
+Figure 1: The mlx-vis pipeline. All stages run on Metal GPU. CPU-bound, performing gradient updates and neighbor searches on the CPU even when GPU hardware is available. On Apple Silicon machines, where CPU and GPU share unified memory, this leaves substantial compute capacity unused. 
+
+mlx-vis addresses both the fragmentation and the performance gap. It reimplements all six methods plus NNDescent k-nearest neighbor search (Dong et al., 2011) in pure MLX (Apple Machine Learning Research, 2023), Apple’s array framework for Metal GPU. MLX is built on Metal, Apple’s low-level GPU API analogous to CUDA, and exposes a NumPy-compatible array interface with lazy evaluation, JIT compilation via @mx.compile ,and unified memory access that eliminates CPU-GPU data transfers. The broader MLX ecosystem includes libraries for language models, diffusion, and speech, but to our knowledge no prior work has targeted dimensionality reduction and visualization. Every operation in the mlx-vis pipeline runs on GPU: PCA preprocessing, k-NN graph construction, gradient-based optimization, and rendering. The library exports a uniform API where each method is instantiated with its hyperparameters and called via fit transform(X) . An optional callback mechanism captures per-epoch snapshots for animation. A distinctive feature of mlx-vis is its GPU-native visualization pipeline. Rather than delegating rendering to matplotlib, the library implements a circle-splatting renderer in MLX with scatter-add alpha blending, piping frames to ffmpeg with hardware H.264 en-coding. A double-buffering scheme overlaps GPU rendering with I/O, producing 800-frame animations in 1.4 seconds. Unlike general-purpose tools such as Datashader, this renderer is purpose-built for embedding animation. 
+
+2 Methodology 
+
+2.1 Architecture 
+
+Figure 1 shows the pipeline. Each dimensionality reduction method occupies a self-contained module under mlx vis/ method/ . A thin public wrapper re-exports the class. The shared NNDescent implementation in mlx vis/ nndescent/ provides k-NN graphs consumed by all six methods. GPU rendering lives in render.py , with plotting and animation entry points in plot.py . The full public API consists of seven algorithm classes and four visualization functions: 
+
+from mlx vis import UMAP, TSNE, PaCMAP, TriMap, DREAMS, CNE, NNDescent from mlx vis import scatter gpu, animate gpu 
+
+> 2mlx-vis: GPU-Accelerated DR on Apple Silicon
+
+Every method follows the same calling convention: instantiate with hyperparameters, invoke 
+
+fit transform(X) on an n × d array, and receive an n × 2 embedding. An epoch callback 
+
+parameter accepts a function that receives the current embedding as a NumPy array at each iteration, enabling animation without modifying the optimization loop. 
+
+2.2 NNDescent on GPU 
+
+Approximate k-nearest neighbor search is the first stage of every method. mlx-vis im-plements NNDescent (Dong et al., 2011) entirely in MLX. The algorithm initializes each point with k random neighbors and iteratively refines the graph by exploring neighbors-of-neighbors. Distances are computed via GPU matrix multiplication: ∥a−b∥2 = ∥a∥2 +∥b∥2 −
+
+2a⊤b. Top-k selection uses mx.argpartition to avoid full sorting, with early termination when the update rate falls below δ = 0 .001. 
+
+2.3 Method Implementations 
+
+All six methods follow the standard two-phase pattern: construct a graph or sampling struc-ture, then iteratively optimize a 2D embedding. Each implementation faithfully reproduces the published algorithm. Notable MLX-specific adaptations include: UMAP fits its output kernel parameters via Gauss-Newton optimization rather than scipy curve fitting; t-SNE provides an FFT-accelerated O(n log n) repulsive force variant following FIt-SNE (Linder-man et al., 2019); and CNE extracts each contrastive loss into a compiled static method for operator fusion. 
+
+2.4 GPU Rendering Pipeline 
+
+The rendering pipeline converts an n × 2 embedding into an RGBA image or video entirely on GPU. For each point, a set of pixel offsets within radius R is computed with linear falloff weights w = max(0 , 1 − r/R ). These offsets are translated to global pixel coordinates, and premultiplied color contributions ( α · w · cr, α · w · cg, α · w · cb, α · w) are accumulated into a framebuffer via mx.array.at[idx].add(vals) , an atomic scatter-add on GPU. A final normalization pass divides accumulated color by accumulated alpha and composites over the background. For animation, animate gpu() renders per-epoch snapshots into frames. Three opti-mizations keep the time low: hold frames reuse a single rendered buffer; mx.async eval() 
+
+overlaps GPU rendering of frame n+1 with I/O of frame n; and constant arrays are con-verted to MLX tensors once. Frames are piped to ffmpeg with h264 videotoolbox hard-ware encoding. 
+
+2.5 MLX-Specific Optimizations Lazy evaluation. MLX builds a computation graph and dispatches work to the GPU only upon mx.eval() . The optimization loops place evaluation gates at the end of each epoch, allowing the framework to fuse operations within an epoch into fewer GPU dispatches. 
+
+Compilation of hot loops. The @mx.compile decorator JIT-compiles a pure function into a fused GPU kernel. mlx-vis applies this to UMAP’s SGD step, t-SNE’s repulsive 
+
+> 3Xiao
+
+Table 1: Embedding time on Fashion-MNIST 70K, M3 Ultra. Mean ± std over 10 runs. Iterations are matched between libraries. Reference packages use all CPU cores (n jobs=-1 ). DREAMS and CNE have no standalone reference packages. Method Iters mlx-vis (GPU) Reference (CPU) Speedup UMAP 500 3.23 ± 0.02 s 8.52 ± 1.91 s ( umap-learn ) 2.6 ×
+
+t-SNE 500 3.78 ± 0.02 s 58 .62 ± 0.96 s ( openTSNE ) 15.5 ×
+
+PaCMAP 450 2.13 ± 0.04 s 6.56 ± 0.04 s ( pacmap ) 3.1 ×
+
+TriMap 500 2.40 ± 0.07 s 14 .32 ± 0.06 s ( trimap ) 6.0 ×
+
+DREAMS 500 3.80 ± 0.02 s — —CNE 500 3.30 ± 0.01 s — —kernel, PaCMAP’s per-phase update, and CNE’s per-loss gradient, eliminating Python-level overhead. 
+
+3 Benchmarks 
+
+All benchmarks use Fashion-MNIST (Xiao et al., 2017): 70,000 images of 28 × 28 pixels flattened to 784 dimensions. The hardware is an Apple M3 Ultra with 512 GB unified mem-ory. All timings are mean ± standard deviation over 10 runs. Iteration counts are matched between mlx-vis and reference implementations: 500 epochs for UMAP, 500 iterations for t-SNE and TriMap, and the default three-phase schedule (100, 100, 250 = 450 total) for PaCMAP. Table 1 reports embedding time for mlx-vis alongside the reference CPU implemen-tations running on all available cores of the same machine. mlx-vis achieves speedups of 2.6 × over umap-learn , 15.5 × over openTSNE , 3.1 × over pacmap , and 6.0 × over trimap .The GPU rendering pipeline adds 1 .43 ± 0.21 s for an 800-frame animation at 1000 × 1000 resolution, bringing the total pipeline time from raw data to rendered video to 3.6–5.2 seconds. The primary source of acceleration is GPU-native execution on unified memory: all matrix operations, neighbor searches, and gradient updates run on Metal GPU without CPU-GPU data transfers. The @mx.compile decorator further reduces overhead by fusing operations within each optimization step. Embedding quality is comparable to the reference implementations, as mlx-vis follows the published algorithms without modification to the objective functions or optimization schedules. Figure 2 in the appendix shows the resulting visualizations for all six methods. 
+
+4 Conclusion 
+
+mlx-vis provides a unified, dependency-minimal library for dimensionality reduction and visualization on Apple Silicon. By implementing six embedding methods and k-NN search in pure MLX, it delivers single-digit-second performance on datasets of 70K points and elim-inates the need for scipy, sklearn, numba, and Cython. The GPU-native rendering pipeline 
+
+> 4mlx-vis: GPU-Accelerated DR on Apple Silicon
+
+extends the acceleration beyond computation to visualization, producing publication-quality scatter plots and smooth animations at rates that enable interactive exploration – a capa-bility absent from existing dimensionality reduction toolkits. It can be installed via pip install mlx-vis .
+
+References 
+
+Ehsan Amid and Manfred K. Warmuth. TriMap: Large-scale dimensionality reduction using triplets. arXiv preprint arXiv:1910.00204 , 2019. Apple Machine Learning Research. MLX: An array framework for apple silicon. https: //github.com/ml-explore/mlx , 2023. Sebastian Damrich, Jan Niklas B¨ ohm, Fred A. Hamprecht, and Dmitry Kobak. From t-SNE to UMAP with contrastive learning. In International Conference on Learning Representations , 2023. Wei Dong, Moses Charikar, and Kai Li. Efficient k-nearest neighbor graph construction for generic similarity measures. In Proceedings of the 20th International Conference on World Wide Web (WWW) , pages 577–586, 2011. No¨ el Kury, Dmitry Kobak, and Sebastian Damrich. DREAMS: Preserving both local and global structure in dimensionality reduction. Transactions on Machine Learning Research ,2026. George C. Linderman, Manas Rachh, Jeremy G. Hoskins, Stefan Steinerberger, and Yuval Kluger. Fast interpolation-based t-SNE for improved visualization of single-cell RNA-seq data. Nature Methods , 16:243–245, 2019. Leland McInnes, John Healy, and James Melville. UMAP: Uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426 , 2018a. Leland McInnes, John Healy, and James Melville. umap-learn: UMAP – uniform manifold approximation and projection. https://github.com/lmcinnes/umap , 2018b. Kevin R. Moon, David van Dijk, Zheng Wang, Scott Gigante, Daniel B. Burkhardt, William S. Chen, Kristina Yim, Antonia van den Elzen, Matthew J. Hirn, Ronald R. Coifman, Natalia B. Ivanova, Guy Wolf, and Smita Krishnaswamy. Visualizing structure and transitions in high-dimensional biological data. Nature Biotechnology , 37:1482–1492, 2019. Pavlin G. Poliˇ car, Martin Straˇ zar, and Blaˇ z Zupan. openTSNE: A modular python li-brary for t-SNE dimensionality reduction and embedding. Journal of Machine Learning Research , 20(174):1–7, 2019. Laurens van der Maaten and Geoffrey Hinton. Visualizing data using t-SNE. Journal of Machine Learning Research , 9:2579–2605, 2008. 
+
+> 5Xiao
+
+Yingfan Wang, Haiyang Huang, Cynthia Rudin, and Yaron Shaposhnik. Understanding how dimension reduction tools work: An empirical approach to deciphering t-SNE, UMAP, TriMap, and PaCMAP for data visualization. Journal of Machine Learning Research , 22 (201):1–73, 2021. Koshi Watanabe, Keisuke Maeda, Takahiro Ogawa, and Miki Haseyama. StarMAP: Global neighbor embedding for faithful data visualization. arXiv preprint arXiv:2502.03776 ,2025. Han Xiao, Kashif Rasul, and Roland Vollgraf. Fashion-MNIST: A novel image dataset for benchmarking machine learning algorithms. arXiv preprint arXiv:1708.07747 , 2017. 
+
+Appendix A. Embedding Visualizations 
+
+Figure 2 shows the 2D embeddings produced by all six methods on Fashion-MNIST (70,000 points, 500 iterations). Colors correspond to the 10 garment categories. 
+
+UMAP t-SNE PaCMAP 
+
+TriMap DREAMS CNE Figure 2: Fashion-MNIST 70K embeddings produced by the six methods in mlx-vis , ren-dered by the GPU circle-splatting pipeline.
