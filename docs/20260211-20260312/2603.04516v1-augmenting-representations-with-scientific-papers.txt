@@ -1,0 +1,261 @@
+Title: Augmenting representations with scientific papers
+
+URL Source: https://arxiv.org/pdf/2603.04516v1
+
+Published Time: Fri, 06 Mar 2026 01:06:51 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# AUGMENTING REPRESENTATIONS WITH SCIENTIFIC PAPERS 
+
+Nicolò Oreste Pinciroli Vago 1, 2, 3, * , Rocco Di Tella 3, Carolina Cuesta-Lázaro 3, 4 , Michael J. Smith 3, Cecilia Garraffo 3, Rafael Martínez-Galarza 31Department of Electronics, Information and Bioengineering, Politecnico di Milano , Via Giuseppe Ponzio, 34, Milan, 20133, MI, Italy 
+
+> 2
+
+Osservatorio Astronomico di Roma, INAF , Via Frascati 33, Monte Porzio Catone, 00078, RM, Italy 
+
+> 3
+
+AstroAI, Center for Astrophysics | Harvard & Smithsonian , 60 Garden Street, Cambridge, 02138, MA, United States of America 
+
+> 4
+
+Center for Computational Astrophysics, Institute for Advanced Study/The Flatiron Institute , 162 5th Ave 9th floor, New York, 10010, NY, United States of America 
+
+> *
+
+nicolooreste.pinciroli@polimi.it 
+
+# ABSTRACT 
+
+Astronomers have acquired vast repositories of multimodal data, including images, spectra, and time series, complemented by decades of literature that analyzes astrophysical sources. Still, these data sources are rarely systematically integrated. This work introduces a contrastive learning framework designed to align X-ray spectra with domain knowledge extracted from scientific literature, facilitating the development of shared multimodal representations. Establishing this connection is inherently complex, as scientific texts encompass a broader and more diverse physical context than spectra. We propose a contrastive pipeline that achieves a 20% Recall@1% when retrieving texts from spectra, proving that a meaningful alignment between these modalities is not only possible but capable of accelerating the interpretation of rare or poorly understood sources. Furthermore, the resulting shared latent space effectively encodes physically significant information. By fusing spectral and textual data, we improve the estimation of 20 physical variables by 16 − 18% over unimodal spectral baselines. Our results indicate that a Mixture of Experts (MoE) strategy, which leverages both unimodal and shared representations, yields superior performance. Finally, outlier analysis within the multimodal latent space identifies high-priority targets for follow-up investigation, including a candidate pulsating ULX (PULX) and a gravitational lens system. Importantly, this framework can be extended to other scientific domains where aligning observational data with existing literature is possible. 
+
+# 1 Introduction 
+
+Foundation models are large-scale neural networks pre-trained on diverse data and adaptable to multiple downstream tasks, and have recently been applied to astronomy [ 1 , 2]. In astronomy, upcoming surveys (Vera Rubin Observatory, Roman Space Telescope) will generate petabyte-scale multimodal datasets [ 3, 4 , 5], which need scalable approaches to extract scientific insights. Unlike single-modality foundation models, astronomical observations are inherently multimodal: a single source may have images, spectra, light curves, and decades of textual descriptions in scientific literature, each capturing complementary physical information. There exist both unimodal and multimodal astronomical foundation models [ 1, 6, 7]. However, the systematic integration of observational data with textual scientific knowledge remains unexplored. This gap is significant, as scientific literature contains high-quality peer-reviewed expert interpretations, physical models, and contextual information unavailable in raw observations alone. We present the first contrastive learning framework aligning X-ray spectra with scientific papers’ summaries, creating a shared latent space that enhances spectral data and encodes physical properties. This approach addresses key challenges for astronomical foundation models by fusing heterogeneous data modalities such as spectra and text, preserving 
+
+> arXiv:2603.04516v1 [cs.LG] 4 Mar 2026
+
+Augmenting representations with scientific papers Table 1: Physical variables and their descriptions from the Chandra Source Catalog. These 20 variables serve as the ground truth for evaluating the physical interpretability of the learned latent representations and are used in the multimodal regression tasks. 
+
+Variable Description 
+
+hard_hs Hardness ratio between hard (2.0–7.0 keV) and soft (0.5–1.2 keV) bands 
+
+hard_ms Hardness ratio between medium (1.2–2.0 keV) and soft (0.5–1.2 keV) bands 
+
+hard_hm Hardness ratio between hard (2.0–7.0 keV) and medium (1.2–2.0 keV) bands 
+
+var_prob_b Gregory–Loredo variability probability 
+
+var_index_b Intra-observation Gregory-Loredo variability index 
+
+powlaw_gamma Photon index from power-law spectral fit 
+
+powlaw_nh Hydrogen column density from power-law fit 
+
+powlaw_stat Fit statistic for the power-law spectral model 
+
+bb_kt Temperature (keV) from blackbody spectral fit 
+
+bb_nh Hydrogen column density from blackbody fit 
+
+bb_stat Fit statistic for the blackbody model 
+
+brems_kt Temperature (keV) from Bremsstrahlung fit 
+
+brems_nh Hydrogen column density from bremsstrahlung fit 
+
+brems_stat Fit statistic for the bremsstrahlung model 
+
+apec_kt Temperature (keV) in APEC thermal model fit 
+
+apec_abund Abundance of the best fitting absorbed APEC model spectrum to the source region aperture Pulse Invariant spectrum 
+
+apec_z Redshift in APEC fit 
+
+apec_nh Hydrogen column density from APEC fit 
+
+apec_stat Fit statistic for the APEC model 
+
+flux_significance_b Flux significance physically meaningful structures in learned representations, and enabling knowledge transfer across observational datasets and scientific literature. The contributions of this work can be summarized as follows: (1) alignment of X-ray spectra with textual summaries using contrastive learning; (2) demonstration that multimodal representations outperform unimodal ones for physical pa-rameter estimation (3) 97% data compression (4,672 to 128 dimensions) while preserving relevant physical information; and (4) ability to use the enriched latent space to flag outliers. 
+
+# 2 Methods 
+
+2.1 Dataset 
+
+An X-ray spectrum is a measurement of the distribution of detected photons across a range of energy levels. For Chandra observations [ 8 ], a spectrum is derived from individual photon events between 0.5 and 8 keV. In this work, for each source (extracted from the Chandra Source Catalog), the energy range is discretized into 400 bins where the intensity is measured as a photon count rate (photons per unit of time and energy). These data are min-max normalized to allow the model to learn from the relative distribution of energy (the spectral shape), which serves as a physical signature of the source’s underlying processes (see also [9]). To incorporate expert knowledge, we cross-reference the spectral data with the NASA Astrophysics Data System (ADS), which contains a collection of scientific papers in astronomy and astrophysics. Cross-referencing is allowed by the use of sky coordinates and source identifiers from SIMBAD. The final dataset consists of 11,447 spectrum-text pairs, split into training (69%), calibration (1%), validation (15%), and test (15%) sets. Each sample is associated with up to 20 ground-truth physical variables (see Table 1) used to evaluate the physical consistency of the learned representations. 
+
+2.2 Architecture 
+
+Our pipeline, presented in Figure 1, follows foundation model principles: we use two pre-trained unimodal foundation models followed by contrastive alignment, focusing the evaluation on downstream tasks. 2Augmenting representations with scientific papers FCNN 
+
+> FCNN
+> Text
+> embeddings
+> Data
+> embeddings
+> Contr.
+> loss
+> Shared space
+> Spectra
+> Papers
+> Physical
+> interpretation
+> Cross-modal
+> retrieval
+> Physical
+> variables
+> 64
+> 64
+> 64
+> 4608
+
+Figure 1: Pipeline overview. Spectra are encoded via a transformer-based autoencoder. Scientific papers are summarized using GPT-4o-mini, and the summaries are embedded from OpenAI’s Ada-002. Contrastive learning aligns modalities into a shared latent space for downstream tasks. The spectra are processed by the transformer-based autoencoder introduced in [ 9]. In this work, we compress spectra to 64-dimensional latent vectors, minimizing the reconstruction loss (MAE). The textual summaries are generated from scientific papers using GPT-4o-mini and later embedded using OpenAI’s Ada-002 model. Two fully-connected networks map spectral (64-dimensional) and text (4,608-dimensional) embeddings to a shared 64-dimensional space. We optimize the InfoNCE loss [10]: 
+
+LInfoNCE = − 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+log exp( sim (ti, d i)/τ )
+
+PNj=1 exp( sim (ti, d j )/τ ) (1) where sim (x, y ) is cosine similarity, τ is temperature (tuned on calibration set), and (ti, d i) are matched text-data pairs. We also evaluate the results on three downstream tasks: • Cross-modal retrieval: we retrieve text descriptions from spectra using similarity search. • Physical parameter regression: we use a k-NN regressor (with k = 3 ) to predict 20 physical variables from latent representations. We employ a Mixture of Experts (MoE) strategy: for each variable, we select the best representation (pre- or post-alignment, using texts, spectra, or both) based on validation set Pearson correlation. • Outlier detection: we use Isolation Forest to identify rare sources in the aligned latent space. 
+
+2.3 Training and evaluation 
+
+Models are trained with Adam optimizer, performing a grid search in the hyperparameter space over learning rate (10 −4 to 10 −3), shared space dimension (16 to 128), dropout (0.1 to 0.5), and hidden dimensions (16 to 1024). The performance metrics are Recall@k% (i.e., the proportion of queries with correct match in top k%), Median Rank, MAE (for regression), and Pearson correlation (for latent space-physical variables relationships). 
+
+# 3 Results 
+
+3.1 Cross-modal retrieval 
+
+Our pipeline achieves ≈ 20% Recall@1% and ≈ 50% Recall@5% (corresponding to a Median Rank of 84). This indicates the median distance of each spectrum to the matching scientific summary is 84 among 1,719 candidates, exploring ≈ 5% of the search space. Figure 2 presents the Recall@ k% for varying values of k.
+
+3.2 Physical interpretation 
+
+Unsurprisingly, autoencoders on spectra are better correlated with the selected physical variables (on average, |ρ| = 0 .43 )than the autoencoders on texts (on average, |ρ| = 0 .30 ). Aligning and combining both modalities leads to an even stronger alignment (average |ρ| = 0 .55 ). Table 2 shows top correlations: for instance, dimensions L12 and L1 encode hardness ratio (hard_hs, ρ = 0 .82 ), while L48 a captures thermal properties (apec_kt, ρ ≈ 0.74 ). The results also indicate that alignment with scientific papers enhances physical interpretability: the shared latent space better reflects physical variables than either modality alone. 3Augmenting representations with scientific papers 0 10 20 30 40 50 
+
+> k (%)
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> Recall@k
+> Recall@k
+
+Figure 2: Recall@k% as a function of k, expressed as a percentage of the test set, for the ensemble model. 0.75 
+
+> 0.50
+> 0.25
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+
+(a) hard_hs 1 
+
+> 2
+> 3
+> 4
+> 5
+> 6
+> 7
+
+(b) powlaw_nh (log scale) 2.0  
+
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+
+(c) flux_significance_b (log scale) 
+
+Figure 3: tSNE plots for a subset of the physical variables 4Augmenting representations with scientific papers Table 2: Top 10 latent-variable correlations (post-alignment spectra embeddings). Latent Dim. Variable Correlation 
+
+L12 hard_hs 0.82 
+
+L1 hard_hs 0.82 
+
+L51 hard_hs 0.77 
+
+L26 hard_hs 0.76 
+
+L48 apec_kt 0.74 
+
+L29 hard_hs 0.74 
+
+L44 hard_hs 0.71 
+
+L8 powlaw_gamma 0.68 
+
+L30 brems_nh 0.68 
+
+L62 bb_kt 0.68 Table 3: Comparison of Mean Absolute Error ( MAE ) before and after alignment, obtained using a k-NN ( k =3) regressor. The “Mean baseline” column reports the MAE obtained when predicting the validation set mean for all samples. The “Improvement” column indicates the relative improvement of the Mixture of Experts ( MoE )strategy compared to the best-performing pre-alignment modality. Underlined values represent the lowest MAE (best performance), while bold values indicate results within the confidence interval of the best value.                                                                                                                                                                                               
+
+> Variable Mean baseline Pre-alignment Post-alignment MoE Uncertainty Improvement Spectra Text Spectra Text Both
+> hard_hs 0.40 0.20 0.27 0.16 0.17 0.12 0.12 0.01 40%
+> hard_ms 0.28 0.17 0.22 0.14 0.17 0.12 0.12 0.01 28%
+> hard_hm 0.23 0.15 0.18 0.11 0.15 0.10 0.10 0.01 33%
+> var_prob_b 0.26 0.27 0.18 0.26 0.20 0.23 0.23 0.02 −25 %
+> var_index_b 1.77 1.79 1.00 1.70 1.19 1.45 1.00 0.10 0%
+> powlaw_gamma 0.89 0.67 0.65 0.44 0.67 0.41 0.41 0.05 36%
+> powlaw_nh 65.32 33.08 48.88 26.39 40.82 21.63 21.63 2.71 35%
+> powlaw_stat 0.47 0.46 0.43 0.36 0.52 0.37 0.37 0.04 14%
+> bb_kt 3.23 0.32 0.49 0.27 0.40 0.28 0.28 0.03 13%
+> bb_nh 58.95 74.31 111.48 53.78 101.59 50.29 50.29 6.30 32%
+> bb_stat 0.91 0.75 0.78 0.65 0.79 0.68 0.68 0.08 10%
+> brems_kt 11.76 6.26 6.27 5.37 5.35 5.64 5.64 0.67 10%
+> brems_nh 125.98 23.31 26.98 15.57 19.54 14.12 14.12 1.77 39%
+> brems_stat 0.57 0.53 0.50 0.42 0.62 0.46 0.46 0.05 9%
+> apec_kt 3.51 1.60 1.74 1.23 1.60 1.22 1.22 0.23 23%
+> apec_abund 0.72 0.76 0.89 0.70 0.78 0.81 0.81 0.13 −6%
+> apec_z 0.22 0.21 0.21 0.20 0.21 0.20 0.21 0.04 −3%
+> apec_nh 65.84 35.95 35.67 27.77 31.47 24.92 24.92 4.65 30%
+> apec_stat 0.73 0.66 0.75 0.61 0.78 0.62 0.62 0.11 6%
+> flux_significance_b 8.50 7.36 7.67 4.06 6.53 4.54 4.54 0.42 38%
+
+Beyond individual linear correlations, we analyze whether the latent space is well-structured with respect to the 20 physical variables. To this end, we use k-NN to estimate them. Figure 3 presents three tSNE plots that show that multimodal representations generate a well-structured space with respect to a subset of the physical variables. Moreover, multimodal representations substantially improve parameter estimation (Table 3). Using both aligned modalities reduces MAE by ≈ 16% with respect to the best pre-alignment modality, and the MoE strategy further improves to ≈ 18% . For hardness ratios (hard_hs, hard_ms, hard_hm), average improvement is 34%. Hydrogen column density ( NH ) estimates improve by 34% across spectral models. For variability metrics (var_prob_b, var_index_b), text alone performs better because spectral data lacks temporal information, which is lost during alignment. The 97% compression (4,672 to 128 dimensions 1) while retaining predictive power is critical for scaling to billion-object surveys (e.g., LSST), where full-dimensionality similarity searches are intractable. Overall, the emerging structure, not explicitly enforced during training, indicates that contrastive learning preserves domain-relevant information. 
+
+> 1
+
+64 dimensions in the shared space for each modality 
+
+5Augmenting representations with scientific papers 
+
+3.3 Outlier detection 
+
+Beyond regression and retrieval, the shared latent space enables the discovery of rare astronomical phenomena by identifying points that deviate from the learned multimodal manifold. We apply Isolation Forest, an unsupervised algorithm that isolates outliers by randomly partitioning the high-dimensional feature space, to the 1,719 objects in the test set. By operating on the aligned latent space, this approach identifies sources where the combination of spectral and textual features is a statistical outlier, potentially flagging objects that challenge standard physical models. The analysis of the test set reveals class-level patterns and high-confidence outliers. Class-level patterns indicate that Quasars (QSOs) exhibit higher median anomaly scores than typical AGNs, reflecting their extreme luminosities. Ultra-luminous X-ray sources (ULXs) show high variance, consistent with the presence of subpopulations (pulsating vs. non-pulsating). In addition, the top 1% anomalies include the gravitational lens system 2CXOJ224030.2+032131 and the ULX 2CXOJ004722.6-252050. The latter has been independently identified as a candidate pulsating ULX candidate in [ 11 ], validating the pipeline’s ability to discover scientifically interesting objects. It is important to note that the findings in [ 11 ] were not included in our training dataset, as the publication date succeeded our data collection cut-off. Consequently, the identification of this source as an outlier serves as an independent validation of our model’s discovery potential. 
+
+# 4 Discussion 
+
+Beyond astronomy, this approach applies to any domain with paired observational sequences and textual annotations, such as seismology (which includes waveforms and event reports [ 12 ]), climate science (which includes timeseries and assessment documents [ 13 ]), and medicine (which comprises physiological signals and clinical notes [ 14 ]). Our work demonstrates that scientific literature, which is widely available, easy to process, and represents a vast repository of expert knowledge, can be systematically integrated with observational data to create enriched foundation models. This knowledge-augmented paradigm leverages decades of domain expertise, accelerating interpretation and discovery. For astronomy, this enables: • Semantic search: given a spectrum, retrieve relevant papers and similar sources, facilitating literature explo-ration. • Cross-facility fusion: combine spectra from different instruments (e.g., Chandra, XMM-Newton) via shared textual metadata. • Automated characterization: preliminary source classification and parameter estimation from latent space, prioritizing follow-up observations. Moreover, our findings highlight that: • Contrastive learning not only enables cross-modal retrieval but also produces latent spaces more correlated with physical variables, an emergent property valuable for scientific applications. • 97% compression facilitates billion-scale similarity searches, essential for next-generation surveys. Still, this work has some limitations: • The retrieval performance of 20% Recall@1% suggests room for improvement. This limitation can be mitigated by improving text summaries and leveraging additional data pairs (possibly adding multimodal observations). Still, the mismatch between X-ray spectra and scientific summaries prevents a perfect alignment. • Current work focuses on retrieval and regression, and has not proven its usefulness on tasks like text generation from spectra • Anomaly detection could enhance outlier detection by incorporating physics-based priors, with the goal to prioritize theoretically interesting outliers over statistical artifacts. • The alignment is limited to astrophysical data, even though the same pipeline can be applied to other fields of science 
+
+# 5 Conclusions 
+
+We present the first multimodal foundation model aligning X-ray spectra with scientific texts, demonstrating that knowledge-augmented representation learning can bridge observational data and domain expertise. Key achievements 6Augmenting representations with scientific papers include: (1) 18% improvement in physical parameter estimation via multimodal fusion; (2) 97% data compression preserving correlations with 20 physical variables; (3) discovery of rare phenomena (candidate PULXs, gravitational lenses) through latent space outlier detection. As petabyte-scale astronomical surveys come online, scalable multimodal approaches are necessary. Our framework, combining self-supervised pre-training, contrastive alignment, and ensemble-based downstream adaptation, offers a blueprint for integrating heterogeneous scientific data. Importantly, this framework can be extended to other scientific domains where aligning observational data with existing literature is possible. By systematically connecting observations with textual knowledge, we move toward foundation models that not only process data efficiently but also encode the semantic richness of scientific understanding. 
+
+# Data Availability 
+
+Processed data: https://osf.io/56s4h/overview?view_only=1ead08e953814767a6f74e02b73fc40b .
+
+# Acknowledgments 
+
+This work was conducted as part of the AstroAI collaboration. The authors gratefully acknowledge Piero Fraternali for his careful proofreading. They also wish to thank Melanie Weber, David Alvarez-Melis, and the AstroAI multimodal group at CfA for their valuable suggestions and insightful discussions. The corpus of literature data was curated and prepared by NASA’s Astrophysics Data System (ADS), and data from the Chandra Archive and Chandra Source Catalog were used. This research was supported by computational resources provided by the CINECA Leonardo supercomputer and by INAF through the project INA24_C6B05. RMG was supported by Astromind, Inc. NOPV and RMG were supported by AstroAI. 
+
+# References 
+
+[1] Liam Parker, Francois Lanusse, Siavash Golkar, Leopoldo Sarra, Miles Cranmer, Alberto Bietti, Michael Eicken-berg, Geraud Krawezik, Michael McCabe, Rudy Morel, Ruben Ohana, Mariel Pettee, Bruno Régaldo-Saint Blan-card, Kyunghyun Cho, Shirley Ho, and Polymathic AI Collaboration. AstroCLIP: a cross-modal foundation model for galaxies. MNRAS , 531(4):4990–5011, July 2024. [2] Henry W Leung and Jo Bovy. Towards an astronomical foundation model for stars with a transformer-based model. Monthly Notices of the Royal Astronomical Society , 527(1):1494–1520, January 2024. [3] Sarah Greenstreet, Siegfried Eggl, Meredith Rawls, and Mario Juric. The Impact of Satellite Constellations on Rubin Observatory’s Legacy Survey of Space and Time (LSST). Bulletin of the AAS , August 2024. [4] Fabio Hernandez, George Beckett, Peter Clark, Matt Doidge, Tim Jenness, Edward Karavakis, Quentin Le Boulc’h, Peter Love, Gabriele Mainetti, Timothy Noble, Brandon White, and Wei Yang. Overview of the distributed image processing infrastructure to produce the Legacy Survey of Space and Time. In European physical journal web of conferences , volume 295 of European physical journal web of conferences , page 01042. EDP, May 2024. arXiv: 2311.13981 [astro-ph.IM] Number: 01042 tex.adsnote: Provided by the SAO/NASA Astrophysics Data System. [5] Suvi Gezari, Misty Bentz, Kishalay De, K. Decker French, Aaron Meisner, Michelle Ntampaka, Robert Jedicke, Ekta Patel, Daniel Perley, Robyn Sanderson, Christian Aganze, Igor Andreoni, Eric F. Bell, Edo Berger, Ian Dell’Antonio, Ryan Foley, Henry Hsieh, Mansi Kasliwal, Joel Kastner, Charles D. Kilpatrick, J. Davy Kirkpatrick, Casey Lam, Karen Meech, Dante Minniti, Ethan O. Nadler, Daisuke Nagai, Justin Pierel, Irene Shivaei, Rachel Street, Erik J. Tollerud, and Benjamin Williams. R2-D2: Roman and rubin – from data to discovery. arXiv e-prints , page arXiv:2202.12311, February 2022. arXiv: 2202.12311 [astro-ph.IM] Number: arXiv:2202.12311 tex.adsnote: Provided by the SAO/NASA Astrophysics Data System. [6] Siddharth Mishra-Sharma, Yiding Song, and Jesse Thaler. PAPERCLIP: Associating astronomical observations and natural language with multi-modal models. arXiv e-prints , page arXiv:2403.08851, March 2024. arXiv: 2403.08851 [astro-ph.IM] Number: arXiv:2403.08851 tex.adsnote: Provided by the SAO/NASA Astrophysics Data System. [7] M. Rizhko and J. S. Bloom. AstroM3: A Self-supervised Multimodal Model for Astronomy. The Astronomical Journal , 170(1):28, June 2025. Publisher: The American Astronomical Society. [8] Ian N. Evans, Janet D. Evans, J. Rafael Martínez-Galarza, Joseph B. Miller, Francis A. Primini, Mojegan Azadi, Douglas J. Burke, Francesca M. Civano, Raffaele D’Abrusco, Giuseppina Fabbiano, Dale E. Graessle, John D. 7Augmenting representations with scientific papers Grier, John C. Houck, Jennifer Lauer, Michael L. McCollough, Michael A. Nowak, David A. Plummer, Arnold H. Rots, Aneta Siemiginowska, and Michael S. Tibbetts. The chandra source catalog release 2 series, October 2024. arXiv: 2407.10799 [astro-ph.HE] Number: 22 tex.adsnote: Provided by the SAO/NASA Astrophysics Data System. [9] Nicolò Oreste Pinciroli Vago, Juan Rafael Martínez-Galarza, and Roberta Amato. Extracting latent representations from X-ray spectra. Classification, regression, and accretion signatures of Chandra sources, October 2025. arXiv:2510.14102 [astro-ph]. [10] Aaron van den Oord, Yazhe Li, and Oriol Vinyals. Representation Learning with Contrastive Predictive Coding, January 2019. arXiv:1807.03748 [cs]. [11] N. O. Pinciroli Vago, R. Amato, M. Imbrogno, G. L. Israel, A. Belfiore, K. Kovlakas, P. Fraternali, and M. Pasquato. The hunt for new pulsating ultraluminous X-ray sources: A clustering approach. Astronomy & Astrophysics ,August 2025. Publisher: EDP Sciences. [12] Xu Si, Xinming Wu, Hanlin Sheng, Jun Zhu, and Zefeng Li. SeisCLIP: A Seismology Foundation Model Pre-Trained by Multimodal Data for Multipurpose Seismic Feature Extraction. IEEE Transactions on Geoscience and Remote Sensing , 62:1–13, 2024. [13] Nan Bai, Ricardo da Silva Torres, Anna Fensel, Tamara Metze, and Art Dewulf. Inferring climate change stances from multimodal tweets. In Proceedings of the 47th international ACM SIGIR conference on research and development in information retrieval , Sigir ’24, pages 2467–2471, Washington DC, USA, 2024. Association for Computing Machinery. Number of pages: 5 tex.address: New York, NY, USA. [14] Sicen Liu, Xiaolong Wang, Yongshuai Hou, Ge Li, Hui Wang, Hui Xu, Yang Xiang, and Buzhou Tang. Multimodal Data Matters: Language Model Pre-Training Over Structured and Unstructured Electronic Health Records. IEEE Journal of Biomedical and Health Informatics , 27(1):504–514, January 2023. 8

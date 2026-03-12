@@ -1,0 +1,1113 @@
+Title: Autoencoder-based framework for anomaly detection in stellar spectra: application to the MaNGA Stellar Library
+
+URL Source: https://arxiv.org/pdf/2603.03734v1
+
+Published Time: Thu, 05 Mar 2026 01:35:56 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+Publications of the Astronomical Society of Japan , 2026, 00 , 1–15 doi: 10.1093/pasj/xxx000 Advance access publication date: 
+
+# Autoencoder-based framework for anomaly detection in stellar spectra: application to the MaNGA Stellar Library 
+
+## Akihiro S UZUKI 1,∗
+
+> 1
+
+Research Center for the Early Universe, The University of Tokyo, 7-3-1 Hongo, Bunkyo-ku, Tokyo 181-8588, Japa 
+
+> ∗
+
+E-mail: akihiro.suzuki@resceu.s.u-tokyo.ac.jp 
+
+> ORCID: 0000-0002-7043-6112
+
+Abstract 
+
+A machine-learning–based method is developed to identify objects with unusual stellar spectra. The method employs an autoencoder, a neural network trained to compress spectral data into a low-dimensional representation and subsequently reconstruct it. Spectra that deviate signif-icantly from the dominant patterns in the training dataset are identified using the reconstruction error as an anomaly score. The models are applied to selected datasets from the MaNGA Stellar Library, an empirical library of stellar spectra. Several spectra are flagged as anomalous: an object with likely instrumental and/or reduction issues, two carbon stars, and an oxygen-rich thermally pulsating asymptotic giant branch star. The sources of the large reconstruction errors are examined, and the effectiveness and limitations of autoencoder-based approaches for detecting anomalous stellar spectra are discussed. 
+
+Keywords: methods: data analysis — stars: general — stars: carbon — stars: chemically peculiar 
+
+## 1 Introduction 
+
+Stellar spectral classification has long played a central role in astro-physics, providing a physically meaningful framework for describ-ing stellar atmospheres and evolutionary states (e.g., Morgan et al. 1943; Gunn & Stryker 1983; Jacoby et al. 1984; Gray & Corbally 2009; Falcón-Barroso et al. 2011). By organizing stars according to their spectral features, such as absorption line strengths and con-tinua shaped by temperature, surface gravity, and chemical com-position, classification schemes have enabled systematic studies of stellar populations. Large stellar spectroscopic surveys are now a foundation of modern astrophysics, supporting detailed studies of stellar popu-lations and evolution, as well as Galactic structure. Surveys such as SDSS (York et al. 2000), LAMOST (Cui et al. 2012), APOGEE (Majewski et al. 2017), GALAH (De Silva et al. 2015; Martell et al. 2017), and Gaia-ESO (Gilmore et al. 2012; Randich et al. 2013) have produced millions of spectra with broad wavelength coverage and varying resolutions. While these datasets provide unprecedented statistical power, their size and complexity pose challenges for traditional analysis methods. Therefore, robust and scalable methods for spectral analysis have become increasingly essential. This situation motivates the development of automated, data-driven approaches capable of capturing both common pat-terns and rare or anomalous objects (e.g., Gulati et al. 1994; Bailer-Jones et al. 1998; Singh et al. 1998; Sharma et al. 2020). Anomaly detection in stellar spectra is of particular interest, as outliers may correspond to astrophysically meaningful objects such as chemically peculiar stars, rare evolutionary stages, in-teracting binaries, emission-line objects, or data quality issues. Classical approaches to anomaly detection often rely on hand-crafted features, physical model fitting, or distance-based met-rics in low-dimensional parameter spaces, such as color-color di-agrams. However, these techniques may struggle to scale to large datasets and perhaps more importantly, they may be biased toward well-known spectral classes, limiting their ability to uncover gen-uinely novel or unexpected objects/phenomena. In recent years, unsupervised and self-supervised machine learning methods have emerged as powerful tools for representa-tion learning in high-dimensional data and have been applied to a wide range of problems in astronomy (e.g., Hoyle et al. 2015; Baron & Poznanski 2017; Giles & Walkowicz 2019; Ichinohe & Yamada 2019; Pruzhinskaya et al. 2019; Lochner & Bassett 2021; Storey-Fisher et al. 2021). Unsupervised approaches to identifying anomalous stellar spectra have previously been ex-plored in the literature. For example, Wei et al. (2013) combined statistical and dimensionality-reduction techniques for identify-ing objects with peculiar spectra. Reis et al. (2018) developed a method based on unsupervised random forest to search for outliers in APOGEE samples. Autoencoder-based approaches (e.g., Hinton & Salakhutdinov 2006; Chalapathy et al. 2017) are particularly well suited to astro-nomical spectra: they naturally handle high-dimensional spectral data, can model nonlinear correlations between spectral features, and are flexible enough to accommodate varying signal-to-noise ratios and instrumental effects. Moreover, the learned latent space can provide additional insight into the structure of the dataset, po-tentially revealing continuous trends or clusters related to stellar parameters such as effective temperature, metallicity, and surface gravity. Owing to their broad applicability, autoencoders and re-lated techniques are increasingly used for stellar spectral datasets from large spectroscopic surveys. Previous examples include the automatic estimation of stellar atmospheric parameters (Yang & Li 2015), the detection of emission-line stars in GALAH data ( ˇ Cotar et al. 2021), and the identification of emission features associated with stellar magnetic activity in LAMOST data (Xiang et al. 2022),     
+
+> Received: ,Accepted:
+> © 2026. Astronomical Society of Japan.
+> arXiv:2603.03734v1 [astro-ph.SR] 4 Mar 2026 2Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0
+
+and so on. Rapidly increasing applications of autoencoder-based anomaly detection to astronomical spectra from large spectroscopic datasets (e.g., Böhm et al. 2023; Liang et al. 2023; Ortiz & Boquien 2025; Zhong et al. 2025) demonstrate the effectiveness of such methods in capturing the intrinsic structure of spectroscopic data. However, most of these studies focus on galaxy spectra, whose diversity and physical drivers differ significantly from those of stellar atmo-spheres. In contrast, the application of reconstruction-based deep learning methods to homogeneous stellar spectral libraries remains comparatively less explored. Unlike galaxy spectra, which are composed of composite stel-lar populations, active galactic nuclei, and multiple interstellar components, stellar spectra are governed primarily by a small set of atmospheric parameters, including effective temperature, surface gravity, and chemical composition. As a result, de-viations from the dominant population may arise from a vari-ety of distinct causes, including astrophysical peculiarities (e.g., chemically unusual stars), sparsely sampled regions of parame-ter space, unresolved composite systems, or data reduction arti-facts. A meaningful anomaly-detection framework must therefore not only identify spectra with large reconstruction residuals, but also clarify the physical or instrumental origins of those devia-tions. Systematically characterizing the patterns of anomalies in homogeneous stellar spectral libraries is thus an essential step to-ward interpreting unsupervised outlier detection in an astrophysi-cal context. In this work, I investigate the application of autoencoder-based anomaly detection to the MaNGA Stellar Library (Yan et al. 2019), an empirical stellar spectral library collected by Mapping Nearby Galaxies at Apache Point Observatory (MaNGA; Bundy et al. 2015) and assembled as part of the SDSS-IV survey (Blanton et al. 2017). Unsupervised autoencoder models are trained on a rep-resentative subset of spectra and reconstruction error is used as an anomaly score to identify anomalous objects. Then, the nature of the detected anomalies is analyzed for assessing their astrophysi-cal relevance, demonstrating that this approach provides an effec-tive, data-driven framework for discovering rare or unusual stellar spectra in modern survey datasets. This paper is structured as follows. In Section 2, the datasets used in this study are described. In Section 3, the autoencoder architecture and training strategy are described, and the trained models are applied to the selected dataset. In Section 4, spectra that are unsuccessfully reconstructed are presented and we discuss the origins of the large reconstruction errors. Finally, Section 5 concludes this paper. 
+
+## 2 Training data and preprocessing 
+
+2.1 Data selection 
+
+The datasets are constructed using spectra from the MaNGA Stellar Library (MaStar), which provides flux-calibrated optical spectra obtained with the MaNGA integral-field spectrographs (Drory et al. 2015), covering a wavelength range of approxi-mately 3622 –10354 ˚A at a resolving power of R ∼ 1800 . The latest MaStar data are distributed as part of SDSS Data Release 17 (Abdurro’uf et al. 2022). With the goal of covering as wide param-eter space (effective temperature, surface gravity, composition, and so on) as possible (Chen et al. 2020; Maraston et al. 2020; Lazarz et al. 2022; Hill et al. 2022a; Hill et al. 2022b; Imig et al. 2022), the data products are not intended to provide unbiased and complete          
+
+> Fig. 1. Color-magnitude diagram (absolute G-band magnitude vs BP-RP color) for the samples used in this study. The samples from small and large datasets are plotted as small diamonds and circles. Three objects flagged as outliers by the autoencoder models (see Section 4) are also plotted as a big circle, square, and star as indicated in the lower panel. In the upper panel, the distribution of the BP-RP color for the large dataset is also presented as a histogram. Alt text: Scatter plot showing the distribution of sample data and a hitogram on top of it.
+
+statistical samples. Nevertheless, it is one of the largest stellar spectral dataset maintaining homogeneous data quality and used for classifiation by supervized machine-larning techniques (e.g., El-Kholy & Hayman 2025) and identifying stellar spectra with un-nusual features, e.g., thermally pulsating asymptotic giant branch (TP-AGB) stars (Hill et al. 2024). In this work, the latest value-added catalogs and spectral data products 1 are used. MaStar delivers stellar spectra with well-controlled and ho-mogeneous data quality. This study adopts the MaStar Uniform Resolution Spectra, which are convolved to a common wavelength-dependent line-spread function corresponding to the 60th and 90th percentiles of the MaStar resolution distribution (see, Yan et al. 2019, for details). Prior to sample construction, spectra containing zero flux values in any wavelength bin are ex-cluded to ensure well-defined inputs across the full wavelength range. This selection yields 2770 and 6522 stellar spectra from the parent datasets corresponding to the 60th and 90th percentile resolutions, respectively. Hereafter, these are referred to as the 
+
+small and large datasets .The small dataset is used for training and validation, while the trained models are applied to the large dataset . From the small dataset , ten independent training realizations are generated by ran-domly selecting 2000 spectra in each case; the remaining 770 spec-tra are used for validation. These multiple random subsets allow us to assess the robustness of the autoencoder training against sam-ple variance while preserving the stellar spectral diversity and a homogeneous instrumental resolution.    
+
+> 1available at https://www.sdss4.org/dr17/mastar/ Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 3
+
+# Encoder Input reconstructed 
+
+2048 
+
+4563 4563 
+
+2048 
+
+512 512 
+
+128 128 
+
+32 32 
+
+10 
+
+# Decoder  
+
+> Fig. 2. Schematic representation of the autoencoder model in this work. Alt text: Schematic illustration showing the model.
+
+No explicit filtering is applied based on stellar classification or atmospheric parameters, allowing the model to learn directly from the data distribution. Objects with potential artificial issues, as well as rare spectral types, are therefore retained and are expected to appear as outliers in the learned representation. This choice enables a fully data-driven search for anomalous spectra without imposing strong astrophysical priors. Since the MaStar samples are drawn from multiple photomet-ric surveys, a cross-matched catalog is also provided. In particu-lar, the information from Gaia mission (Gaia Collaboration et al. 2016a; Gaia Collaboration et al. 2016b; Gaia Collaboration et al. 2018; Gaia Collaboration et al. 2023), including Gaia ID and infor-mation, absolute G-band magnitude ( MG), and the BP–RP color, is available along with distance estimates from Bailer-Jones et al. (2021). This information is used to characterize the properties of objects identified by the anomaly detection method. Out of the 2770 and 6522 objects in the small and large datasets , 2765 and 6501 objects have corresponding Gaia IDs. Figure 1 shows the color–absolute magnitude diagram ( MG vs GBP -GRP ) for the 
+
+small and large datasets . The samples include a large number of main-sequence stars, extending to low-mass dwarfs, as well as evolved stars in the red clump and asymptotic giant branch, and a small population of white dwarfs. 
+
+2.2 Preprocessing 
+
+Prior to training, each spectrum is normalized by its maximum flux value to remove overall flux scaling. Each spectrum consists of 4563 wavelength bins. The normalized flux can therefore be represented as a 4563-dimensional vector ( Ndim = 4563 ), here-after referred to as the flux vector, Fi (i = 1 , . . . , N dim ), or simply denoted by F. The logarithm of the normalized flux is then used as the input feature vector for the autoencoder, such that fi = ln( Fi)
+
+or f = ln( F). Because spectra containing zero flux values are ex-cluded during the data selection above, the logarithmic transfor-mation is well defined for all wavelength bins. This preprocess-ing step reduces the dynamic range of the input data, allowing the model to focus on relative spectral variations rather than absolute 10 3
+
+10 2
+
+10 1
+
+> loss
+> model1
+> model2
+> model3
+> model4
+> model5
+> model6
+> model7
+> model8
+> model9
+> model10
+
+0 200 400 600 800 1000 
+
+training steps 
+
+10 3
+
+10 2
+
+10 1  
+
+> validation loss
+> Fig. 3. Training (upper) and validation (lower) losses as a function of the training epochs. In each panel, all the ten autoencoder models are pre-sented. Alt text: Tow plots with ten lines each.
+
+flux differences. 
+
+## 3 Autoencoder architecture, training, and application 
+
+In this section, the architecture of the autoencoder models, the training strategy, and the application of the trained models are de-scribed. 4 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 
+
+3.1 Network architecture 
+
+Figure 2 presents a schematic representation of the autoencoder model trained and used in this work. Autoencoders are a class of neural networks designed to learn compact representations of high-dimensional data by compressing the input into a lower-dimensional latent space and then reconstructing it. More detailed introductions to neural networks and autoencoders can be found elsewhere (e.g., Bishop & Nasrabadi 2006; Baron 2019; Ting 2025). The following is a brief and intuitive description of the architecture. A feedforward neural network consists of a sequence of layers that progressively transform the input data. Each layer performs a linear transformation followed by a nonlinear operation, allowing the network to model complex relationships between the input and output. Mathematically, the transformation at layer l is given by 
+
+h(l) = σ W(l)h(l−1) + b(l), (1) where h(l−1) and h(l) denote the input and output vectors of layer 
+
+l, W(l) and b(l) are trainable weight matrices and bias vectors, and 
+
+σ is a nonlinear activation function. By stacking multiple layers of linear transformations and nonlinear activations, the network can approximate highly nonlinear mappings from the input space to the output space. In the present application, the input for the initial layer is set to the transformed flux vector; h(0) = f , while the final layer returns the reconstructed output ˆf with the same dimension as the input f . The network parameters W(l) and b(l) are learned during training by iteratively adjusting them to minimize a loss function that quantifies the discrepancy between the input vector 
+
+f and the output ˆf (see, Sec. 3.2). This optimization is in general performed using gradient-based methods. The proposed model is a symmetric, fully connected autoen-coder composed of an encoder and a decoder (Figure 2). The en-coder maps the 4563-dimensional input flux vector through a se-quence of dense layers with decreasing dimensionality (2048, 512, 128, and 32) to a 10-dimensional latent representation. This bottle-neck layer enforces a compact encoding of the input features. The decoder mirrors the encoder architecture, reconstructing the input by progressively increasing the dimensionality through dense lay-ers of sizes 32, 128, 512, and 2048, followed by an output layer of size 4563. Rectified linear unit (ReLU) activations (Nair & Hinton 2010; Glorot et al. 2011), defined as σ(x) = max(0 ,x ), are used in all hidden layers, while a linear activation is applied at the output layer. The specific choice of network depth and layer widths is not unique and was not determined through an exhaustive hyperpa-rameter search. Instead, the adopted configuration represents a practical compromise between model capacity and computational efficiency, designed to capture the dominant structure of the in-put spectra while maintaining a compact latent representation. As is common in autoencoder-based approaches, alternative architec-tural choices may yield comparable performance. Nevertheless, as demonstrated below, the selected architecture achieves stable training and provides accurate reconstructions of the input data, indicating that it is sufficiently expressive for the purposes of this study. 
+
+3.2 Implementation and training 
+
+The network is implemented and trained using TensorFlow (Abadi et al. 2016) with the Keras API (Chollet et al. 2015), which pro-vides a high-level interface for defining and training deep neu-ral networks. Training was performed using the Adam (Adaptive Moment Estimation) optimizer (Kingma & Ba 2014) with a fixed learning rate of 0.001 and a batch size of 32. The autoencoder is trained to minimize the reconstruction error between the input (transformed) flux vector f and its reconstructed output ˆf . The mean squared error (MSE) is employed, 
+
+L(f ,ˆf ) = 1
+
+Ndim 
+
+> Ndim
+
+X
+
+> i=1
+
+(fi − ˆfi)2, (2) as the loss function. The training loss is computed as the average reconstruction error over the training dataset and serves as a proxy for the model’s ability to recover the salient spectral features of the training data. To assess the generalization capability of the model and to pre-vent overfitting, a validation loss is computed using the same re-construction error metric. As shown below, only a small discrep-ancy is observed between the training and validation losses, indi-cating that the model generalizes well and does not suffer from sig-nificant overfitting. Using the ten realized training and validation data (created from the small dataset ) described above, ten autoen-coder models with identical architectures and hyperparameters are independently trained. Hereafter they are referred to as MODEL 1through MODEL 10. After training, the learned models are applied to the large dataset .Figure 3 shows the training and validation losses as a function of training epochs. Both losses exhibit similar convergence behavior. The losses rapidly decrease to ∼ 3 × 10 −3 within the first several tens of epochs and then gradually decrease to ∼ 10 −3, with only small temporal increases. This trend is consistently reproduced across all ten models, demonstrating the robustness of the training process. 
+
+3.3 Application to the large sample 
+
+The autoencoder models trained on the small dataset are applied to the large dataset . For each object in the large dataset , the in-put spectrum is reconstructed and the reconstruction error is com-puted independently using each of the ten trained autoencoder models. The reconstruction error is defined as the mean squared error (Eq. 2), evaluated for the normalized flux vectors F and 
+
+ˆF, L(F, ˆF), where the reconstructed flux vector ˆF is obtained as 
+
+ˆFi = exp( ˆfi). Objects exhibiting large reconstruction errors con-sistently across multiple models are flagged as potential anomalies. This ensemble-based approach mitigates sensitivity to individual model initializations and provides a more robust identification of anomalous spectra. Figure 4 shows the distributions of reconstruction errors for the 6522 spectra in the large dataset . All ten autoencoder mod-els produce similar error distributions, spanning approximately 
+
+log 10 L(F, ˆF) ≃ − 4.5 to −2.5. The 1st, 10th, 50th, 90th, and 99th percentiles of the distribution are located at log 10 L(F, ˆF) ≃ − 4.4,
+
+−4.2, −3.8, −3.4, and −3.0, respectively, with exact values listed in Table 1. The near-continuous nature of the error distributions across al-most the entire range indicates that the autoencoder models suc-cessfully capture the dominant patterns of common stellar spec-tra and accurately reproduce their features for the majority of the sample. Figure 5 shows a representative example of input spectra and their corresponding reconstructions produced by the trained autoencoder models. The reconstructed spectra closely match the inputs, preserving the overall spectral shape and common features such as absorption lines. In particular, prominent Balmer absorp-tion lines, including H α (λ = 6563 ˚A), H β (4861 ˚A), and H γPublications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 510 3
+
+## 10 2
+
+## 10 1
+
+## 10 0    
+
+> %%%%%
+
+model1     
+
+> %%%%%
+
+model2 
+
+## 10 3
+
+## 10 2
+
+## 10 1
+
+## 10 0 model3 model4 
+
+## 10 3
+
+## 10 2
+
+## 10 1
+
+## 10 0
+
+> Normalized number
+
+model5 model6 
+
+## 10 3
+
+## 10 2
+
+## 10 1
+
+## 10 0 model7 model8 
+
+## 4.5 4.0 3.5 3.0 2.5 2.0 
+
+## ( ( , )) 
+
+## 10 3
+
+## 10 2
+
+## 10 1
+
+## 10 0 model9 
+
+## 4.5 4.0 3.5 3.0 2.5 2.0 
+
+## ( ( , )) 
+
+model10   
+
+> Fig. 4. Reconstruction error distributions for all the ten models. In each panel, the distribution is plotted as a histogram. The 1st, 10th, 50th, 90th, and 99th percentiles of the distributions are indicated by vertical dashes lines (from left to right). Alt text: ten histograms showing distribution of errors in ten different models.
+> Table 1. Properties of error distributions presented in Figure 4
+
+model percentile 
+
+1% 10% 50% 90% 99% 
+
+> MODEL
+
+1 −4.391 −4.169 −3.823 −3.386 −2.989 
+
+> MODEL
+
+2 −4.360 −4.150 −3.815 −3.389 −2.997 
+
+> MODEL
+
+3 −4.356 −4.141 −3.801 −3.370 −2.994 
+
+> MODEL
+
+4 −4.352 −4.146 −3.825 −3.379 −2.985 
+
+> MODEL
+
+5 −4.356 −4.135 −3.813 −3.377 −2.993 
+
+> MODEL
+
+6 −4.373 −4.161 −3.831 −3.392 −2.998 
+
+> MODEL
+
+7 −4.342 −4.140 −3.821 −3.383 −2.988 
+
+> MODEL
+
+8 −4.355 −4.142 −3.818 −3.378 −2.985 
+
+> MODEL
+
+9 −4.272 −4.085 −3.760 −3.345 −2.990 
+
+> MODEL
+
+10 −4.347 −4.138 −3.803 −3.362 −2.978 
+
+(4340 ˚A), as well as other metal lines, are reproduced with high fidelity. This demonstrates that the autoencoder models success-fully learn these absorption features as common characteristics of the training data. A notable property of the reconstructed spectra is that they ap-pear smoother and cleaner than the corresponding input spectra. This behavior is characteristic of autoencoder-based approaches (Vincent et al. 2008; Vincent et al. 2010). By compressing the input data into a low-dimensional latent space (Figure 2), the au-toencoder is forced to learn only the most salient and recurring fea-tures of the input spectra. As a result, uncorrelated noise features, whose shapes vary from measurement to measurement, are not re-tained in the latent representation. The trained models therefore preferentially extract and reconstruct common, physically mean-ingful spectral features from the training sample. Consequently, the residuals between the input and reconstructed spectra (shown in the upper panels of Figure 5) exhibit similar patterns, likely dominated by measurement noise and data-reduction artifacts. One potential drawback of this behavior is that autoencoder models may also learn features arising from instrumental effects or telluric contamination if they are common among the input spectra. Nevertheless, the successful reconstructions presented here demonstrate that the adopted autoencoder architecture is suf-ficiently expressive to capture the dominant physical features of the stellar spectra in the MaStar dataset. This behavior supports the use of the reconstruction error as an effective anomaly score. As discussed below, a subset of stellar spectra is not well reproduced by the trained models and appears in the high-error tail of the distributions shown in Figure 4. 6 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model1 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 MaNGA ID=5-32095 
+
+4000 6000 8000 10000 
+
+model2 ( , ) = .
+
+input( )
+
+reconstructed( )
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model3 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model4 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model5 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model6 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model7 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model8 ( , ) = .
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model9 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+model10 ( , ) = .    
+
+> Fig. 5. Resoncstructed stellar spectra for a randomly selected object from the large sample. Alt text: Ten plots showing the model and observed spectra wit thin and shick lines and residuapl plotted on top of each panel. Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 7
+> Table 2. Objects with the 5 highest reconstruction errors in the 10 trained models (The objects discussed in Section 4 are highlighted by bold letters.)
+
+model name error MaNGA ID model name error MaNGA ID 
+
+> MODEL
+
+1 0.002522 60-1436778955512349056 MODEL 6 0.002936 7-17219806 
+
+0.002360 3-115120061 0.002429 3-115120061 
+
+0.002081 3-105740024 0.002314 60-1436778955512349056 
+
+0.002024 7-14573163 0.002135 60-3615860471750191104 0.001957 3-151672729 0.002056 3-151672729 
+
+> MODEL
+
+2 0.002529 7-17219806 MODEL 7 0.002923 3-115120061 
+
+0.002183 3-115120061 0.002763 60-3615860471750191104 0.002102 3-1516727296 0.002747 7-17219806 
+
+0.002093 60-3615860471750191104 0.002528 3-151672729 0.002052 3-105740024 0.002133 7-14573163 
+
+> MODEL
+
+3 0.002289 3-115120061 MODEL 8 0.002591 3-115120061 
+
+0.002062 3-151672729 0.002085 54-44051315 0.002045 3-105740024 0.002071 3-105740024 0.002004 7-14573163 0.002054 7-14573163 0.001831 3-122926611 0.001993 3-151672729 
+
+> MODEL
+
+4 0.002979 3-33352569 MODEL 9 0.003321 3-33352569 
+
+0.002317 60-1436778955512349056 0.002200 3-115120061 
+
+0.002230 3-115120061 0.002186 3-151672729 0.002113 3-105740024 0.002145 7-14573163 0.002088 7-14573163 0.002075 3-105740024 
+
+> MODEL
+
+5 0.002120 60-1436778955512349056 MODEL 10 0.002319 3-33352569 
+
+0.002050 3-105740024 0.002308 3-115120061 
+
+0.002047 7-14573163 0.002125 7-14573163 0.002005 3-115120061 0.002086 3-105740024 0.001858 3-122926611 0.002007 3-151672729 
+
+## 4 Unsuccessfully reconstructed cases 
+
+In this section, we focus on cases of unsuccessful reconstruction and discuss possible sources of large reconstruction errors. Table 2 lists the five objects with the highest reconstruction errors for each of the ten trained autoencoder models. Among these, four objects with MaNGA IDs 7-17219806 , 3-33352569 , 3-115120061 , and 
+
+60-1436778955512349056 appear frequently across the different models (highlighted in Table 2). These objects are found to be a spectrum affected by instrumental or reduction artifacts, two car-bon stars, and an oxygen-rich TP-AGB star. In the following, these three categories are examined in more detail. 
+
+4.1 Object with possible artifacts 
+
+Figure 6 presents the input and reconstructed spectra for the ob-ject with MaNGA ID 3-33352569 , shown in the same format as Figure 5. Based on visual inspection, the overall spectral shape is broadly consistent with that of an M-type star. Through its Gaia ID, I searched the counterpart source in SIMBAD Astronomical Database 2. Indeed, this object is turned out to be included in the APOGEE M-dwarf catalog (Blanton et al. 2017) with an APOGEE ID of 2M21140743+4924350 and estimated stellar pa-rameters of effective temperature Teff = 3428 K and metallicity 
+
+[M /H] = −0.61 . These properties assures that this object is a com-monly found M-type star. However, as shown in the figure, the input spectrum exhibits unusually high flux values around ∼ 9500 ˚A. The presence of this feature causes several reconstructed spectra (notably MODEL 4, 
+
+> MODEL
+
+9, and MODEL 10) to significantly overestimate the flux in this wavelength region. This localized overestimation leads to a  
+
+> 2https://simbad.cds.unistra.fr/simbad/
+
+large reconstruction error, resulting in this object being identified as one of the most poorly reconstructed cases. The unsuccessful reconstruction suggests that the feature near 
+
+9500 ˚A is not represented in the training dataset. To our knowl-edge, however, there is no well-established stellar spectral feature expected at this wavelength for M-type stars. If the excess flux were due to intrinsic stellar activity, such as emission associated with chromospheric processes, one might expect corresponding emission features in the Balmer lines (Joy & Abt 1974; Cram & Mullan 1979); however, no such emission is observed. Therefore, it is concluded that the anomalous feature is most likely caused by instrumental effects or data-reduction artifacts rather than intrinsic stellar properties. The MaSTAR GOODVISIT catalog parameter BADPIXFRAC ,which quantifies the fraction of pixels with zero inverse variance, is equal to zero for this object, indicating that no pixels were fully masked by the reduction pipeline. We therefore examined the inverse-variance ( IVAR ) array provided with the MaStar spectra and converted it to per-pixel uncertainties via σλ = 1 /√IVAR .Figure 7 shows σλ for this object together with the original spec-trum. Although no pixels are formally masked ( BADPIXFRAC = 0 ), the region around 9500 ˚A exhibits a localized increase in σλ rela-tive to the median uncertainty across the spectrum. While the un-certainty continues to rise toward longer wavelengths, the anomaly detected by the trained models is confined to the enhancement near 
+
+9500 ˚A, suggesting a reduction artifact rather than an astrophysical feature. 
+
+4.2 Carbon star 
+
+We next turn to the second category of unsuccessful recon-structions, represented by the two objects with MaNGA IDs 8 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model1 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 MaNGA ID=3-33352569 
+
+4000 6000 8000 10000 
+
+model2 ( , ) = .
+
+input( )
+
+reconstructed( )
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model3 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model4 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model5 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model6 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model7 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model8 ( , ) = .
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model9 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+model10 ( , ) = .             
+
+> Fig. 6. Same as Figure 5, but for the unsuccessful case of the object specified by MaNGA ID 3-33352569. Alt text: Ten plots showing the model and observed spectra wit thin and shick lines and residuapl plotted on top of each panel. Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 94000 5000 6000 7000 8000 9000 10000
+> [Å]
+> 0
+> 500
+> 1000
+> 1500
+> 2000
+> 2500
+> flux density  [ / /  /Å]
+> 0
+> 5
+> 10
+> 15
+> [ / /  /Å]
+> Fig. 7. Flux density per unit wavelength (lower) and the uncertainty σλ
+> (upper) of MaNGA ID 3-33352569. Alt text: two line plots showing the spectrum and its uncertainty as a function of wavelength.
+
+3-115120061 and 7-17219806 . Figures 8 and 9 present the in-put and reconstructed spectra for these two objects, respectively. Unlike the previous example, the large reconstruction errors in these cases arise from intrinsic stellar spectral features rather than instrumental effects. 
+
+4.2.1 Object with MaNGA ID 3-115120061 
+
+The input spectrum shown in Figure 8 exhibits prominent spectral features in the wavelength range 4000 –6000 ˚A that deviate signif-icantly from the typical stellar spectra represented in the training dataset. As seen in the residuals, ˆF − F, shown in the upper panels of the figure, these features constitute the dominant source of the reconstruction error. This behavior is consistently observed across all independently trained autoencoder models. The observed spectral characteristics are consistent with those of carbon stars (e.g., Keenan 1993; Wallerstein & Knapp 1998; Gonneau et al. 2016). Carbon stars are generally characterized by strong molecular absorption features, most notably the CH G band near 4300 ˚A, C2 Swan bands at approximately 4300 –6200 ˚A,and CN bands spanning ∼ 6000 –10000 ˚A, along with additional molecular features. These spectral signatures clearly distinguish carbon stars from the more common stellar spectra dominating the training dataset. This object is indeed classified as a CH star in the latest LAMOST carbon star catalog (Zhou et al. 2025; see also Si et al. 2015; Ji et al. 2016; Li et al. 2018; Li et al. 2024). 
+
+4.2.2 Object with MaNGA ID 7-17219806 
+
+The object shown in Figure 9 exhibits similar molecular band fea-tures, extending to longer wavelengths. In contrast to the CH star discussed above, several trained models (e.g., MODEL 1, MODEL 8, 
+
+> MODEL
+
+9, and MODEL 10) are relatively successful in reproducing these features across the full wavelength range, resulting in mod-erate reconstruction errors. This suggests that similar spectra are present in the training dataset, although their population may not be sufficiently large for the autoencoder to fully capture the diver-sity in feature strengths. Then, the training samples in MODEL 1, which most success-fully reproduced this object, are examined. Objects located in close proximity to this source in the 10-dimensional latent space are identified. Figure 10 shows the spectra of the five nearest neighbors. Because the deterministic autoencoder employed in this work does not impose any explicit regularization on the la-tent structure, the interpretation of distances in latent space is not straightforward. Nevertheless, the objects shown in Figure 10 dis-play weaker, but similar spectral features to those of this object (MaNGA ID 7-17219806 ), including moderate absorption edges across 7000 –9000 ˚A. Although the carbon features are signifi-cantly weaker than in the target object, the presence of such spec-tra within the training set may enable the autoencoder to learn the underlying structure and effectively extrapolate these features in more extreme cases. This object corresponds to SDSS J190419.69+401520.5, which was previously identified as a carbon star by Green (2013), who conducted a systematic survey of carbon stars in the SDSS. More recently, it has been claimed to be a non-AGB or dwarf carbon star by Hill et al. (2024) (their Figure 10), who analyzed spectra from the MaStar datasets by combining color selection and spectral fit-ting. 
+
+4.2.3 Properties of two carbon stars 
+
+For further assessment of the identities of these two objects, Their absolute magnitudes and BP–RP colors are compared with those of known carbon star populations spanning different sub-classes. I used samples of two subtypes of classical carbon stars (CH and CR stars) from Li et al. (2018) and dwarf carbon stars (dC) from Roulston et al. (2021). Figure 11 shows the resulting color–magnitude diagram. The carbon star population exhibits two distinct branches: abright branch and a faint branch. Dwarf carbon stars are main-sequence stars with enhanced surface carbon abundances (Dahn et al. 1977) likely due to binary mass transfer and therefore predom-inantly occupy the faint branch. In contrast, classical carbon stars classified as CH and CR stars are more evolved and are mainly found along the bright branch. As shown in Figure 11, the two objects identified as anomalous are located on the bright branch. For the object with MaNGA ID 
+
+3-115120061 , this provides further confirmation of its consistency with a CH star classification. The other object, with MaNGA ID 
+
+7-17219806 , is located in an even brighter region of the diagram. This placement favors a classification as a classical carbon star rather than a dwarf carbon star. In summary, the two objects flagged as anomalous are carbon stars exhibiting characteristic spectral features. Their positions in the color–magnitude diagram (Figure 1) indicate that they are not isolated from the broader stellar population in the dataset. This suggests that the stellar parameters shaping their continua, such as effective temperature and surface gravity, are not unusual. However, the enhanced surface carbon abundance, and the re-sulting presence of strong molecular bands (C 2, CN, and CH), ultimately lead to unsuccessful spectral reconstructions, as high-lighted in Figures 8 and 9. 10 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model1 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 MaNGA ID=3-115120061 
+
+4000 6000 8000 10000 
+
+model2 ( , ) = .
+
+input( )
+
+reconstructed( )
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model3 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model4 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model5 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model6 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model7 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model8 ( , ) = .
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model9 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+model10 ( , ) = . 
+
+> Fig. 8. Same as Figure 5, but for the unsuccessful case of the object specified by MaNGA ID 3-115120061. Alt text: Ten plots showing the model and observed spectra wit thin and shick lines and residuapl plotted on top of each panel.
+
+Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 11 4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model1 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 MaNGA ID=7-17219806 
+
+4000 6000 8000 10000 
+
+model2 ( , ) = .
+
+input( )
+
+reconstructed( )
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model3 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model4 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model5 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model6 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model7 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model8 ( , ) = .
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model9 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+model10 ( , ) = .   
+
+> Fig. 9. Same as Figure 5, but for the unsuccessful case of the object specified by MaNGA ID MaNGA ID 7-17219806. Alt text: Ten plots showing the model and observed spectra wit thin and shick lines and residuapl plotted on top of each panel. 12 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0
+
+0.0 
+
+0.5 
+
+1.0 
+
+3-35082197 
+
+0.0 
+
+0.5 
+
+1.0 
+
+7-17219806 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+60-652783081365956352 
+
+0.0 
+
+0.5 
+
+1.0 
+
+60-1821699216032733184 
+
+0.0 
+
+0.5 
+
+1.0 
+
+60-650673908825890816 
+
+0.0 
+
+0.5 
+
+1.0 
+
+7-16142991           
+
+> Fig. 10. Comparison of the spectrum of MaNGA ID MaNGA ID 7-17219806 (top) and neearest five objects in the latent space. Alt text: Six line plots showing spectra of six objects in total.
+
+4.3 Oxygen-rich thermally pulsating AGB star 
+
+Finally, Figure 12 presents the case of the object with MaNGA ID 
+
+60-1436778955512349056 . The input spectrum is characterized by an extremely red color, with almost negligible flux shortward of ∼ 6000 ˚A. The trained models systematically underestimate the flux at the longest wavelengths ( >
+
+∼ 9500 ˚A), which serves as the dominant source of the large reconstruction error. Such red stars are intrinsically faint in the optical and are therefore underrepre-sented in spectroscopic surveys. Despite their abundance in the Galaxy, their sparsity in the training dataset can generally lead to relatively higher reconstruction errors when analyzed with autoen-coder models trained predominantly on earlier-type stars. The extremely red nature of this object is highlighted in the color–magnitude diagram shown in Figure 1. With MG = −0.19 
+
+and GBP −GRP = 4 .46 , this object is one of the reddest sources in the entire dataset, located at the end of the asymptotic giant branch. As shown in Figure 1, the region with BP-RP color esceeding 4.0
+
+is only sparsely populated, containing fewer than 10 objects. This scarcity forces the autoencoder models to effectively extrapolate spectra during reconstruction. This case therefore suggests that 0.0 0.5 1.0 1.5 2.0 2.5 3.0 
+
+[ ]
+
+14 
+
+12 
+
+10 
+
+8
+
+6
+
+4
+
+2
+
+0
+
+2
+
+4 
+
+> [ ]
+> CH star CR star dC star 7-17219806 3-115120061
+> Fig. 11. Color-magnitude diagram fpr carbon stars in litterature (circle: CH star, lower triangle: CR star, and square: dC star). The two carbon stars flagged as outliers by the autoencode models are also presented (large square and circle). Alt text: A scatter plot in the color and absolute magni-tude plane showing carbon stars.
+
+autoencoder-based anomaly detection can also flag samples at the extrema of continuous physical distributions. The region around this object in the color–magnitude diagram (Figure 1) is known to be occupied by TP-AGB stars, which generally exhibit long-period variability. Consistently, this ob-ject, also known as IRAS 16572+5843, was identified in the Northern Sky Variability Survey (Wo´ zniak et al. 2004) as a long-period variable (LPV) with a period of 730 days. Lançon & Wood (2000) published a spectral library of luminous cool stars, including LPVs, covering the wavelength range 5000 –25000 ˚A.Subsequently, Lançon & Mouhcine (2002) constructed averaged spectra of carbon(C)- and oxygen(O)-rich LPVs by grouping sam-ples according to their colors. In Figure 13, the spectrum of this object is compared with the nine mean spectra of O-rich LPVs from Lançon & Mouhcine (2002) (labeled as O-rich LPV1 through LPV9, ordered by increasing color). Based on visual inspection, this object is most consistent with O-rich LPV6 or LPV7 as shown in the figure. Although a more quantitative comparison is beyond the scope of this study, the notably good agreement supports the identification of this object as an O-rich TP-AGB star. TP-AGB stars originate from ∼ 1–8 M⊙ stars and represent a short-lived evolutionary phase lasting up to a few 10 6 yr . In this sense, the autoencoder models successfully identify an object in a rare evo-lutionary stage. 
+
+## 5 Discussion and conclusion 
+
+The results of this study show that autoencoder-based models can efficiently identify both non-physical anomalies (Sec. 4.1) and as-trophysically interesting rare objects (Sec.4.2 and 4.3) without re-lying on prior assumptions about stellar classification. In the for-Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 13 4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model1 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 MaNGA ID=60-1436778955512349056 
+
+4000 6000 8000 10000 
+
+model2 ( , ) = .
+
+input( )
+
+reconstructed( )
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model3 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model4 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model5 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model6 ( , ) = .
+
+4000 6000 8000 10000 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model7 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+model8 ( , ) = .
+
+4000 6000 8000 10000 
+
+[Å] 
+
+0.0 
+
+0.5 
+
+1.0 
+
+> ,
+
+model9 ( , ) = .
+
+0.3 
+
+0.0 
+
+0.3 
+
+4000 6000 8000 10000 
+
+[Å] 
+
+model10 ( , ) = .   
+
+> Fig. 12. Same as Figure 5, but for the unsuccessful case of the object specified by MaNGA ID MaNGA ID 0-1436778955512349056. Alt text: Ten plots showing the model and observed spectra wit thin and shick lines and residuapl plotted on top of each panel. 14 Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0
+
+4000 6000 8000 10000 12000 
+
+[Å] 
+
+10 1
+
+10 1
+
+10 3
+
+10 5
+
+10 7
+
+10 9
+
+> scaled flux density  [a.u.]
+> O-rich LPV1
+> O-rich LPV2
+> O-rich LPV3
+> O-rich LPV4
+> O-rich LPV5
+> O-rich LPV6
+> O-rich LPV7
+> O-rich LPV8
+> O-rich LPV9
+
+MaNGA ID=60-1436778955512349056          
+
+> Fig. 13. Spectral comparison of the object with MaNGA ID 60-1436778955512349056 (thick line) and oxygen-rich LPVs (thin lines). The nine mean spectra of O-rich LPVs are ploted from top to bottom in order of their colors (bluer to redder). Alt text: Plot showing nine different template spectra and two spectra from the data.
+
+mer case, such detections can be leveraged to identify spectral re-gions that should be masked or removed in subsequent analyses. In the latter case, the method enables the discovery of objects with unusual spectral features (Section 4.2) as well as sources occupy-ing the extremes of continuous physical distributions (Section 4.3). The models therefore provides a robust framework for exploring large spectroscopic surveys. While autoencoder-based anomaly detection has been increas-ingly applied to spectroscopic datasets, identifying the sources of reconstruction error is essential not only for a deeper understand-ing of the method, but also for guiding its future extensions (e.g., Ortiz & Boquien 2025). This work showcases examples of un-successful reconstructions from trained autoencoder models ap-plied to the MaNGA Stellar Library, combining reconstruction-error analysis with careful examination of spectral morphology and data-quality indicators. The focus is on clarifying the types of objects flagged as anomalous and helps distinguish between as-trophysical peculiarities and other sources of deviation. Future studies could extend autoencoder-based anomaly detec-tion to larger and more diverse stellar spectral datasets, including ongoing and upcoming surveys such as SDSS-V (Kollmeier et al. 2017), WEAVE (Jin et al. 2024), 4MOST (de Jong et al. 2019), and the Prime Focus Spectrograph (PFS) on Subaru (Takada et al. 2014). Incorporating multi-epoch or multi-wavelength data could help capture variable or rare spectral features. Furthermore, sys-tematic follow-up of objects flagged as anomalous offers opportu-nities for revealing rare spectral types, chemically peculiar stars, or unusual evolutionary states. This is essential to maximize the scientific return of large spectroscopic surveys. Methodological improvements, such as variational autoen-coders (Kingma & Welling 2013; Rezende et al. 2014) and attention-based architectures (Vaswani et al. 2017), may enhance the model’s ability to capture complex correlations and better dis-tinguish subtle anomalies from noise. Integrating stellar param-eters, including effective temperature, surface gravity, and metal-licity, as auxiliary inputs could further improve anomaly detection conditional on spectral type. Overall, this study highlights the potential of unsupervised deep learning techniques to uncover unusual stellar spectra in large datasets, providing a valuable tool for both quality control and the discovery of astrophysically interesting objects. 
+
+## Acknowledgments 
+
+The author thanks the anonymous referee for his/her construc-tive suggestions on the manuscript. The author appreciates Yohei Masada, Jin Matsumoto, and participants of Astroinformatics Advanced Programming Techniques (AAPT) workshop 2025 held at Fukuoka University, for fruitful discussion. The computations are carried out by using resceubbc PC cluster at the Research Center for the Early Universe, the Univsersity of Tokyo. This work made use of data from the MaNGA Stellar Library (MaStar) as part of the Sloan Digital Sky Survey IV (SDSS-IV). Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P. Sloan Foundation, the U.S. Department of Energy Office of Science, and the Participating Institutions. SDSS-IV acknowledges support and resources from the Center for High Performance Computing at the University of Utah. The SDSS website is www.sdss4.org. SDSS-IV is managed by the Astrophysical Research Consortium for the Participating Institutions of the SDSS Collaboration including the Brazilian Participation Group, the Carnegie Institution for Science, Carnegie Mellon University, Center for Astrophysics | Harvard & Smithsonian, the Chilean Participation Group, the French Participation Group, Instituto de Astrofísica de Canarias, The Johns Hopkins University, Kavli Institute for the Physics and Mathematics of the Universe (IPMU) / University of Tokyo, the Korean Participation Group, Lawrence Berkeley National Laboratory, Leibniz Institut für Astrophysik Potsdam (AIP), Max-Planck-Institut für Astronomie (MPIA Heidelberg), Max-Planck-Institut für Astrophysik (MPA Garching), Max-Planck-Institut für Extraterrestrische Physik (MPE), National Astronomical Observatories of China, New Mexico State University, New York University, University of Notre Dame, Observatário Nacional / MCTI, The Ohio State University, Pennsylvania State University, Shanghai Astronomical Observatory, United Kingdom Participation Group, Universidad Nacional Autónoma de México, University of Arizona, University of Colorado Boulder, University of Oxford, University of Portsmouth, University of Utah, University of Virginia, University of Washington, University of Wisconsin, Vanderbilt University, and Yale University. This work has made use of data from the European Space Agency (ESA) mission Gaia (https://www.cosmos.esa.int/gaia), processed by the Gaia Data Processing and Analysis Consortium (DPAC). Funding for the DPAC has been provided by national in-stitutions, in particular the institutions participating in the Gaia Publications of the Astronomical Society of Japan (2026), Vol. 00, No. 0 15 
+
+Multilateral Agreement. 
+
+## Funding Data availability 
+
+The trained models and parameters are available upon a reasonable request. 
+
+## References 
+
+Abadi, M., Agarwal, A., Barham, P., et al. 2016, TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems, arXiv:1603.04467 Abdurro’uf, Accetta, K., Aerts, C., et al. 2022, ApJS, 259, 2, 35. Bailer-Jones, C. A. L., Irwin, M., & von Hippel, T. 1998, MNRAS, 298, 2, 361. Bailer-Jones, C. A. L., Rybizki, J., Fouesneau, M., et al. 2021, AJ, 161, 3, 147. Baron, D. 2019, , arXiv:1904.07248. Baron, D. & Poznanski, D. 2017, MNRAS, 465, 4, 4530. doi:10.1093/mnras/stw3021 Birky, J., Hogg, D. W., Mann, A. W., et al. 2020, ApJ, 892, 1, 31. Bishop, C. M., & Nasrabadi, N. M. 2006. Pattern recognition and machine learning. (New York: springer). Blanton, M. R., Bershady, M. A., Abolfathi, B., et al. 2017, AJ, 154, 1, 28. Böhm, V., Kim, A. G., & Juneau, S. 2023, MNRAS, 526, 2, 3072. doi:10.1093/mnras/stad2773 Bundy, K., Bershady, M. A., Law, D. R., et al. 2015, ApJ, 798, 1, 7. Chalapathy, R., Menon, A. K., & Chawla, S. 2017, arXiv:1704.06743 Chen, Y.-P., Yan, R., Maraston, C., et al. 2020, ApJ, 899, 1, 62. Chollet, F., et al. 2015, Keras ,ˇCotar, K., Zwitter, T., Traven, G., et al. 2021, MNRAS, 500, 4, 4849. Cram, L. E. & Mullan, D. J. 1979, ApJ, 234, 579. Cui, X.-Q., Zhao, Y.-H., Chu, Y.-Q., et al. 2012, Research in Astronomy and Astrophysics, 12, 9, 1197. Dahn, C. C., Liebert, J., Kron, R. G., et al. 1977, ApJ, 216, 757. De Silva, G. M., Freeman, K. C., Bland-Hawthorn, J., et al. 2015, MNRAS, 449, 3, 2604. Drory, N., MacDonald, N., Bershady, M. A., et al. 2015, AJ, 149, 2, 77. El-Kholy, R. I. & Hayman, Z. M. 2025, A&A, 693, A300. Falcón-Barroso, J., Sánchez-Blázquez, P., Vazdekis, A., et al. 2011, A&A, 532, A95. Gaia Collaboration, Prusti, T., de Bruijne, J. H. J., et al. 2016a, A&A, 595, A1. Gaia Collaboration, Brown, A. G. A., Vallenari, A., et al. 2016b, A&A, 595, A2. Gaia Collaboration, Brown, A. G. A., Vallenari, A., et al. 2018, A&A, 616, A1. Gaia Collaboration, Vallenari, A., Brown, A. G. A., et al. 2023, A&A, 674, A1. Giles, D. & Walkowicz, L. 2019, MNRAS, 484, 1, 834. Gilmore, G., Randich, S., Asplund, M., et al. 2012, The Messenger, 147, 25. Glorot, X., Bordes, A., & Bengio, Y. 2011. Deep sparse rectifier neural networks. In Proceedings of the fourteenth international conference on artificial intelligence and statistics (pp. 315-323). Gonneau, A., Lançon, A., Trager, S. C., et al. 2016, A&A, 589, A36. Gray, R. O. & Corbally, C. 2009, Green, P. 2013, ApJ, 765, 1, 12. Gulati, R. K., Gupta, R., Gothoskar, P., et al. 1994, ApJ, 426, 340. Gunn, J. E. & Stryker, L. L. 1983, ApJS, 52, 121. Hill, L., Thomas, D., Maraston, C., et al. 2022a, MNRAS, 509, 3, 4308. Hill, L., Thomas, D., Maraston, C., et al. 2022b, MNRAS, 517, 3, 4275. Hill, L., Maraston, C., Thomas, D., et al. 2024, MNRAS, 530, 2, 1534. Hinton, G. E., & Salakhutdinov, R. R. 2006, Science, 313, 504 Hoyle, B., Rau, M. M., Paech, K., et al. 2015, MNRAS, 452, 4, 4183. Ichinohe, Y. & Yamada, S. 2019, MNRAS, 487, 2, 2874. Imig, J., Holtzman, J. A., Yan, R., et al. 2022, AJ, 163, 2, 56. Jacoby, G. H., Hunter, D. A., & Christian, C. A. 1984, ApJS, 56, 257. Ji, W., Cui, W., Liu, C., et al. 2016, ApJS, 226, 1, 1. Jin, S., Trager, S. C., Dalton, G. B., et al. 2024, MNRAS, 530, 3, 2688. Joy, A. H. & Abt, H. A. 1974, ApJS, 28, 1. Keenan, P. C. 1993, PASP, 105, 905. Kingma, D. P. & Ba, J. 2014, , arXiv:1412.6980. Kingma, D. P. & Welling, M. 2013, , arXiv:1312.6114. Kollmeier, J. A., Zasowski, G., Rix, H.-W., et al. 2017, , arXiv:1711.03234. Lançon, A. & Wood, P. R. 2000, A&AS, 146, 217. Lançon, A. & Mouhcine, M. 2002, A&A, 393, 167. Lazarz, D., Yan, R., Wilhelm, R., et al. 2022, A&A, 668, A21. Li, Y.-B., Luo, A.-L., Du, C.-D., et al. 2018, ApJS, 234, 2, 31. Li, L., Zhang, K., Cui, W., et al. 2024, ApJS, 271, 1, 12. Liang, Y., Melchior, P., Hahn, C., et al. 2023, ApJL, 956, 1, L6. Lochner, M. & Bassett, B. A. 2021, Astronomy and Computing, 36, 100481. Majewski, S. R., Schiavon, R. P., Frinchaboy, P. M., et al. 2017, AJ, 154, 3, 94. Maraston, C., Hill, L., Thomas, D., et al. 2020, MNRAS, 496, 3, 2962. Morgan, W. W., Keenan, P. C., & Kellman, E. 1943, Martell, S. L., Sharma, S., Buder, S., et al. 2017, MNRAS, 465, 3, 3203. Nair, V., & Hinton, G. E. 2010. Rectified linear units improve restricted boltzmann machines. In Proceedings of the 27th international conference on machine learning (ICML-10) (pp. 807-814). Ortiz, E. & Boquien, M. 2025, A&A, 703, A242. Pruzhinskaya, M. V., Malanchev, K. L., Kornilov, M. V., et al. 2019, MNRAS, 489, 3, 3591. Randich, S., Gilmore, G., & Gaia-ESO Consortium 2013, The Messenger, 154, 47. Rezende, D. J., Mohamed, S., & Wierstra, D. 2014, International conference on machine learning, 1278 Roulston, B. R., Green, P. J., Toonen, S., et al. 2021, ApJ, 922, 1, 33. Sharma, K., Kembhavi, A., Kembhavi, A., et al. 2020, MNRAS, 491, 2, 2280. Si, J.-M., Li, Y.-B., Luo, A.-L., et al. 2015, Research in Astronomy and Astrophysics, 15, 10, 1671. Singh, H. P., Gulati, R. K., & Gupta, R. 1998, MNRAS, 295, 2, 312. Storey-Fisher, K., Huertas-Company, M., Ramachandra, N., et al. 2021, MNRAS, 508, 2, 2946. Takada, M., Ellis, R. S., Chiba, M., et al. 2014, PASJ, 66, 1, R1. Ting, Y.-S. 2025, , arXiv:2510.10713. Vaswani, A., Shazeer, N., Parmar, N., et al. 2017, , arXiv:1706.03762. Vincent, P., Larochelle, H., Bengio, Y., & Manzagol, P. A. 2008, Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning (pp. 1096-1103). Vincent, P., Larochelle, H., Lajoie, I., Bengio, Y., Manzagol, P. A., & Bottou, L. 2010. Stacked denoising autoencoders: Learning useful representations in a deep network with a local denoising criterion. Journal of machine learning research, 11(12). Wallerstein, G. & Knapp, G. R. 1998, ARA&A, 36, 369. Wei, P., Luo, A., Li, Y., et al. 2013, MNRAS, 431, 2, 1800. Wo´ zniak, P. R., Williams, S. J., Vestrand, W. T., et al. 2004, AJ, 128, 6, 2965. Xiang, Y., Gu, S., & Cao, D. 2022, MNRAS, 514, 4, 4781. Yan, R., Chen, Y., Lazarz, D., et al. 2019, ApJ, 883, 2, 175. Yang, T. & Li, X. 2015, MNRAS, 452, 1, 158. York, D. G., Adelman, J., Anderson, J. E., et al. 2000, AJ, 120, 3, 1579. Zhong, F., Napolitano, N. R., Heneka, C., et al. 2025, MNRAS, 543, 1, 691. Zhou, L., Cai, J., Yang, H., et al. 2025, ApJS, 279, 2, 40. de Jong, R. S., Agertz, O., Berbel, A. A., et al. 2019, The Messenger, 175, 3.

@@ -1,0 +1,565 @@
+Title: Variational views for self-supervised learning in radio astronomy
+
+URL Source: https://arxiv.org/pdf/2602.18923v1
+
+Published Time: Tue, 24 Feb 2026 01:38:30 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+> MNRAS 000 , 1–17 (2026) Preprint 24 February 2026 Compiled using MNRAS L ATEX style file v3.3
+
+# Variational views for self-supervised learning in radio astronomy 
+
+# Johnny Joseph Alphonse, 1★ and Anna M. M. Scaife 1,2
+
+> 1Jodrell Bank Centre for Astrophysics, University of Manchester, Oxford Road, Manchester M13 9PL, UK
+> 2Alan Turing Institute, Euston Road, London, UK
+> Accepted XXX. Received YYY; in original form ZZZ
+
+ABSTRACT 
+
+Modern astronomical surveys are producing progressively larger and more complex datasets, making traditional supervised approaches that rely on extensive labelled catalogues increasingly difficult. Consequently, pre-training using self-supervised learning (SSL), which offers a scalable route by extracting structure directly from unlabelled images, is becoming attractive for many downstream applications. In this work we consider the use of coupled self-supervised representation learning approaches for radio galaxy morphology pre-training. In order to account for the more nuanced variations in radio galaxy morphology than are typically included in the augmented views of view-based SSL algorithms, we use a pre-trained Variational Autoencoder (VAE) to generate views for training a larger view-based self-supervised model. To do this, a 𝛽 -VAE was trained on the Radio Galaxy Zoo (RGZ) dataset, where moderate regularization ( 𝛽 = 2.3) was found to provide a good balance between reconstruction quality and disentanglement of generative factors such as source multiplicity and lobe asymmetry. An analysis of the 𝛽 -VAE reveals that Fanaroff-Riley class identity manifests as a continuous transition across the latent space, rather than being associated to a single discrete dimension. 𝛽 -VAE reconstructions were then incorporated as generative augmentations within a view-based SSL pipeline. Our experiments show that combining these generative views with standard image augmentations improves downstream classification performance, and we present ablation studies clarifying the relative contribution of each augmentation type. These results indicate that generative and contrastive approaches are complementary, and point toward disentanglement-aware self-supervised learning as a promising direction for future radio astronomy surveys. 
+
+Key words: methods: data analysis – radio continuum: galaxies – methods: statistical 
+
+1 INTRODUCTION 
+
+Radio galaxies, together with radio-loud quasars, are active galactic nuclei (AGN) distinguished by their strong emission at radio wave-lengths. This emission is not confined to the central regions of the host galaxy but is often observed in the form of large-scale structures, including collimated jets and diffuse lobes. These jets can extend over distances of hundreds of kiloparsecs and, in extreme cases, up to sev-eral megaparsecs, making them among the largest single structures in the Universe. Fanaroff & Riley (1974) analysed 57 sources in the Third Cam-bridge Catalogue of Radio Sources (3CR) and introduced a mor-phological classification scheme based on the relative distribution of radio brightness. They defined the ratio between the separation of the brightest regions on opposite sides of the central galaxy and the total linear extent of the source. Sources with a ratio less than 0.5 were classified as Fanaroff–Riley type I (FR I), characterised by jets that are brightest near the galactic centre and fade with distance. Conversely, sources with a ratio greater than 0.5 were classified as Fanaroff–Riley type II (FR II), in which the outer edges dominate the emission and often display bright terminal hotspots. While the Fanaroff–Riley scheme provides a binary framework, subsequent observations have revealed a much richer morphological  
+
+> ★E-mail: johnny.josephalphonse@postgrad.manchester.ac.uk (JJA)
+
+diversity. Hybrid radio sources (HyMoRS; Gopal-Krishna & Wiita 2000) exhibit asymmetric structures, showing FR I-like characteris-tics on one side and FR II-like features on the other. These objects are extremely rare and are generally interpreted as the result of envi-ronmental asymmetries affecting the propagation of relativistic jets. Narrow-angle tail (NAT) and wide-angle tail (WAT) sources, also re-ferred to collectively as bent-tail galaxies (Rudnick & Owen 1976), are associated with dense cluster environments. Their characteris-tic bent jets are thought to arise from the relative motion of the host galaxy through the intracluster medium, providing an important diag-nostic of environmental effects. Compact radio galaxies, sometimes termed FR 0s, represent another significant class. These sources lack large-scale jets or lobes and instead display emission concentrated near the nucleus (Baldi et al. 2015). They are thought to represent either young radio galaxies whose jets have yet to extend far from the central engine or systems in which the jet activity is disrupted or confined. Other exotic morphologies, such as X-shaped or double-double radio galaxies, further illustrate the variety of forms that can emerge from the interaction of jets, host galaxies, and surrounding environments. Classifying radio galaxies becomes increasingly challenging as observations extend to fainter sources and more distant populations. At low signal-to-noise ratios or with limited resolution, it is often dif-ficult to distinguish morphological features clearly, and many sources show intermediate structures that do not fit neatly into simple cate- 
+
+> ©2026 The Authors
+> arXiv:2602.18923v1 [astro-ph.IM] 21 Feb 2026
+
+# 2 J. Joseph Alphonse et al. 
+
+gories. Building large, statistically meaningful samples across differ-ent redshifts, flux ranges, and environments is therefore essential for understanding radio galaxy evolution. However, the vast amount of data produced by modern surveys makes traditional visual, “by-eye” classification methods impractical. Recent surveys highlight the scale of this challenge. The LOFAR Two-metre Sky Survey (LoTSS) Data Release 2, conducted with the LOw-Frequency ARray (LOFAR), has generated approximately 7 petabytes of data containing nearly 4.4 million sources (Shimwell et al. 2022). The Very Large Array Sky Survey (VLASS) is ex-pected to detect around 5.3 million sources, with the first epoch alone cataloguing 1.9 million (Lacy et al. 2020; Gordon et al. 2021). The Rapid ASKAP Continuum Survey (RACS) with the Australian SKA Pathfinder (ASKAP) has identified roughly 2.6 million sources in its high-frequency band (RACS-High, 1655.5 MHz; Duchesne et al. 2025). The GaLactic and Extragalactic All-sky MWA eXtended (GLEAM-X) survey, conducted with the Murchison Widefield Array (MWA), contains about 625,000 sources (Ross et al. 2024). Similarly, the MeerKAT International GHz Tiered Extragalactic Exploration Survey (MIGHTEE) has produced approximately 144,000 sources from its lower-resolution images and 114,000 from higher-resolution data (Hale et al. 2024). Earlier large-scale surveys, such as the Faint Images of the Radio Sky at Twenty Centimeters (FIRST; Becker et al. 1995) and the NRAO VLA Sky Survey (NVSS; Condon et al. 1998), together catalogued on the order of 580,000 sources over their operational lifetimes (Kimball & Ivezic 2013). With the accelerating pace of data acquisition, manual classifica-tion is no longer a sustainable approach. Automated methods, rang-ing from classical statistical techniques to modern machine learning algorithms, have therefore become essential for processing and in-terpreting the growing wealth of radio data. These approaches aim not only to reproduce traditional morphological categories such as FR I and FR II, but also to uncover new patterns and subclasses that emerge when millions of sources are analysed in a uniform and scalable way. 
+
+1.1 Machine Learning in Radio Galaxy Classification 
+
+Although machine learning has enabled significant progress in the classification and representation of radio galaxies (see e.g. ), several challenges remain that limit the effectiveness of current approaches. A central constraint is the scarcity of large, balanced, and consis-tently labeled datasets. Catalogues such as MiraBest (Porter & Scaife 2023a) and subsets of Radio Galaxy Zoo (Banfield et al. 2015) pro-vide valuable training resources, but they suffer from class imbalance, with FRI sources underrepresented relative to FRII galaxies, and rare morphologies such as hybrids or bent-tailed sources appearing only sparsely. Furthermore, reliable labeling of morphology requires ex-pert input and is susceptible to inconsistencies in large community-driven projects. These limitations restrict the performance of super-vised methods, which depend on abundant, high-quality labels. At the same time, upcoming surveys such as the SKA are expected to produce data on an unprecedented scale, intensifying the need for methods that can generalize beyond small, carefully annotated samples. As supervised learning models rely heavily on labelled data, many recent studies have investigated semi-supervised and unsupervised methods that can leverage large unlabelled datasets. Baron Perez et al. (2025) applied deep clustering with semi-supervised learning to classify LoTSS-DR2 sources into multiple morphological categories, showing that unlabeled data could significantly improve classification accuracy. Unsupervised approaches based on self-organizing maps (SOMs) and autoencoders have also been used to discover clusters of radio morphologies without human supervision (Ralph et al. 2019; Mostert et al. 2021). These methods are particularly relevant be-cause the morphological diversity of radio galaxies extends beyond the canonical FRI/FRII dichotomy, encompassing classes such as hybrids, X-shaped, and double-double sources. By grouping sources in an unsupervised way, these approaches allow astronomers to ex-plore unexpected structures and potentially identify new categories of radio galaxies. A further challenge is that standard machine learning methods cap-ture only a limited range of morphological diversity. Common image augmentations such as flips, rotations, crops, and intensity changes help models generalize but are not connected to the underlying astro-physics. They cannot reproduce variations tied to physical properties of the source or its environment, such as changes in jet length, lobe curvature, brightness asymmetry, or core prominence. Simulations of radio galaxies, created using hydrodynamical or semi-empirical models, can generate such physically meaningful diversity (Bonaldi & Braun 2018; Turner et al. 2022). However, these simulations are computationally expensive and not yet feasible at the scale required by surveys like the SKA. This creates a gap between the need for morphologically diverse training data and the limitations of both labelled catalogues and physical simulations. Generative models offer a complementary approach that addresses these limitations from a data-driven perspective. These models can learn compressed latent representations of radio galaxies and can generate new, plausible variations of sources that interpolate between and extend beyond the training examples, effectively creating "new views" of radio galaxies. Such representations surpass simple image manipulations by reflecting physical properties of the sources, for ex-ample, differences in jet structure, lobe asymmetry, or the prominence of the central core. Unlike traditional augmentations, which operate through predefined geometric transformations, generative augmenta-tions have the potential to introduce variations that are more closely aligned with the intrinsic diversity of the data itself. This makes them a natural candidate for integration into self-supervised learn-ing pipelines, where the goal is to learn robust and generalizable representations without relying on large amounts of labeled data. This strategy parallels methods that train on synthetic data derived from hydrodynamical or semi-empirical simulations (Wilman et al. 2008; Bonaldi & Braun 2018; Turner et al. 2022). However, instead of relying on external, computationally intensive simulations to ex-pand the training set, our approach integrates the generative process directly into the self-supervised pipeline. By learning the underly-ing generative factors of the data distribution directly (Higgins et al. 2016), the model produces ’internal simulations’ (new views) that are statistically consistent with the observed population. This allows for a self-contained framework where the augmentation strategy evolves alongside the representation learner. The motivation of this work is therefore twofold. First, to critically evaluate whether generative views can contribute to self-supervised representation learning in a way that is competitive with, or com-plementary to, conventional augmentations. Second, to explore how disentangled latent representations might provide interpretable in-sights into the structure of radio galaxy morphologies. 
+
+2 SELF-SUPERVISED LEARNING 
+
+Traditional machine learning methods, such as supervised learn-ing, depend on large, labeled datasets in which models are trained to associate inputs with known outputs. Although highly success- 
+
+> MNRAS 000 , 1–17 (2026)
+
+# Variational views for SSL in radio astronomy 3
+
+ful in many applications, this approach is less practical in domains such as astronomy, where data volumes are vast but reliable labels are scarce and require expert knowledge. Self-supervised learning (SSL) addresses this challenge by exploiting the intrinsic structure of unlabeled data to formulate pretext tasks, allowing models to learn informative representations without direct supervision (Jing & Tian 2021). These learned representations can then be adapted to down-stream tasks such as classification or clustering, thereby reducing reliance on labeled data. A key motivation for SSL is the problem of dimensionality reduc-tion. Astronomical images, such as those of radio galaxies, are inher-ently high-dimensional, with thousands of pixels encoding complex and often subtle structures. To enable effective analysis, this infor-mation must be compressed into compact latent representations that retain the relevant features while discarding noise and redundancy. Early approaches to this problem relied on linear techniques such as principal component analysis (PCA; Shlens 2014), but these methods are limited in their ability to capture nonlinear relationships. Neural network–based methods, such as autoencoders, have since become dominant due to their ability to capture nonlinear structures in the data. SSL builds upon this idea by defining training objectives that force networks to extract robust, semantically meaningful features directly from raw inputs. Two major paradigms of SSL have emerged in recent years. The first is reconstruction-based (generative) SSL, where models such as autoencoders learn to compress and reconstruct inputs, sometimes with modifications such as masked regions that must be predicted (He et al. 2021). The second is view-based SSL, where models are trained to produce consistent representations of different augmented “views” of the same input, using either contrastive (Chen et al. 2020) or non-contrastive frameworks (Grill et al. 2020). Both approaches have shown state-of-the-art performance across computer vision and natural language processing, and are increasingly being explored in astronomy (Hayat et al. 2021; Marianer et al. 2020; Slijepcevic et al. 2023; Lastufka et al. 2025; Parker et al. 2024). 
+
+2.1 View-based SSL 
+
+In view-based learning, models are trained to produce consis-tent representations of different “views” of the same input. Unlike reconstruction-based approaches, which aim to recover missing or corrupted input data, view-based SSL focuses on learning invari-ance: the representation should remain stable under transformations such as cropping, rotation, color distortion, or noise (Le-Khac et al. 2020; Jing & Tian 2021). This principle is particularly valuable in domains such as astronomy, where sources may appear at different scales, orientations, or noise levels depending on the instrument and observing conditions. The key idea is to generate two or more augmented versions of an input image and then train the network so that their latent represen-tations are close to one another. This forces the model to capture un-derlying content rather than the pixel-level differences. Approaches to view-based SSL can be divided into two categories: contrastive and non-contrastive. In astronomy, view-based self-supervised learning is particularly appealing because augmentations can be tailored to observational data. For example, rotated or mirrored versions of radio galaxy im-ages remain morphologically valid, while noise injection can mimic instrumental effects. By enforcing invariance across such transfor-mations, view-based SSL enables the discovery of representations that capture underlying astrophysical structure rather than imaging artifacts (Cecconello et al. 2024). One widely used framework in view-based SSL is SimCLR (Chen et al. 2020), which learns representations by encouraging two aug-mented views of the same image to be mapped to nearby points in the latent space, while ensuring that views from different images remain well separated. This is achieved through a contrastive loss function, which quantifies similarity between representations using measures such as cosine similarity, and regulates the sharpness of the separa-tion with a temperature parameter. In astronomy, contrastive methods have been explored for learning galaxy morphology representations (e.g. Hayat et al. 2021). However, the reliance of contrastive meth-ods on large numbers of negative pairs can typically result in large batches or memory banks to provide sufficient negative pairs, which can be computationally expensive and difficult to scale. To address this limitation, non-contrastive self-supervised methods were intro-duced. These approaches eliminate the need for explicit negative examples and instead use carefully designed architectures or opti-mization strategies to prevent the trivial solution of representational collapse, where the network outputs the same representation for every input, making the features useless. One influential approach is Bootstrap Your Own Latent (BYOL; Grill et al. 2020), which introduced asymmetric online and target net-works updated through a momentum encoder. BYOL demonstrated that non-contrastive methods could achieve performance competi-tive with, or even exceeding, contrastive methods on standard bench-marks. 
+
+3 BYOL: BOOTSTRAP YOUR OWN LATENT 
+
+Bootstrap Your Own Latent (BYOL; Grill et al. 2020) is a non-contrastive learning method that represents a significant step in the development of view-based SSL. Unlike contrastive frameworks, which explicitly require negative pairs, BYOL learns representations by aligning two augmented views of the same image using only positive pairs. The key insight of BYOL is that collapse is avoided through an asymmetric architecture consisting of an online network and a target network, coupled with a stop-gradient mechanism. The BYOL framework operates on two stochastic augmentations of an input image, ˜x1 and ˜x2. Each augmentation is passed through an encoder followed by a projection head to obtain representations. The online network consists of an encoder 𝑓 𝜃 , a projection head 𝑔 𝜃 , and an additional predictor 𝑝 𝜃 . The target network, on the other hand, consists only of an encoder 𝑓 𝜉 and projection head 𝑔 𝜉 .Given an augmented input ˜x1, the online network computes 
+
+z1 = 𝑔 𝜃 ( 𝑓 𝜃 ( ˜x1)) , p1 = 𝑝 𝜃 (z1), (1) and the target network processes ˜x2 as 
+
+z2 = 𝑔 𝜉 ( 𝑓 𝜉 ( ˜x2)) . (2) The online prediction p1 is trained to match the target represen-tation z2. Symmetrically, the roles of the two augmentations are swapped, yielding a bidirectional training objective. 
+
+3.1 Training Objective 
+
+The training objective in BYOL is to align the representations pro-duced by the online and target networks for two augmented views of the same input. This is achieved by minimizing the distance between the online predictor’s output and the target projection, with similarity measured using a cosine-based loss, which is given by, 
+
+LBYOL = ∥q1 − sg (z2)∥ 22 + ∥ q2 − sg (z1)∥ 22, (3)  
+
+> MNRAS 000 , 1–17 (2026)
+
+# 4 J. Joseph Alphonse et al.                     
+
+> 𝑥
+> input
+> ˜𝑥 1ℎ𝜃 𝑧 𝜃 𝑝 𝜃 (𝑧 𝜃 )
+> view representation projection prediction
+> 𝑡
+> 𝑓 𝜃 𝑔 𝜃 𝑝 𝜃 online network
+> ˜𝑥 2ℎ𝜉 𝑧 𝜉
+> view representation projection
+> 𝑡 ′
+> 𝑓 𝜉 𝑔 𝜉 sg (𝑧 𝜉 )//
+> sg
+> loss
+> target network
+> Figure 1. Schematic of the BYOL framework with online and target networks.
+
+where 𝑞 1 and 𝑞 2 are the online predictions, 𝑧 1 and 𝑧 2 are the target projections, and 𝑠𝑔 () denotes the stop-gradient operator. The stop-gradient prevents the target network from receiving gradient updates, ensuring that optimization only affects the online network. Without this asymmetry, the two networks would converge to a solution in which all representations collapse to a constant vector. The parameters of the target network are not learned directly through backpropagation. Instead, they are updated as an exponential moving average (EMA) of the online network’s parameters: 
+
+𝜉 ← 𝜏𝜉 + ( 1 − 𝜏 )𝜃, (4) where 𝜃 are the online parameters, 𝜉 are the target parameters, and 𝜏 
+
+is a momentum coefficient. This slow updating mechanism stabilizes training by providing a steadily evolving target representation, against which the online network can consistently align. BYOL avoids the need for large batches or memory banks, which are common requirements in contrastive methods. This makes it com-putationally more efficient and adaptable to research environments where resources are constrained. For astronomy, this efficiency is especially valuable given the scale of modern surveys. Early appli-cations of SSL in galaxy morphology analysis (Hayat et al. 2021) demonstrate the feasibility of such approaches, and BYOL offers a strong framework for building robust representations of radio galaxy morphologies (e.g. Slijepcevic et al. 2023). 
+
+4 VARIATIONAL AUTOENCODERS (VAES) 
+
+Variational Autoencoders (VAEs) are a class of deep generative models that combine neural network–based autoencoders with the principles of variational inference (Kingma & Welling 2022). Unlike classical autoencoders, which learn a deterministic mapping between inputs and compressed latent representations, VAEs impose a prob-abilistic structure on the latent space by approximating intractable posteriors with variational distributions. The VAEs have a dual role as they act as both representation learners, compressing high-dimensional data into meaningful latent variables, and as generative models, capable of producing synthetic data that reflects the statistical properties of the training set. These ca-pabilities make VAEs very valuable in astronomy, where they can be used for data augmentation and disentanglement of physical features. The architecture of a VAE consists of two neural networks: an en-coder (the inference network) and a decoder (the generative network). The encoder approximates the posterior distribution over latent vari-ables, while the decoder reconstructs or generates data from samples drawn from those variables. A prior distribution is placed over the latent variables, usually an isotropic Gaussian, 
+
+𝑝 (𝑧 ) = N ( 𝑧 ; 0 , 𝐼 ), (5) which regularizes the latent space and enables straightforward sam-pling. The encoder then maps an input 𝑥 and produces the parameters of an approximate posterior distribution over the latent variables 
+
+𝑧 . Following Kingma & Welling (2022), this approximate posterior is modeled as a multivariate Gaussian with a diagonal covariance matrix: 
+
+log 𝑞 𝜙 (𝑧 | 𝑥 ) = log N
+
+
+
+𝑧 ; 𝜇 𝜙 , 𝜎 2 
+
+> 𝜙
+
+𝐼 
+
+
+
+, (6) where 𝜇 𝜙 and 𝜎 2 
+
+> 𝜙
+
+are the mean and variance vector, predicted by the encoder with parameters 𝜙 .The decoder, parameterized by 𝜃 , defines the likelihood, 𝑝 𝜃 (𝑥 | 𝑧 ),which reconstructs the input (or generates new samples) from latent codes. The key element of the VAE is the reparameterization trick, which makes sampling differentiable. Instead of sampling 𝑧 directly from the encoder’s distribution, it is expressed as 
+
+𝑧 = 𝜇 𝜙 (𝑥 ) + 𝜎 𝜙 (𝑥 ) ⊙ 𝜖, 𝜖 ∼ N ( 0, 𝐼 ) (7) where ⊙ denotes elementwise multiplication. This allows gradients to flow through the encoder during training, enabling end-to-end optimization with stochastic gradient descent. 
+
+4.1 Training Objective 
+
+Training a VAE requires optimizing a loss function that balances two competing goals. The first is to accurately reconstruct the input data, and the second is to ensure that the latent space remains structured  
+
+> MNRAS 000 , 1–17 (2026)
+
+# Variational views for SSL in radio astronomy 5
+
+according to a prior distribution. This objective is formalized through the Evidence Lower Bound (ELBO), which arises from variational inference. The true posterior, 𝑝 𝜃 (𝑧 | 𝑥 ), is analytically intractable because the marginal likelihood, 𝑝 𝜃 (𝑥 ), cannot be computed exactly for high dimensional latent spaces. Variational inference (VI) pro-vides a tractable solution by introducing an approximate posterior 
+
+𝑞 𝜙 (𝑧 | 𝑥 ).
+
+4.1.1 The Evidence Lower Bound (ELBO) 
+
+The central idea is to maximize the log marginal likelihood of the data, log 𝑝 𝜃 (𝑥 ). Since this is intractable, we derive a variational lower bound using Jensen’s inequality (Jordan et al. 1999; Blei et al. 2017), 
+
+log 𝑝 𝜃 (𝑥 ) = log 
+
+∫
+
+𝑞 𝜙 (𝑧 | 𝑥 ) 𝑝 𝜃 (𝑥, 𝑧 )
+
+𝑞 𝜙 (𝑧 | 𝑥 ) 𝑑𝑧 (8) 
+
+≥ E𝑞 𝜙 (𝑧 | 𝑥 )
+
+ log 𝑝 𝜃 (𝑥, 𝑧 ) − log 𝑞 𝜙 (𝑧 | 𝑥 ) . (9) This inequality defines the Evidence Lower Bound (ELBO), 
+
+L( 𝜃, 𝜙 ; 𝑥 ) = E𝑞 𝜙 (𝑧 | 𝑥 )
+
+ log 𝑝 𝜃 (𝑥 | 𝑧 ) − 𝐷 KL 
+
+ 𝑞 𝜙 (𝑧 | 𝑥 ) ∥ 𝑝 𝜃 (𝑧 ).
+
+(10) Maximizing the ELBO simultaneously encourages two properties, (i) The first term ensures that the decoder reconstructs the ob-served data accurately from the latent variables. (ii) The second term regularizes the approximate posterior to re-main close to the prior 𝑝 𝜃 (𝑧 ), typically chosen as an isotropic Gaus-sian. Thus, the ELBO provides a balance between data reconstruction and latent space regularization. 
+
+4.1.2 Reconstruction Loss 
+
+The reconstruction loss, acting as the data fidelity term, 
+
+E𝑞 𝜙 (𝑧 | 𝑥 )
+
+ log 𝑝 𝜃 (𝑥 | 𝑧 ) (11) encourages the decoder to produce outputs that closely match the observed data when conditioned on the latent variables. In practical implementations, this expectation reduces to a likelihood-based loss function that depends on the choice of observation model. For con-tinuous valued data, the likelihood is typically modeled as a Gaussian distribution, which corresponds to an MSE loss. For binary-valued or normalized pixel data, a Bernoulli likelihood is commonly adopted, yielding a cross-entropy loss. This component of the objective ensures that the latent repre-sentation retains sufficient information for accurate reconstruction, effectively measuring how well the VAE compresses and regenerates the input data. 
+
+4.1.3 KL Divergence 
+
+The second component of the ELBO corresponds to the Kull-back–Leibler (KL) divergence, which measures how far the approx-imate posterior deviates from the prior distribution, given by, 
+
+𝐷 KL 
+
+ 𝑞 𝜙 (𝑧 | 𝑥 ) ∥ 𝑝 𝜃 (𝑧 ) (12) In the standard VAE formulation, the approximate posterior is modelled as a Gaussian distribution with diagonal covariance (Equa-tion 6) while the prior is typically taken to be 𝑝 𝜃 (𝑧 ) = N ( 𝑧 ; 0 , 𝐼 ).
+
+Given these choices, the KL divergence can be simplified to a closed-form expression, 
+
+𝐷 KL 
+
+ 𝑞 𝜙 (𝑧 | 𝑥 ) ∥ 𝑝 𝜃 (𝑧 ) = 12
+
+> 𝑑
+
+∑︁ 
+
+> 𝑖 =1
+
+
+
+𝜎 2 
+
+> 𝜙,𝑖
+
++ 𝜇 2 
+
+> 𝜙,𝑖
+
+− 1 − log 𝜎 2
+
+> 𝜙,𝑖
+
+
+
+,
+
+(13) where 𝑑 denotes the dimensionality of the latent space. This regularization term enforces that the approximate posterior does not drift too far from the prior. As a result, the latent space remains continuous, compact, and well-behaved, which is crucial for meaningful sampling and interpolation in generative tasks. 
+
+4.2 𝛽 -VAE and Disentanglement 
+
+A central challenge in representation learning is to capture under-lying generative factors of variation in data in a way that is both interpretable and useful for downstream tasks. Standard VAEs often entangle these factors in the latent space, making it difficult to sep-arate distinct attributes such as shape, orientation, or brightness in image data. To address this limitation, the 𝛽 -VAE was introduced as a modification of the original VAE framework to promote “disentan-gled” representations (Higgins et al. 2016). The key idea of a 𝛽 -VAE is to alter the standard VAE objective by scaling the KL divergence term in the ELBO with a hyperparameter 
+
+𝛽 ,
+
+L𝛽 −𝑉 𝐴𝐸 (𝜃, 𝜙 ; 𝑥 ) = E𝑞 𝜙 (𝑧 | 𝑥 )
+
+ log 𝑝 𝜃 (𝑥 | 𝑧 )
+
+− 𝛽 𝐷 KL 
+
+ 𝑞 𝜙 (𝑧 | 𝑥 ) ∥ 𝑝 𝜃 (𝑧 ). (14) When 𝛽 = 1, the formulation reduces to the standard VAE ob-jective. By setting 𝛽 > 1, the model places greater emphasis on aligning the approximate posterior with the prior distribution, effec-tively constraining the capacity of the latent space. This constraint reduces the capacity of the latent space, encouraging the model to represent distinct generative factors independently across different latent dimensions. A common training strategy is to apply KL an-nealing, where the 𝛽 term is gradually increased from zero to its target value, mitigating posterior collapse and enabling the model to learn useful representations before enforcing strong regularization (Bowman et al. 2016). 
+
+𝛽 -VAE demonstrated for the first time that disentangled repre-sentations could emerge in an unsupervised setting, without requir-ing labeled factors of variation (Higgins et al. 2016; Burgess et al. 2018). This was a key conceptual advance, showing that structural constraints on probabilistic models can yield interpretable represen-tations aligned with the independent causal mechanisms underlying the data. However, 𝛽 -VAE introduces a trade-off between disentan-glement and reconstruction quality; higher values of 𝛽 encourage greater disentanglement but often degrade the fidelity of reconstruc-tions. To quantify disentanglement, Higgins et al. (2016) proposed one of the earliest metrics designed to evaluate whether variations in gener-ative factors are captured by individual latent dimensions. While this metric has been influential, it is limited by its reliance on access to ground-truth generative factors and has been criticized for instability and weak correlation with downstream task performance (Locatello et al. 2019). Consequently, latent traversals remain a widely used al-ternative: by systematically varying one latent variable while keeping others fixed, researchers can directly observe whether interpretable factors of variation emerge. This approach, applied in both early and  
+
+> MNRAS 000 , 1–17 (2026)
+
+# 6 J. Joseph Alphonse et al. 
+
+subsequent studies (Higgins et al. 2016; Burgess et al. 2018; Lo-catello et al. 2019; Zhu et al. 2020), continues to provide intuitive and compelling evidence of disentanglement in practice. 
+
+4.3 Other Generative Models 
+
+Beyond VAEs, several other generative frameworks have become central to modern machine learning. Generative Adversarial Net-works (GANs) (Goodfellow et al. 2014) train a generator and dis-criminator in an adversarial game, producing highly realistic samples but often facing instability and mode collapse. Normalizing Flows (Rezende & Mohamed 2016) model complex distributions through invertible transformations of simple priors, allowing exact likelihood computation and flexible density estimation, though scalability can be restrictive. Diffusion Models (Sohl-Dickstein et al. 2015) generate data by reversing a noise corruption process. They achieve state-of-the-art synthesis quality and diversity, albeit at high computational cost due to iterative sampling. Together, these approaches complement VAEs by offering different trade-offs between sample quality, tractability, and efficiency, shaping the landscape of deep generative modeling. 
+
+4.4 Source Simulation in Astronomy 
+
+Simulating astronomical sources has become an essential tool for both data analysis and methodological development in modern as-tronomy. As next-generation surveys like the SKA generate un-precedented volumes of data, simulations provide a controlled en-vironment to test detection pipelines, evaluate classification algo-rithms, and understand systematic biases. Synthetic sources allow researchers to benchmark machine learning models where labeled data are scarce, and to explore parameter spaces that are underrepre-sented in current observations. In radio astronomy, simulation frameworks have been developed to model extragalactic radio sources across a range of morphologies and physical conditions. For example, the SKADS Simulated Sky (S ³)project (Wilman et al. 2008) generated large-scale simulations of ra-dio galaxies, star-forming galaxies, and AGN populations to support survey planning and cosmological studies. More recently, the Tiered Radio Extragalactic Continuum Simulation (T-RECS; Bonaldi et al. 2018) has been introduced, providing improved modeling of AGN and star-forming populations, including their spectral, polarization, and clustering properties. Such synthetic datasets are invaluable for probing the limitations of observational sensitivity and resolution. Alongside such astrophysical simulations, generative models are increasingly being employed to produce realistic source populations in a data-driven manner. In the optical domain, the Celeste model applied variational inference to construct a probabilistic genera-tive framework of stars and galaxies, explicitly incorporating ob-servational effects such as noise and point spread functions (Regier et al. 2015). In radio astronomy, structured variational autoencoders have been used to synthesize FR I and FR II galaxies, generating morphology-consistent images that aid both survey preparation and the development of machine learning pipelines (Bastien et al. 2021) and more recently diffusion models have been developed for the same purpose (Vičánek Martínez et al. 2024). 
+
+5 DATASETS 
+
+The experiments in this thesis are conducted on two benchmark datasets of radio galaxies: the MiraBest dataset (Porter & Scaife          
+
+> Table 1. Three digit identification scheme for sources in Miraghaei & Best (2017). Digit 1 Digit 2 Digit 3 1: FRI 0: Confident 0: Standard 2: FRII 1: Uncertain 1: Double Double 3: Hybrid 2: Wide Angle Tail 4: Unclassifiable 3: Diffuse 4: Head Tail
+
+2023b) and the Radio Galaxy Zoo (RGZ) catalogue (Banfield et al. 2015). Both datasets contain examples of FR type I and II morpholo-gies, but they differ considerably in scale, curation, and labeling methodology, making them complementary resources for studying machine learning approaches in radio astronomy. The MiraBest dataset is a carefully curated sample of FR I and FR II sources with expert-confirmed classifications. Its relatively modest size is offset by the high reliability of its labels, which makes it partic-ularly well-suited as a benchmark for evaluating model performance and comparing experimental outcomes. By contrast, the RGZ dataset represents one of the largest citizen-science efforts in astronomy, in which thousands of volunteers visu-ally matched radio emission to host galaxies. While RGZ does not directly provide FR class labels, it captures a far broader and more diverse population of radio sources. With appropriate filtering or the application of automated reclassification pipelines, it can be lever-aged as a large-scale training and testing ground for machine learning methods. Together, these datasets balance label reliability (MiraBest) and data scale (RGZ), making them complementary for testing both gen-erative and self-supervised methods in this work. 
+
+5.1 MiraBest dataset 
+
+The MiraBest dataset (Porter & Scaife 2023b) is a curated collection of 1,256 radio-loud AGN drawn from the work of Miraghaei & Best (2017), who cross-matched the Sloan Digital Sky Survey (SDSS DR7; Abazajian et al. 2009) with radio sources from NVSS (Condon et al. 1998) and FIRST (Becker et al. 1995). Each source was visually inspected and assigned a FR morphological class as either FRI or FRII. In addition to these FR types, the dataset also contains hybrid sources, as well as subclass labels for non-standard morphologies such as double-double, WATs, diffuse, and head-tail structures. Each source is encoded with a three-digit identifier (Table 1). The first digit indicates the FR class, the second digit encodes classi-fication confidence, and the third digit specifies the morphological subclass. The overall composition of the dataset is summarised in Table 2. There are 591 FR I sources, 631 FR II sources, and 34 hybrids, with both confident and uncertain examples. The FR I and FR II populations are relatively balanced, which is particularly advanta-geous for machine learning applications, as these two classes form the canonical FR morphologies and serve as a benchmark for testing classification and representation learning approaches. The inclusion of hybrid sources, while comparatively rare, is also valuable since such objects exhibit mixed or transitional features between the two canonical classes and therefore provide an opportunity to study edge cases that challenge traditional classification schemes. To make the dataset compatible with machine learning workflows, preprocessing steps were applied following the pipeline of Tang et al. (2019). For each source, a 300 ×300 pixel FIRST image cutout was  
+
+> MNRAS 000 , 1–17 (2026)
+
+# Variational views for SSL in radio astronomy 7            
+
+> Table 2. Population of sources in the MiraBest dataset Class Confidence No. FRI Confident 397 Uncertain 194 FRII Confident 436 Uncertain 195 Hybrid Confident 19 Uncertain 15
+
+downloaded, centered on the radio source position. Images were then cropped to 150 ×150 pixels, sigma-clipped to suppress background noise, and circularly masked to remove unrelated sources in the field. Finally, pixel intensities were normalized to the range [0, 255] and converted to PNG format for efficient storage and loading. This combination of high-quality expert labels, confidence annota-tions, and well-documented preprocessing makes MiraBest an ideal dataset for benchmarking generative modeling and self-supervised learning methods in radio astronomy. 
+
+5.2 Radio Galaxy Zoo (RGZ) 
+
+The RGZ project is a large-scale citizen science initiative aimed to address the challenge of cross-identifying radio sources with their corresponding host galaxies (Banfield et al. 2015). Traditional auto-mated methods often fail for extended or morphologically complex radio sources, particularly those with multiple lobes, jets, or irreg-ular structures. RGZ leverages the collective effort of thousands of volunteers to perform visual classifications, thereby enabling the con-struction of large and accurate training datasets for future machine learning applications in radio astronomy. The dataset primarily draws from two deep 1.4 GHz radio con-tinuum surveys: the FIRST (Becker et al. 1995) and the Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2015), com-plemented with mid-infrared imaging from the Wide-field Infrared Survey Explorer (WISE; Wright et al. 2010) and the Spitzer Wide-area Infrared Extragalactic Survey (SWIRE; Lonsdale et al. 2003). Volunteers classify radio components within 3′ ×3′ fields and identify their most likely infrared counterparts, producing consensus-based host galaxy associations. In the first year of operation, RGZ collected over one million classifications, covering ∼ 175 , 000 radio sources (Banfield et al. 2015). The classifications are probabilistic and consensus-driven rather than absolute, making the dataset effectively unlabelled in a mor-phological sense. Unlike curated datasets such as MiraBest, RGZ does not provide definitive FR classes but instead facilitates host identification and morphology clustering. Early results demonstrated that citizen scientists could achieve accuracy comparable to expert astronomers when consensus levels exceeded 75%, particularly for simpler morphologies. The majority of identified hosts were found to lie in mid-infrared colour regions typical of elliptical galaxies, quasars, and luminous infrared galaxies (LIRGs), consistent with expectations for radio-loud AGN popula-tions. Furthermore, RGZ enabled the discovery of unusual systems, such as spiral hosts with extended radio lobes and hybrid morphology radio sources (HyMoRS), which are of particular interest for studies of galaxy evolution and AGN feedback (Banfield et al. 2015). The scale and diversity of RGZ make it a valuable complement to smaller but curated datasets. While the absence of definitive morpho-logical class labels poses challenges for direct supervised training, the dataset is well-suited for self-supervised representation learning approaches. Its large scale and wide range of source structures allow the development of methods that can better handle the ambiguities and complexities found in real radio galaxy populations. 
+
+6 MODEL IMPLEMENTATION & TRAINING 
+
+The VAE implemented in this work adopts a convolutional encoder– decoder design tailored to 150 × 150 pixel radio galaxy images. The encoder consists of stacked convolutional layers with batch nor-malization and ReLU activations, progressively reducing the spatial resolution while increasing the number of feature channels. The final feature map is flattened and passed through fully connected layers to produce the mean 𝜇 and log-variance log 𝜎 2 of the approximate posterior distribution. Sampling from this distribution is made dif-ferentiable using the reparameterization trick (Kingma & Welling 2022). The decoder reverses this process: latent samples are mapped through fully connected layers and reshaped into feature maps, which are then upsampled using transposed convolutions. Batch normaliza-tion and ReLU activations are applied after each deconvolution, and the final output layer uses a sigmoid activation to constrain pixel intensities to the [0, 1] range. For the experiments in this thesis, the latent dimensionality is set to 𝑧 = 8, providing a compact representation that balances re-construction fidelity with interpretability. A complete layer-by-layer breakdown of the architecture is given in Table 3. This architecture strikes a balance between expressive power and computational efficiency. With a relatively small latent dimension 
+
+(𝑧 = 8), the model learns compact representations of radio galaxy morphology that can be used both for reconstruction and as a source of controlled synthetic augmentations. 
+
+6.1 Training Setup 
+
+The model is trained to maximize the ELBO with a unit Gaussian prior 𝑝 (𝑧 ) = N ( 0, 𝐼 ). The reconstruction term is implemented as binary cross-entropy (BCE) under a Bernoulli likelihood, while the KL term is weighted by a factor 𝛽 . To stabilize training, KL annealing is applied where 
+
+𝛽 𝑡 = min 
+
+
+
+1, 𝑡 + 110 
+
+
+
+𝛽 max , (15) such that 𝛽 increases linearly over the first 𝑡 = 10 epochs before being fixed at 𝛽 max .Training is fully unsupervised, with inputs normalized to [0, 1].Optimization uses Adam with learning rate 10 −4 and runs for 150 epochs. MiraBest and RGZ images are provided as 150 ×150 cutouts. 
+
+7 BYOL FRAMEWORK 
+
+This work employs the BYOL framework (Grill et al. 2020) as the primary self-supervised learning method for radio galaxy images. BYOL was selected due to its proven ability to learn high-quality feature representations without requiring negative samples, making it particularly well suited for domains with limited labels but abun-dant unlabeled data, such as radio astronomy. The implementation used here follows the adaptation of BYOL to astronomical datasets presented in Slijepcevic et al. (2023), ensuring consistency with re-cent work on large-scale self-supervised modeling of radio galaxies. The complete implementation of our pipeline, including the 𝛽 -VAE  
+
+> MNRAS 000 , 1–17 (2026)
+
+# 8 J. Joseph Alphonse et al.   
+
+> (a) Confident FR I
+> (b) Confident FR II
+> (c) Confident Hybrid
+> Figure 2. Example radio galaxy cutouts from the MiraBest dataset, showing confident samples of (a) FR I, (b) FR II, and (c) Hybrid morphologies.
+> Figure 3. Example radio galaxy cutouts from the RGZ dataset.
+
+and augmentation modules, is made publicly available to facilitate reproducibility. 1
+
+The following subsections outline the specific components of this setup: the network architecture used for encoding and projection, the augmentation pipeline applied to generate diverse training views, and the evaluation protocol adopted to assess representation quality.   
+
+> 1The code repository is available at: https://github.com/joe-johnny/ b_VAE-for-RadioGalaxy-SSL
+
+7.1 Network Architecture 
+
+The network architecture adopted in this thesis follows the design implemented by Slijepcevic et al. (2023) for applying BYOL to radio galaxy data. Both the online and target networks use a ResNet-18 backbone (He et al. 2015), chosen after a model-depth comparison showed little improvement from deeper variants such as ResNet-34. This choice provides a good balance between representational capacity and computational efficiency for single-channel, structurally sparse radio images. The ResNet encoder processes input cutouts of  
+
+> MNRAS 000 , 1–17 (2026)
+
+# Variational views for SSL in radio astronomy 9                                                                                                                                                                                          
+
+> Table 3. CNN-VAE architecture used for experiments ( 𝑧 =8). Each layer is listed sequentially.
+> Layer Operation Parameters Output Size Encoder
+> 1Convolution 1→32 , k=4, s=2, p=1 32 ×75 ×75
+> 2BatchNorm + ReLU –32 ×75 ×75
+> 3Convolution 32 →32 , k=4, s=2, p=1 32 ×38 ×38
+> 4BatchNorm + ReLU –32 ×38 ×38
+> 5Convolution 32 →64 , k=4, s=2, p=1 64 ×19 ×19
+> 6BatchNorm + ReLU –64 ×19 ×19
+> 7Convolution 64 →64 , k=4, s=2, p=1 64 ×9×9
+> 8BatchNorm + ReLU –64 ×9×9
+> 9Fully Connected 5184 →128 128 10 Fully Connected (mean) 128 →8𝜇 ∈R8
+> 11 Fully Connected (logvar) 128 →8log 𝜎 2∈R8
+> Decoder
+> 1Fully Connected 8→128 128 2Fully Connected 128 →5184 64 ×9×9
+> 3ConvTranspose2D 64 →64 , k=4, s=2, p=1 64 ×19 ×19
+> 4BatchNorm + ReLU –64 ×19 ×19
+> 5ConvTranspose2D 64 →32 , k=5, s=2, p=1 32 ×38 ×38
+> 6BatchNorm + ReLU –32 ×38 ×38
+> 7ConvTranspose2D 32 →32 , k=5, s=2, p=1 32 ×75 ×75
+> 8BatchNorm + ReLU –32 ×75 ×75
+> 9ConvTranspose2D 32 →1, k=4, s=2, p=1 1×150 ×150
+> 10 Sigmoid –1×150 ×150
+> [h!]
+> Table 4. BYOL architecture, following Slijepcevic et al. (2023)
+> Module Online Target Output Dim.
+> Encoder ResNet-18 ResNet-18 512 Projection Head 2-layer MLP 2-layer MLP 256 Predictor Head 2-layer MLP –256 Update Rule Backprop EMA ( 𝜏 =0.99 )–
+
+150 × 150 pixels, extracting spatial features that form the basis for the downstream projection and prediction modules used in the BYOL framework. On top of this encoder, BYOL introduces lightweight MLPs. Both branches include a projection head, which maps encoder outputs into a latent space suited for the self-supervised objective. In the online branch, an additional predictor head is applied, providing the asymmetry that enables BYOL to avoid representational collapse. The target branch mirrors the encoder and projector of the online network but omits the predictor. Its parameters are not directly up-dated by gradients; instead, they are maintained as an EMA of the online parameters, which stabilizes training and ensures the target representations evolve smoothly. The overall structure of the BYOL framework is summarized in Table 4, which highlights the symmetry between the online and tar-get branches, as well as the role of the predictor head in maintaining asymmetry. The associated training hyperparameters, shown in Ta-ble 5. During pretraining, all components work together to align the on-line predictions with the target projections of differently augmented views of the same image. For downstream tasks such as classification, only the encoder is kept, while the projection and prediction heads               
+
+> [h!]
+> Table 5. Training hyperparameters for BYOL pretraining, following Slijepce-vic et al. (2023).
+> Hyperparameter Value / Setting
+> Optimizer SGD with momentum 0.9 Weight Decay 1.5×10 −6
+> Base Learning Rate 0.2 (scaled with batch size) Batch Size 512 Learning Rate Schedule 10-epoch warm-up + cosine decay Epochs 800 Input Resolution 128 ×128 pixels (single-channel)
+
+are discarded. This ensures the final model is compact and directly comparable to supervised baselines. 
+
+7.2 Augmentation Pipeline 
+
+The augmentation pipeline is central to the effectiveness of BYOL, as it generates multiple distinct “views” of the same input source to enforce invariance in the learned representations. In this work, the de-sign follows the pipeline proposed by Slijepcevic et al. (2023), with the addition of 𝛽 -VAE reconstructions introduced as an augmen-tation stage prior to conventional transformations. Unlike entirely synthetic generations, these 𝛽 -VAE reconstructions retain the overall morphology of the original input while introducing controlled varia-tions along disentangled latent dimensions. This provides a comple-mentary and semantically meaningful view of the same radio galaxy, encouraging the network to learn representations that are invariant not only to geometric transformations but also to morphological di-versity.  
+
+> MNRAS 000 , 1–17 (2026)
+
+# 10 J. Joseph Alphonse et al.                        
+
+> [h!]
+> Table 6. Augmentations used in BYOL training. Standard transformations follow Slijepcevic et al. (2023), with 𝛽 -VAE reconstructions added as an additional view.
+> Augmentation Value
+> 𝛽 -VAE reconstruction Re-encode + decode of input Rotation 0 – 360 °(uniform distribution) Center crop 70 pixels Random resized crop 80 – 100% of original size Horizontal flip 𝑝 =0.5
+> Vertical flip 𝑝 =0.5
+> Color jitter 𝑠 =0.5,𝑝 =0.8
+> Gaussian blur 𝑝 =0.1
+
+Following this reconstruction step, each image undergoes a se-quence of standard augmentations. Inputs are randomly cropped and resized to 128 ×128 pixels, introducing positional variability. Hori-zontal and vertical flips are applied to exploit the approximate rota-tional invariance of radio galaxy morphologies. To further enhance robustness, Gaussian blurring is used to mimic resolution degrada-tion, while Color Jitter introduces changes in contrast and saturation. By integrating 𝛽 -VAE reconstructions into the augmentation pipeline alongside traditional geometric and photometric transforms, this approach introduces both structural and observational variability into the learning process. Such a hybrid strategy is particularly well-suited to radio astronomy data, where models must be resilient to both imaging artifacts and the complex, continuous nature of source morphology. 
+
+7.3 Finetuning and Evaluation 
+
+To assess the quality of representations learned through BYOL pre-training, we adopt two complementary evaluation protocols: linear evaluation and fine-tuning. In the linear evaluation setup, commonly used as a standard benchmark in self-supervised learning (Grill et al. 2020), the encoder is frozen after pretraining, and a single fully con-nected classifier is trained on top using the MiraBest dataset (Porter & Scaife 2023b). This approach directly measures the quality of the learned representations, as no further updates are made to the encoder weights. The classification performance thus reflects how well the features generalize to a supervised task without additional adaptation. In contrast, the fine-tuning setup unfreezes the encoder, allowing all layers to be jointly trained with the classifier on labeled MiraBest data. This approach evaluates not only the quality but also the adapt-ability of the pretrained encoder when exposed to limited supervi-sion. Fine-tuning can often uncover representational nuances that remain latent under linear probing, especially when domain shifts or label-specific features are involved. Following Slijepcevic et al. (2023), both protocols are evaluated using binary classification of Fanaroff-Riley types (FR I vs. FR II), the canonical task in radio galaxy morphology. Accuracy is reported as the primary metric, supplemented by class-wise performance where relevant to address potential imbalances in the dataset. Additionally, ablation studies are conducted under varied aug-mentation configurations, standard-only, 𝛽 -VAE-only, and hybrid, allowing for a more detailed understanding of how augmentation design and generative views impact both representation quality and transferability.     
+
+> Figure 4. Diagnostic plot of Regularization Strength ( 𝛽 ) vs. Latent Capacity for the RGZ dataset. The balance point where the curves intersect aligns with the empirically chosen 𝛽 =2.3.
+
+8 DISCUSSIONS 8.1 𝛽 -VAE Representation Learning 
+
+8.1.1 Selection of Regularization Strength ( 𝛽 )
+
+Quantitative evaluation of disentanglement remains an open chal-lenge in unsupervised learning. Standard metrics such as the 𝛽 -VAE metric (Higgins et al. 2016) or FactorVAE metric (Kim & Mnih 2019) require ground-truth labels for the generative factors of varia-tion, which are unavailable for real observational data. Furthermore, recent studies suggest that these metrics can be unstable and do not always correlate with downstream task performance (Locatello et al. 2019). Consequently, we adopted a heuristic approach combining visual inspection with a "capacity diagnostic" analysis to determine the optimal 𝛽 .We monitored the trade-off between the KL divergence (regular-ization load) and the mean log-variance of the latent posterior (a proxy for information capacity) across a range of 𝛽 values. The inter-section of these metrics typically indicates a balance point where the model effectively compresses data without suffering from posterior collapse. For the RGZ dataset, which served as the generator for our down-stream BYOL pipeline, this diagnostic (Fig. 4) revealed a balance point at approximately 𝛽 ≈ 2.3. This quantitative finding aligned with our visual inspection, where 𝛽 = 2.3 produced the most coher-ent morphologies, effectively smoothing out the noise inherent in the dataset while retaining structural diversity. Given this convergence of quantitative and qualitative evidence, this model was selected to generate the augmentations for the self-supervised learning experi-ments. 
+
+8.1.2 Reconstruction and Generation Behavior 
+
+With the regularization parameters fixed at 𝛽 = 2.3, we evaluated the qualitative fidelity of the model outputs. The visual results confirm that this setting achieved the necessary balance between structural definition and noise suppression. In our analysis, models trained with significantly lower 𝛽 values produced sharper images but frequently reconstructed background artifacts, while those with higher 𝛽 values  
+
+> MNRAS 000 , 1–17 (2026)
+
+# Variational views for SSL in radio astronomy 11 
+
+yielded over-smoothed morphologies that lost astrophysical details such as hotspots. Reconstructions with 𝛽 = 2.3 (Fig. 7) maintained the essential two-component FR II morphology while allowing controlled variability. The model reliably reproduced symmetric double lobes and their ori-entation, with differences emerging gradually as variance increased. Generated sources (Fig. 8) exhibited a continuum of compact to ex-tended morphologies, including mild brightness asymmetries and diffuse emission consistent with physical variability across the pop-ulation. Overall, both models demonstrate that moderate 𝛽 values yield la-tent spaces capable of producing morphologically stable yet seman-tically flexible reconstructions and generations. Variance governs the degree of diversity within these spaces, slow variance ensures fidelity to the input, while higher variance explores plausible structural vari-ability, confirming that the 𝛽 -VAE framework effectively captures the generative continuum of radio galaxy morphologies. 
+
+8.1.3 Latent Structure and Disentanglement 
+
+Latent traversal and projection analyses were used to provide in-sight into the internal structure of the 𝛽 -VAE representations. It was observed that the chosen 𝛽 value encouraged meaningful disentan-glement of several morphological factors. These include variations in core–lobe separation, lobe luminosity asymmetry, elongation, halo or jet-like diffusion, and orientation. Each factor changes gradu-ally and independently, producing smooth transitions that align with plausible physical variations seen in radio galaxies. Some latent di-mensions, however, remain less interpretable, showing irregular or diffuse patterns that may encode residual noise or blended features rather than distinct morphological factors. see Figure 11. The latent space clearly encodes lobe brightness asymmetry, orientation and axis rotation, component multiplicity, and lobe separation. These disentangled behaviours indicate that the model organizes morphol-ogy along continuous axes rather than discrete class boundaries, providing a smooth manifold of structural transformations. The UMAP projection of the RGZ latent space, shown in Figure 9, reinforces this observation. Instead of forming distinct clusters for FR I and FR II sources, the projection shows a continuous gradient where sources with different morphologies occupy overlapping but ordered regions. This suggests that the 𝛽 -VAE captures the gradual nature of radio galaxy morphology rather than imposing discrete class separations, consistent with the physical continuum between these classes. 
+
+8.2 BYOL Ablation Study 
+
+To quantify the effect of individual transformations in the BYOL pipeline, two ablation regimes were tested: (i) a no 𝛽 -VAE setup, using only standard augmentations (rotation, crop, flip, color jitter, and Gaussian blur) and (ii) a + 𝛽 -VAE setup, where 𝛽 -VAE reconstructions, generated from a 𝛽 -VAE trained on the unlabelled RGZ dataset at 𝛽 = 2.3, were incorporated as additional generative views. In the no 𝛽 -VAE setup, results show that random crop and color jitter are the most critical augmentations for learning robust rep-resentations. Removing crop caused the largest performance drop, confirming its role in enforcing positional and scale invariance by fo-cusing attention on the galaxy region rather than background noise. Excluding color jitter also reduced accuracy, indicating its impor-tance in teaching the model stability to natural brightness and flux variations. Conversely, removing rotation slightly improved results, suggesting that strict rotational invariance may obscure meaningful directional cues in FR morphology. Flipping and blurring had smaller impacts; the latter even slightly hindered performance by removing key spatial details such as edges and hotspots. A visual summary of these results is shown in Figure 12, with numerical results in Table A1. In the +𝛽 -VAE setup, a direct comparison of the fully augmented baselines reveals that adding 𝛽 -VAE views to the standard pipeline yields performance comparable to the ’No 𝛽 -VAE’ setup. This sug-gests that the inclusion of generative views does not immediately overcome the limitations imposed by formal geometric transforma-tions, such as rotation, when all are applied simultaneously. How-ever, the contribution of the 𝛽 -VAE becomes evident in the ablations. When used in isolation (“Only 𝛽 -VAE”), performance declined, in-dicating that synthetic views alone cannot replace standard transfor-mations. Among the ablations, removing rotation again yielded the strongest improvement (linear = 0.896 ± 0.010), implying that orien-tation diversity is already captured within the +𝛽 -VAE latent space. Similarly, removing color jitter slightly improved linear performance, suggesting that the flux variation encoded in +𝛽 -VAE reconstructions reduces the need for photometric noise. Crop remained essential, as its removal led to reduced linear accuracy, confirming its continued importance for localization and scale invariance. These ablation results indicate that 𝛽 -VAE reconstructions serve as effective, morphology preserving augmentations that strengthen BYOL’s self-supervised learning process. When paired with key ge-ometric transformations, especially cropping and flipping, they im-prove representation quality while reducing reliance on more aggres-sive photometric or rotational perturbations. The findings demon-strate that generative and contrastive approaches can work synergis-tically to produce semantically rich and astrophysically meaningful embeddings of radio galaxy morphology. 
+
+9 CONCLUSIONS 
+
+In this work, we have presented a novel self-supervised learning framework for radio astronomy that integrates generative views from a 𝛽 -VAE into the BYOL pipeline. Motivated by the unprecedented scale of data expected from next-generation surveys like the SKA, we investigated whether disentangled generative factors could serve as semantically meaningful augmentations to improve representation learning without reliance on extensive labelled catalogues. Our analysis of the 𝛽 -VAE component demonstrated that moderate regularization ( 𝛽 = 2.3 for RGZ) effectively disentangles key mor-phological factors such as lobe separation, asymmetry, and source orientation. Crucially, we found that the latent spaces of these mod-els do not align with discrete Fanaroff-Riley class boundaries but rather encode morphology as a continuous manifold. This supports the growing consensus that radio galaxy morphology is better de-scribed by continuous physical parameters than by binary classifi-cation schemes (Rudnick & Owen 1976; Gopal-Krishna & Wiita 2000). The ablation studies reveal a clear hierarchy in the effectiveness of augmentation strategies. We found that relying only on generative views is detrimental to representation learning. Performance declined notably when the 𝛽 -VAE was used in isolation, demonstrating that synthetic variations cannot yet replace the spatial priors provided by standard geometric transformations, particularly cropping. However, the generative model serves as a valuable complement to these tradi-tional augmentation methods. The 𝛽 -VAE reconstructions effectively  
+
+> MNRAS 000 , 1–17 (2026)
+
+# 12 J. Joseph Alphonse et al. 
+
+(a) 
+
+(b) 
+
+(c) 
+
+Figure 5. Reconstructions of a MiraBest radio source with a 𝛽 -VAE (𝛽 = 1.22 ). The original is shown at left in each row, followed by multiple stochastic reconstructions obtained by sampling the latent code with increasing variance: (A) N ( 0, 0.1), (B) N ( 0, 0.5), (C) N ( 0, 1.0).
+
+(a) 
+
+(b) 
+
+(c) 
+
+Figure 6. Synthetic samples of radio sources from the latent space of a 𝛽 -VAE trained on the MiraBest dataset with 𝛽 = 1.22 . Each row shows generations obtained by sampling with increasing variance: (A) N ( 0, 0.1), (B) N ( 0, 0.5), and (C) N ( 0, 1.0).MNRAS 000 , 1–17 (2026) Variational views for SSL in radio astronomy 13 
+
+(a) 
+
+(b) 
+
+(c) 
+
+Figure 7. Reconstructions of a RGZ radio source with a 𝛽 -VAE (𝛽 = 2.3). The original is shown at left in each row, followed by multiple stochastic reconstructions obtained by sampling the latent code with increasing variance: (A) N ( 0, 0.1), (B) N ( 0, 0.5), (C) N ( 0, 1.0).
+
+(a) 
+
+(b) 
+
+(c) 
+
+Figure 8. Synthetic samples of radio sources from the latent space of a 𝛽 -VAE trained on the Radio Galaxy Zoo dataset with 𝛽 = 2.3. Each row shows generations obtained by sampling with increasing variance: (A) N ( 0, 0.1), (B) N ( 0, 0.5), and (C) N ( 0, 1.0).MNRAS 000 , 1–17 (2026) 14 J. Joseph Alphonse et al. 
+
+Figure 9. UMAP projection of the 𝑧 = 8 latent space learned by the standard VAE on the RGZ dataset. Points are coloured by class label (blue = FR I, red = FR II). 
+
+compensated for the removal of rotational and photometric augmen-tations, suggesting that the model captures intrinsic orientation and flux variability. This indicates that while generative models cannot yet serve as a standalone augmentation strategy, they function as a vi-tal auxiliary mechanism that incorporates the astrophysical structure into the self-supervised pipeline. Ultimately, this work highlights the potential of disentanglement-aware self-supervised learning, paving the way for foundation models that are not only robust to observa-tional artifacts but are also physically informative. 
+
+ACKNOWLEDGEMENTS 
+
+AMS gratefully acknowledges support from the UK Alan Turing Institute under grant reference EP/V030302/1. 
+
+DATA AVAILABILITY 
+
+The data underlying this article were derived from sources in the public domain: the MiraBest dataset (Porter & Scaife 2023b) and the Radio Galaxy Zoo dataset (Banfield et al. 2015). The code un-derlying this article is available in the GitHub repository at https: //github.com/joe-johnny/b_VAE-for-RadioGalaxy-SSL .
+
+REFERENCES 
+
+Abazajian K. N., et al., 2009, The Astrophysical Journal Supplement Series, 182, 543–558 Baldi R. D., Capetti A., Giovannini G., 2015, Astronomy &amp; Astrophysics, 576, A38 Banfield J. K., et al., 2015, Monthly Notices of the Royal Astronomical Society, 453, 2327–2341 Baron Perez N., Brüggen M., Kasieczka G., Lucie-Smith L., 2025, Astronomy &amp; Astrophysics, 699, A302 Bastien D. J., Scaife A. M. M., Tang H., Bowles M., Porter F., 2021, Monthly Notices of the Royal Astronomical Society, 503, 3351–3370 Becker R. H., White R. L., Helfand D. J., 1995, ApJ, 450, 559 Blei D. M., Kucukelbir A., McAuliffe J. D., 2017, Journal of the American Statistical Association, 112, 859 Bonaldi A., Braun R., 2018, Square Kilometre Array Science Data Challenge 1 ( arXiv:1811.10454 ), https://arxiv.org/abs/1811.10454 
+
+Bonaldi A., Bonato M., Galluzzi V., Harrison I., Massardi M., Kay S., De Zotti G., Brown M. L., 2018, Monthly Notices of the Royal Astronomical Society, 482, 2–19 Bowman S. R., Vilnis L., Vinyals O., Dai A. M., Jozefowicz R., Bengio S., 2016, Generating Sentences from a Continuous Space (arXiv:1511.06349 ), https://arxiv.org/abs/1511.06349 
+
+Burgess C. P., Higgins I., Pal A., Matthey L., Watters N., Des-jardins G., Lerchner A., 2018, Understanding disentangling in 𝛽 -VAE (arXiv:1804.03599 ), https://arxiv.org/abs/1804.03599 
+
+Cecconello T., Riggi S., Becciani U., Vitello F., Hopkins A. M., Vizzari G., Spampinato C., Palazzo S., 2024, Self-supervised learning for radio-astronomy source classification: a benchmark ( arXiv:2411.14078 ), 
+
+https://arxiv.org/abs/2411.14078 
+
+Chen T., Kornblith S., Norouzi M., Hinton G., 2020, A Simple Framework for Contrastive Learning of Visual Representations ( arXiv:2002.05709 ), 
+
+https://arxiv.org/abs/2002.05709 
+
+Condon J. J., Cotton W. D., Greisen E. W., Yin Q. F., Perley R. A., Taylor G. B., Broderick J. J., 1998, AJ, 115, 1693 Duchesne S. W., et al., 2025, The Rapid ASKAP Continuum Survey (RACS) VI: The RACS-high 1655.5 MHz images and catalogue (arXiv:2501.04978 ), https://arxiv.org/abs/2501.04978 
+
+Fanaroff B. L., Riley J. M., 1974, Monthly Notices of the Royal Astronomical Society, 167, 31P Franzen T. M. O., et al., 2015, MNRAS, 453, 4020 Goodfellow I. J., Pouget-Abadie J., Mirza M., Xu B., Warde-Farley D., Ozair S., Courville A., Bengio Y., 2014, Generative Adversarial Networks (arXiv:1406.2661 ), https://arxiv.org/abs/1406.2661 
+
+Gopal-Krishna Wiita P. J., 2000, Extragalactic radio sources with hybrid morphology: implications for the Fanaroff-Riley di-chotomy (arXiv:astro-ph/0009441 ), https://arxiv.org/ abs/astro-ph/0009441 
+
+Gordon Y. A., et al., 2021, The Astrophysical Journal Supplement Series, 255, 30 Grill J.-B., et al., 2020, Bootstrap your own latent: A new approach to self-supervised Learning ( arXiv:2006.07733 ), https://arxiv. org/abs/2006.07733 
+
+Hale C. L., et al., 2024, MIGHTEE: The Continuum Survey Data Release 1 (arXiv:2411.04958 ), https://arxiv.org/abs/2411.04958 
+
+Hayat M. A., Stein G., Harrington P., Lukić Z., Mustafa M., 2021, The Astrophysical Journal Letters, 911, L33 He K., Zhang X., Ren S., Sun J., 2015, Deep Residual Learning for Image Recognition ( arXiv:1512.03385 ), https://arxiv.org/abs/1512. 03385 
+
+He K., Chen X., Xie S., Li Y., Dollár P., Girshick R., 2021, Masked Autoen-coders Are Scalable Vision Learners ( arXiv:2111.06377 ), https: //arxiv.org/abs/2111.06377 
+
+Higgins I., Matthey L., Pal A., Burgess C. P., Glorot X., Botvinick M. M., Mohamed S., Lerchner A., 2016, in International Conference on Learning Representations. https://api.semanticscholar.org/ CorpusID:46798026 
+
+Jing L., Tian Y., 2021, IEEE Transactions on Pattern Analysis and Machine Intelligence, 43, 4037 Jordan M. I., Ghahramani Z., Jaakkola T. S., Saul L. K., 1999, An introduction to variational methods for graphical models. MIT Press, Cambridge, MA, USA, p. 105–161 Kim H., Mnih A., 2019, Disentangling by Factorising ( arXiv:1802.05983 ), 
+
+https://arxiv.org/abs/1802.05983 
+
+Kimball A. E., Ivezic Z., 2013, Proceedings of the International Astronomical Union, 9, 238–239 Kingma D. P., Welling M., 2022, Auto-Encoding Variational Bayes (arXiv:1312.6114 ), https://arxiv.org/abs/1312.6114 
+
+Lacy M., et al., 2020, Publications of the Astronomical Society of the Pacific, 132, 035001 Lastufka E., et al., 2025, Bridging the Gap: Examining Vision Foun-MNRAS 000 , 1–17 (2026) Variational views for SSL in radio astronomy 15 
+
+Figure 10. Latent traversal map showing all 8 dimensions with disentangled factors in MiraBest Data using 𝛽 -VAE with 𝛽 = 1.22 
+
+dation Models for Optical and Radio Astronomy Applications (arXiv:2409.11175 ), https://arxiv.org/abs/2409.11175 
+
+Le-Khac P. H., Healy G., Smeaton A. F., 2020, IEEE Access, 8, 193907–193934 Locatello F., Bauer S., Lucic M., Rätsch G., Gelly S., Schölkopf B., Bachem O., 2019, Challenging Common Assumptions in the Unsuper-vised Learning of Disentangled Representations ( arXiv:1811.12359 ), 
+
+https://arxiv.org/abs/1811.12359 
+
+Lonsdale C., et al., 2003, Publications of the Astronomical Society of the Pacific, 115, 897–927 Marianer T., Poznanski D., Prochaska J. X., 2020, Monthly Notices of the Royal Astronomical Society, 500, 5408–5419 Miraghaei H., Best P. N., 2017, Monthly Notices of the Royal Astronomical Society, 466, 4346 Mostert R. I. J., et al., 2021, Astronomy &amp; Astrophysics, 645, A89 Parker L., et al., 2024, Monthly Notices of the Royal Astronomical Society, 531, 4990–5011 Porter F. A. M., Scaife A. M. M., 2023a, MiraBest: A Dataset of Morphologically Classified Radio Galaxies for Machine Learning (arXiv:2305.11108 ), https://arxiv.org/abs/2305.11108 
+
+MNRAS 000 , 1–17 (2026) 16 J. Joseph Alphonse et al. 
+
+Figure 11. Latent traversal map showing all 8 dimensions with disentangled factors in RGZ Data using 𝛽 -VAE with 𝛽 = 2.3
+
+Porter F. A. M., Scaife A. M. M., 2023b, MiraBest: A Dataset of Morphologically Classified Radio Galaxies for Machine Learning (arXiv:2305.11108 ), https://arxiv.org/abs/2305.11108 
+
+Ralph N. O., et al., 2019, PASP, 131, 108011 Regier J., Miller A., McAuliffe J., Adams R., Hoffman M., Lang D., Schlegel D., Prabhat 2015, Celeste: Variational inference for a generative model of astronomical images ( arXiv:1506.01351 ), https://arxiv.org/ abs/1506.01351 
+
+Rezende D. J., Mohamed S., 2016, Variational Inference with Normalizing Flows ( arXiv:1505.05770 ), https://arxiv.org/abs/1505.05770 
+
+Ross K., et al., 2024, GaLactic and Extragalactic All-sky Murchison Wide-field Array eXtended (GLEAM-X) survey II: Second Data Release (arXiv:2406.06921 ), https://arxiv.org/abs/2406.06921 
+
+Rudnick L., Owen F., 1976, The Astrophysical Journal, 203, L107 Shimwell T. W., et al., 2022, Astronomy &amp; Astrophysics, 659, A1 Shlens J., 2014, A Tutorial on Principal Component Analysis (arXiv:1404.1100 ), https://arxiv.org/abs/1404.1100 
+
+Slijepcevic I. V., Scaife A. M. M., Walmsley M., Bowles M., Wong O. I., Shabala S. S., White S. V., 2023, Radio Galaxy Zoo: Towards build-ing the first multi-purpose foundation model for radio astronomy with MNRAS 000 , 1–17 (2026) Variational views for SSL in radio astronomy 17 
+
+Figure 12. Performance of BYOL with and without 𝛽 -VAE under different augmentation ablations on the MiraBest Confident dataset is shown. The x axes for the finetuning and linear evaluation are scaled differently to show the relative difference between each value. Numerical results shown in Table A1. self-supervised learning ( arXiv:2305.16127 ), https://arxiv.org/ abs/2305.16127 
+
+Sohl-Dickstein J., Weiss E. A., Maheswaranathan N., Ganguli S., 2015, Deep Unsupervised Learning using Nonequilibrium Thermodynamics (arXiv:1503.03585 ), https://arxiv.org/abs/1503.03585 
+
+Tang H., Scaife A. M., Leahy J., 2019, Monthly Notices of the Royal Astro-nomical Society, 488, 3358 Turner R. J., Yates-Jones P. M., Shabala S. S., Quici B., Stewart G. S. C., 2022, Monthly Notices of the Royal Astronomical Society, 518, 945–964 Vičánek Martínez T., Baron Perez N., Brüggen M., 2024, A&A, 691, A360 Wilman R. J., et al., 2008, Monthly Notices of the Royal Astronomical Society, 388, 1335 Wright E. L., et al., 2010, The Astronomical Journal, 140, 1868–1881 Zhu X., Xu C., Tao D., 2020, Learning Disentangled Representations with La-tent Variation Predictability ( arXiv:2007.12885 ), https://arxiv. org/abs/2007.12885 
+
+APPENDIX A: BYOL NUMERICAL RESULTS 
+
+This appendix presents the detailed numerical results corresponding to the ablation studies discussed in Section 8.2. Table A1 provides the mean accuracy and standard deviation for both fine-tuning and linear evaluation protocols on the MiraBest Confident dataset. These values quantify the impact of individual augmentation strategies and the inclusion of 𝛽 -VAE generative views within the BYOL pipeline. 
+
+This paper has been typeset from a TEX/L ATEX file prepared by the author. MNRAS 000 , 1–17 (2026) 18 J. Joseph Alphonse et al. 
+
+Table A1. Performance with and without 𝛽 -VAE under different augmentation ablations on the MiraBest Confident dataset, reported as mean ± standard deviation. ✓ indicates augmentation applied, × indicates removed. Rotation Crop Flip Color Jitter Blur 𝛽 -VAE Finetuning Linear Eval 
+
+✓ ✓ ✓ ✓ ✓ × 0.966 ± 0.012 0.846 ± 0.021 
+
+× ✓ ✓ ✓ ✓ × 0.973 ± 0.004 0.876 ± 0.027 
+
+✓ × ✓ ✓ ✓ × 0.960 ± 0.009 0.825 ± 0.031 
+
+✓ ✓ × ✓ ✓ × 0.952 ± 0.018 0.862 ± 0.024 
+
+✓ ✓ ✓ × ✓ × 0.952 ± 0.018 0.828 ± 0.019 
+
+✓ ✓ ✓ ✓ × × 0.974 ± 0.008 0.852 ± 0.044 
+
+✓ ✓ ✓ ✓ ✓ ✓ 0.966 ± 0.007 0.846 ± 0.022 
+
+✓ × × × × ✓ 0.939 ± 0.009 0.817 ± 0.017 
+
+× ✓ × × × ✓ 0.966 ± 0.007 0.827 ± 0.012 
+
+× × ✓ × × ✓ 0.946 ± 0.009 0.817 ± 0.026 
+
+× × × ✓ × ✓ 0.952 ± 0.007 0.798 ± 0.033 
+
+× × × × ✓ ✓ 0.944 ± 0.007 0.778 ± 0.017 
+
+× × × × × ✓ 0.942 ± 0.010 0.769 ± 0.024 
+
+× ✓ ✓ ✓ ✓ ✓ 0.972 ± 0.009 0.896 ± 0.010 
+
+✓ × ✓ ✓ ✓ ✓ 0.947 ± 0.008 0.855 ± 0.026 
+
+✓ ✓ × ✓ ✓ ✓ 0.961 ± 0.006 0.873 ± 0.019 
+
+✓ ✓ ✓ × ✓ ✓ 0.944 ± 0.004 0.877 ± 0.013 
+
+✓ ✓ ✓ ✓ × ✓ 0.959 ± 0.008 0.872 ± 0.022 
+
+MNRAS 000 , 1–17 (2026)

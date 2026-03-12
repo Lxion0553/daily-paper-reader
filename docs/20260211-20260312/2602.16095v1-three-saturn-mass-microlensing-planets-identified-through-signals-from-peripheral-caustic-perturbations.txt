@@ -1,0 +1,472 @@
+Title: Three Saturn-mass Microlensing Planets Identified through Signals from Peripheral-caustic Perturbations
+
+URL Source: https://arxiv.org/pdf/2602.16095v1
+
+Published Time: Thu, 19 Feb 2026 01:20:58 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+Draft version February 19, 2026 
+
+Typeset using L ATEX twocolumn style in AASTeX7 
+
+Three Saturn-mass Microlensing Planets Identified through Signals from Peripheral-caustic Perturbations 
+
+Cheongho Han ∗,1 Chung-Uk Lee, 2 Andrzej Udalski 3 And Ian A. Bond 4
+
+(Leading authors) Michael D. Albrow, 5 Sun-Ju Chung, 2 Andrew Gould, 6 Youn Kil Jung, 2, 7 Kyu-Ha Hwang, 2 Yoon-Hyun Ryu, 2
+
+Yossi Shvartzvald, 8 In-Gu Shin, 9 Jennifer C. Yee, 10 Weicheng Zang, 9 Hongjing Yang, 9 Doeon Kim, 1
+
+Dong-Jin Kim, 2 Sang-Mok Cha, 2, 11 Seung-Lee Kim, 2 Dong-Joo Lee, 2 Yongseok Lee, 2, 11 Byeong-Gon Park, 2
+
+Kyeongsoo Hong 2 And Richard W. Pogge 6
+
+(KMTNet Collaboration) Przemek Mr´ oz, 3 Michal K. Szyma´ nski, 3 Jan Skowron, 3 Radoslaw Poleski, 3 Igor Soszy´ nski, 3
+
+Pawel Pietrukowicz, 3 Szymon Kozlowski, 3 Krzysztof A. Rybicki, 3 Patryk Iwanek, 3 Krzysztof Ulaczyk, 12 
+
+Marcin Wrona, 3, 13 Mariusz Gromadzki 3 And Mateusz J. Mr´ oz 3
+
+(OGLE Collaboration) Fumio Abe, 14 David P. Bennett, 15, 16 Aparna Bhattacharya, 15, 16 Ryusei Hamada, 17 Yuki Hirao, 18 Asahi Idei, 17 
+
+Stela Ishitani Silva, 15 Shuma Makida, 17 Shota Miyazaki, 19 Yasushi Muraki, 14 Tutumi Nagai, 17 Togo Nagano, 17 
+
+Seiya Nakayama, 17 Mayu Nishio, 17 Kansuke Nunota, 17 Ryo Ogawa, 17 Ryunosuke Oishi, 17 Yui Okumoto, 17 
+
+Greg Olmschenk, 15 Cl´ ement Ranc, 20 Nicholas J. Rattenbury, 21 Yuki Satoh, 22 Takahiro Sumi, 17 
+
+Daisuke Suzuki, 17 Takuto Tamaoki, 17 Sean K. Terry, 15, 16 Paul J. Tristram, 23 Aikaterini Vandorou 15, 16 
+
+And Hibiki Yama 17 
+
+(The MOA and PRIME Collaboration) 
+
+> 1
+
+Department of Physics, Chungbuk National University, Cheongju 28644, Republic of Korea 
+
+> 2
+
+Korea Astronomy and Space Science Institute, Daejon 34055, Republic of Korea 
+
+> 3
+
+Astronomical Observatory, University of Warsaw, Al. Ujazdowskie 4, 00-478 Warszawa, Poland 
+
+> 4
+
+School of Mathematical and Computational Sciences, Massey University, Auckland 0745, New Zealand 
+
+> 5
+
+University of Canterbury, Department of Physics and Astronomy, Private Bag 4800, Christchurch 8020, New Zealand 
+
+> 6
+
+Department of Astronomy, Ohio State University, 140 West 18th Ave., Columbus, OH 43210, USA 
+
+> 7
+
+University of Science and Technology, Daejeon 34113, Republic of Korea 
+
+> 8
+
+Department of Particle Physics and Astrophysics, Weizmann Institute of Science, Rehovot 76100, Israel 
+
+> 9
+
+Department of Astronomy, Westlake University, Hangzhou 310030, Zhejiang Province, China 
+
+> 10
+
+Center for Astrophysics | Harvard & Smithsonian 60 Garden St., Cambridge, MA 02138, USA 
+
+> 11
+
+School of Space Research, Kyung Hee University, Yongin, Kyeonggi 17104, Republic of Korea 
+
+> 12
+
+Department of Physics, University of Warwick, Gibbet Hill Road, Coventry, CV4 7AL, UK 
+
+> 13
+
+Villanova University, Department of Astrophysics and Planetary Sciences, 800 Lancaster Ave., Villanova, PA 19085, USA 
+
+> 14
+
+Institute for Space-Earth Environmental Research, Nagoya University, Nagoya 464-8601, Japan 
+
+> 15
+
+Code 667, NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA 
+
+> 16
+
+Department of Astronomy, University of Maryland, College Park, MD 20742, USA 
+
+> 17
+
+Department of Earth and Space Science, Graduate School of Science, Osaka University, Toyonaka, Osaka 560-0043, Japan 
+
+> 18
+
+Institute of Astronomy, Graduate School of Science, The University of Tokyo, 2-21-1 Osawa, Mitaka, Tokyo 181-0015, Japan 
+
+> 19
+
+Institute of Space and Astronautical Science, Japan Aerospace Exploration Agency, 3-1-1 Yoshinodai, Chuo, Sagamihara, Kanagawa 252-5210, Japan 
+
+> 20
+
+Sorbonne Universit´ e, CNRS, UMR 7095, Institut d’Astrophysique de Paris, 98 bis bd Arago, 75014 Paris, France 
+
+> 21
+
+Department of Physics, University of Auckland, Private Bag 92019, Auckland, New Zealand 
+
+> 22
+
+College of Science and Engineering, Kanto Gakuin University, Yokohama, Kanagawa 236-8501, Japan  
+
+> 23
+
+University of Canterbury Mt. John Observatory, P.O. Box 56, Lake Tekapo 8770, New Zealand 
+
+ABSTRACT 
+
+Corresponding author: cheongho@astroph.chungbuk.ac.kr Corresponding author: leecu@kasi.re.kr 
+
+> arXiv:2602.16095v1 [astro-ph.EP] 17 Feb 2026
+
+2We present the discovery and analysis of three microlensing planets identified through brief positive anomalies on the wings of their light curves. The events, KMT-2021-BLG-0852, KMT-2024-BLG-2005, and KMT-2025-BLG-0481, were detected in high-cadence survey data from the KMTNet, OGLE, MOA, and PRIME collaborations. The anomaly morphologies are consistent with major-image per-turbations induced by planetary-mass companions located near the peripheral caustic. A systematic exploration of model degeneracies, including binary-source scenarios, higher mass-ratio binary lenses, and the inner–outer caustic degeneracy, firmly establishes the planetary origin of each signal. Mea-surements of the angular Einstein radius and event timescale, combined with Bayesian priors from a Galactic model, yield the physical parameters of each system. The hosts are low-mass stars (0.12– 0.75 M⊙), while the companions are Saturn-mass planets (0.16–0.59 MJ) projected at separations of 1.1–7.8 au, placing them beyond the snowline of their hosts. These results demonstrate the capability of microlensing to detect and characterize cold giant planets around low-mass stars at kpc distances, populating the critical transition region between ice giants and gas giants. 
+
+Keywords: Gravitational microlensing exoplanet detection (2147)  
+
+> 1.
+
+INTRODUCTION The remarkable diversity of the known exoplanet pop-ulation, encompassing terrestrial worlds, super-Earths, ice giants, and gas giants, provides a vital laboratory for testing theories of planetary formation and evolu-tion ( Winn & Fabrycky 2015 ). While super-Jupiters (with masses M & 5 MJ) mark the upper boundary of the planetary mass scale, a comprehensive mapping of planetary demographics requires a focus on the tran-sition between ice giants and massive gas giants. In this context, identifying Saturn-mass planets in the cold outer regions of their host systems is essential for con-straining the efficiency of core formation and subsequent gas accretion beyond the snowline, where the condensa-tion of volatiles increases the surface density of solids (Kennedy & Kenyon 2008 ). Within the framework of core accretion theory, Saturn-mass planets represent a distinctive transition regime. Standard models predict that once a solid core reaches a critical mass of ∼ 10–15 M⊕, it trig-gers a phase of runaway gas accretion ( Stevenson 1982 ;
+
+Pollack et al. 1996 ). While Jupiter-mass planets are the canonical result of sustained growth, Saturn-mass plan-ets likely represent cases for which this rapid accumula-tion was interrupted either by the dissipation of the pro-toplanetary disk or by disk-driven migration that moved the protoplanet into a gas-depleted region ( Ida & Lin 2004 ; Alibert et al. 2005 ). Consequently, Saturn-mass planets are not merely small Jupiters. They are ex-pected to retain significantly higher core-to-envelope mass fractions compared to their more massive counter-parts ( Fortney et al. 2007 ). This makes them sensitive probes of the precise timing of disk depletion and of the underlying physics of solid core assembly. While the radial-velocity and transit techniques have been extraordinarily successful in characterizing exo-planets on short to moderate orbital periods, they be-come progressively less sensitive to planets in the cold, outer regions of planetary systems. Gravitational mi-crolensing, by contrast, provides a uniquely powerful and complementary probe of cold planets at wide sep-arations, with peak sensitivity to companions located near and beyond the snowline ( Mao & Paczy´ nski 1991 ;
+
+Gould & Loeb 1992 ; Gaudi 2012 ). Moreover, because the microlensing signal depends on the gravitational field of the lens rather than its emitted light, the method is largely insensitive to host luminosity. This enables the detection of planets orbiting low-mass stars and even substellar hosts such as brown dwarfs, thereby offering a relatively unbiased view of planetary demographics across a broad range of host masses. In this paper, we report the discovery of three Saturn-mass planets orbiting low-mass stars, identified through the analysis of short-term anomalies in microlensing light curves obtained from high-cadence survey observa-tions. In each case, the planetary signature appears as a positive deviation from the corresponding single-lens model, confined to the wing regions of the light curve and lasting for only a brief interval. We present a de-tailed analysis of these events, exploring the underlying lensing geometries that give rise to such features. We explore a range of model degeneracies that can compli-cate the interpretation of planetary signals producing anomalies with similar morphologies.  
+
+> 2.
+
+DATA Short-term anomalies in the events analyzed in this work were first identified during our inspection of mi-crolensing events detected by the Korea Microlens-Three Saturn-mass microlensing planets 3                   
+
+> Table 1. Coordinates and event ID correspondence.
+> KMTNet ID (RA, DEC) J2000 (l, b )Other ID
+> KMT-2021-BLG-0852 (17:43:19.48, −33:53:30.62) (−4◦
+> .4815, −2◦
+> .1734) · · ·
+> KMT-2024-BLG-2005 (17:53:37.94, −28:54:03.53) (+0 ◦
+> .9312, −1◦
+> .4860) PRIME-2024-BLG-088 KMT-2025-BLG-0481 (17:41:25.44, −34:22:18.30) (−5◦
+> .0970, −2◦
+> .0913) OGLE-2025-BLG-0543
+
+ing Telescope Network (KMTNet) survey ( Kim et al. 2016 ), namely KMT-2021-BLG-0852, KMT-2024-BLG-2005, and KMT-2025-BLG-0481. We subsequently ex-amined whether these events were also monitored by other microlensing surveys. We found that KMT-2025-BLG-0481 was independently discovered by the Optical Gravitational Lensing Experiment (OGLE) (Udalski et al. 2015 ), with the designation OGLE-2025-BLG-0543. The event KMT-2024-BLG-2005 was also observed by the PRime-focus Infrared Microlensing Ex-periment (PRIME) survey ( Sumi et al. 2025 ) and la-beled PRIME-2024-BLG-088. Although this event was not independently reported by the OGLE and Mi-crolensing Observations in Astrophysics (MOA) surveys (Bond et al. 2001 ; Sumi et al. 2003 ), we recovered their data through subsequent photometric re-reductions of the field. In Table 1, we list the equatorial and Galactic coor-dinates of the events, together with the corresponding event identifiers adopted by the different surveys. In all cases, the events were first identified by KMTNet, and we therefore refer to them throughout this work using the KMTNet designations. Observations of the events by the four microlensing surveys were carried out using the following facilities and instrumentation. KMTNet consists of three 1.6-m wide-field optical telescopes strategically distributed across the Southern Hemisphere in Chile (KMTC), South Africa (KMTS), and Australia (KMTA). Each KMTNet telescope is equipped with an 18k ×18k mo-saic CCD camera that provides a 4 deg 2 field of view. OGLE operates the 1.3-m Warsaw Telescope at Las Campanas Observatory in Chile with a 32-CCD mosaic camera covering 1.4 deg 2. MOA conducts observations with the 1.8-m MOA-II telescope at Mt. John Observa-tory in New Zealand using the MOA-cam3 prime-focus camera, which comprises ten 2k ×4k CCDs and covers 2.2 deg 2. Finally, PRIME utilizes a 1.8-m prime-focus near-infrared telescope in South Africa equipped with PRIME-Cam, a four-detector H4RG-10 (4096 ×4096) NIR mosaic delivering 1.45 deg 2. Observations by KMT-Net and OGLE were conducted primarily in the Cousins 
+
+I band, whereas MOA observations were obtained in the custom MOA-R band. For these surveys, a subset of the images was also taken in the V band to determine the source color. PRIME observations were carried out in the H band. The image reduction and photometry were carried out using the standard pipelines of the individual surveys. To obtain precise photometry in the crowded Galactic bulge fields, these pipelines commonly employ difference image analysis, in which each science image is regis-tered to a high-quality reference frame, PSF-matched through kernel convolution, and subtracted to yield high-precision differential flux measurements for vari-able sources ( Tomaney & Crotts 1996 ; Alard & Lupton 1998 ; Wo´ zniak 2000 ). For light-curve modeling, the orig-inally reported photometric uncertainties for each data set were renormalized to account for underestimated sys-tematics and to ensure statistically consistent weighting, following the prescription of Yee et al. (2012 ).  
+
+> 3.
+
+ANALYSIS In gravitational microlensing events, planetary signals can be classified as central or peripheral perturbations, depending on which caustic produces the deviation in the lensing light curve. A planetary lens system gen-erates two distinct types of caustics: central caustics and planetary (peripheral) caustics. Central caustics form in the immediate vicinity of the host star, and the perturbations they induce therefore tend to occur near the peak of high-magnification events, producing central perturbations ( Griest & Safizadeh 1998 ). By contrast, planetary caustics occur at larger separations from the host star, and the associated deviations often appear in the wing regions of the microlensing light curve. Such deviations are referred to here as peripheral perturba-tions. Planetary signals arising from peripheral perturba-tions can be further subdivided into major-image and minor-image perturbations. In a single-lens event, the source is split into two images: a major image that forms outside the Einstein ring on the same side as the planet and a minor image that forms inside the Einstein ring on the opposite side. As the lens–source relative motion proceeds, these images move along predictable trajecto-ries. A planetary deviation occurs when the planet lies 4
+
+Table 2. Lensing parameters.                                                                                                                                                                                       
+
+> Parameter KMT-2021-BLG-0852 KMT-2024-BLG-2005 KMT-2025-BLG-0481
+> Inner Outer 1L2S Solution 1 Solution 2
+> χ2/N data 1841 .8/1846 2046 .8/1846 2396 .8/1846 9874 .7/9942 10204 .9/9942 680 .0/679
+> t0(HJD ′)9350 .551 ±0.018 9351 .327 ±0.016 9418 .164 ±0.693 524 .992 ±0.015 524 .518 ±0.019 783 .540 ±0.046
+> u00.01757 ±0.00050 −0.02796 ±0.00226 −1.99 ±0.13 0.1038 ±0.0029 0.0948 ±0.0019 0.2107 ±0.0067
+> tE(days) 59 .71 ±1.74 45 .09 ±2.94 38 .47 ±2.81 28 .82 ±0.62 30 .57 ±0.51 16 .02 ±0.33
+> s2.225 ±0.031 2.785 ±0.121 · · · 1.1408 ±0.0030 1.1013 ±0.0017 1.3689 ±0.0096
+> q(10 −3)0.622 ±0.031 0.418 ±0.038 · · · 1.29 ±0.10 11 .49 ±0.45 2.58 ±0.16
+> α(rad) 4.068 ±0.010 4.096 ±0.021 · · · 5.7941 ±0.0038 −0.0612 ±0.0052 3.4417 ±0.0059
+> ρ(10 −3)6.80 ±0.73 27 .17 ±2.19 · · · 5.50 ±0.51 6.29 ±0.36 4.56 ±0.30
+> t0,2· · · · · · 9351 .2371 ±0.0062 · · · · · · · · ·
+> u0,2(10 −3)· · · · · · −0.68 ±01 .36 · · · · · · · · ·
+> ρ2(10 −3)· · · · · · 13 .92 ±0.93 · · · · · · · · ·
+> qF· · · · · · 0.0030 ±0.0006 · · · · · · · · ·
+> Note — For KMT-2021-BLG-0852, HJD ′≡HJD −2450000; for the other events, HJD ′≡HJD −2460000.
+
+close to the trajectory of one of these images, producing an distortion in the magnification pattern. A major-image perturbation occurs when a wide-separation planet (with a projected separation larger than the Einstein radius) lies close to the major image produced by the host lens. Conversely, a minor-image perturbation arises when a close-separation planet (with a projected separation smaller than the Einstein ra-dius) perturbs the minor image. These two classes of perturbations produce distinct observational signa-tures: perturbations of the major image typically in-crease the magnification, leading to positive deviations from the single-lens light curve, whereas, in most cases, perturbations of the minor image decrease the magni-fication, producing negative deviations. For examples of planetary microlensing events exhibiting major- and minor-image perturbations, see Han et al. (2024a ) and 
+
+Han et al. (2024b ). In all three events analyzed here, the signals manifest as short-duration positive anomalies in the wings of the light curves. If these deviations are planetary in origin, their morphology provides a useful diagnostic of the un-derlying mechanism. First, their occurrence in the wings strongly suggests that they arise from peripheral caus-tics rather than central caustics. Second, the fact that the deviations are positive most likely indicates that the major image is perturbed. Taken together, these charac-teristics most naturally point to wide-separation planets that perturb the major image as it passes near the as-sociated peripheral caustic. Motivated by this interpre-tation, we model each event using a binary-lens single-source (2L1S) framework in which the lens consists of a host star and a companion in the planetary-mass regime. We perform the modeling by searching for the set of lensing parameters that best reproduces the observed light curve. For a lensing event produced by a binary lens (a host star and a planet), the light curve is de-scribed by seven basic parameters. The three param-eters ( t0, u 0, t E) characterize the source–lens encounter, where t0 is the time of closest approach, u0 is the impact parameter (normalized to the angular Einstein radius 
+
+θE), and tE is the event timescale, defined as the time required for the source to traverse an angular distance of θE. The binary-lens geometry is specified by ( s, q ), where s is the projected separation between the lens components (in units of θE) and q is their mass ratio. The parameter α denotes the angle between the binary-lens axis and the source trajectory. In many planetary events, the anomaly is affected by finite-source effects because the signal arises when the source approaches or crosses a caustic induced by the planet. To account for these effects, we include an additional parameter ρ,which is defined as the ratio of the angular source radius (θ∗) to θE.In our analyses, we explore alternative origins of short-term anomalies and address the associated degeneracies, which are essential for correctly interpreting these fea-tures. A particularly important non-planetary channel is the single-lens binary-source (1L2S) scenario, in which the observed flux is the superposition of two unresolved sources ( Griest & Hu 1992 ). The primary source pro-duces the main microlensing event, while a fainter com-panion can briefly contribute additional magnified light if it passes closer to the lens and/or reaches peak mag-nification at a different time. This typically generates a short, positive bump that can closely mimic a plan-etary major-image perturbation when the flux ratio is small, making 1L2S a well-known false-positive channel in microlensing planet searches ( Gaudi 1998 ; Shin et al. 2019 ). In addition to the three parameters of a single-Three Saturn-mass microlensing planets 5lens (1L1S) event, t0, u0, and tE, modeling a 1L2S event requires four additional parameters: t0,2, u0,2, ρ2, and 
+
+qF . The first two specify the time of closest approach and the corresponding impact parameter of the second source star ( S2). The third parameter, ρ2, represents the normalized angular radius of S2, and the final parame-ter, qF , denotes the flux ratio between the two source stars ( Hwang et al. 2013 ). Another non-planetary possibility is that the anomaly is produced not by a planet but by a higher mass-ratio binary lens, such as a low-mass stellar companion or a brown dwarf. Although such systems can generate large caustics, they may still produce short-lived anomalies if the source probes only a localized region of the magnifi-cation pattern, for example during a cusp approach or a grazing encounter with a caustic tip. In these cases, the perturbation timescale is set by the small spatial extent of the region sampled by the source trajectory, allowing a brief deviation even when the overall caustic structure is large. Finally, even when a planetary interpretation is fa-vored, the inferred parameters may not be unique be-cause of degeneracies among different planetary configu-rations. In particular, the inner–outer degeneracy arises because a planetary anomaly can often be reproduced nearly equally well by source trajectories passing on ei-ther the inner (host-facing) or outer (host-opposing) side of the peripheral caustic ( Gaudi & Gould 1997 ). More-over, when anomalies are incompletely covered, addi-tional accidental degeneracies may arise, as illustrated by Hwang et al. (2018 ). We therefore perform a thor-ough exploration of all plausible degenerate solutions. In the following three sections, we present the model-ing details for each event and the results obtained from these analyses.  
+
+> 4.
+
+KMT-2021-BLG-0852 Figure 1 shows the light curve of the microlensing event KMT-2021-BLG-0852. The light curve consists of two distinct components: (1) a broad main feature peaking at HJD ′ ≡ HJD − 2450000 ≃ 9418 with a low maximum magnification of Amax ∼ 1.15, and (2) a short-term anomaly centered near HJD ′ ≃ 9351 with a relatively high peak. The anomaly comprises two sub-features: a weak bump at HJD ′ ≃ 9349 .7 followed by a stronger peak at HJD ′ ≃ 9351 .2. The event was first identified by the KMTNet survey on 2021 May 17 (HJD ′ ≃ 9351), coincident with the peak of the anomaly, and was subsequently monitored exclusively by KMTNet. The source lies in the KMTNet field BLG17, which was observed at a cadence of 1.0 hr. The extinction toward the field is AI ∼ 3.0, and the baseline I-band magnitude is Ibase = 18 .75. The light curve features are characteristic of plane-tary microlensing, exhibiting a localized anomaly pro-duced by a planet orbiting the primary lens, set against a broader magnification profile produced by the host. We therefore adopted a 2L1S modeling approach, which suc-cessfully reproduces all features of the observed event, including the short-duration anomaly. The best-fit model is shown as the solid curve in Fig-ure 1, and the corresponding parameters are listed in Ta-ble 2, together with the χ2 value and the number of data points, Ndata . We define t0 as the epoch of the the clos-est approach to the center of the peripheral caustic and 
+
+u0 is the impact parameter to this approach. The best-fit binary-lens parameters are ( s, q ) ∼ (2 .2, 0.6 × 10 −3), indicating that the anomaly was induced by a planetary-mass companion at a projected separation of ∼ 2.2 times the Einstein radius. The event timescale is approxi-mately 60 days. Although the source trajectory only grazes the caustic, the normalized source radius was nev-ertheless well measured to be ρ ∼ (6 .8 ± 0.7) × 10 −3.The corresponding lens-system geometry is illustrated in the insets of the lower panel of Figure 1. The right in-set shows the positions of the lens components and caus-tic structure, while the left inset provides a close-up view of the caustic region. The planet produces a small four-cusp caustic displaced from the host by s − 1/s ∼ 1.78. The source trajectory crosses the planet–host axis at an incidence angle of ∼ 53 ◦, and the anomaly occurs as the source approaches the planet-induced caustic. The acute trajectory causes the source to first approach the upper cusp, creating a minor bump, before passing the inner side of the strong on-axis cusp to produce the pri-mary peak of the anomaly. These successive cusp ap-proaches naturally explain the observed two-component structure of the anomaly. We investigated possible degeneracies in the solution. First, we examined the ambiguity with an alternative model in which the source passes the outer region of the caustic. In the upper panel of Figure 1, the model curve for the outer solution is represented by a dotted line overlaid on the data and its associated lensing pa-rameters are summarized in Table 2. The outer solution provides a significantly poorer fit, with ∆ χ2 = 205 .0 rel-ative to the preferred inner solution, indicating that the inner–outer degeneracy is clearly resolved. This resolu-tion is due to the caustic geometry: for a source passing the outer side, the strong on-axis cusp is encountered before the weak off-axis cusp. This sequence would pro-duce a light-curve anomaly in which the stronger bump precedes the weaker one, which is the opposite of what is 6  
+
+> Figure 1. Light curve of the microlensing event KMT-2021-BLG-0852. The bottom panel displays the full time-series of the event, while the top panel provides a magnified view of the anomalous region, including the best-fit model curves and residuals for both the inner and outer solutions. The preferred model (inner solution) is overlaid on the data points as a solid curve, and the outer solution is shown as a dotted curve for comparison. The two insets in the bottom panel illustrate the lens-system geometry. The right inset shows the wide-scale configuration, marking the positions of the binary lens components with black filled circles, the caustic structures in red, and the source trajectory with an arrowed line. The left inset shows a close-up of the caustic crossing, where the open magenta circle on the source trajectory indicates the source size scaled to the caustic size.
+
+observed. Therefore, the observed anomaly (weak bump followed by strong bump) is inconsistent with an outer crossing and uniquely supports the inner geometry. Second, we also tested a binary-source interpretation of the anomaly. The best-fit lensing parameters of the 1L2S model are presented in Table 2. The best-fit 1L2S solution yields χ2 = 2396 .8, which is substantially worse than the best-fit planetary model by ∆ χ2 = 555 .0. Thus, the anomaly is confidently characterized without any degeneracy in its interpretation.  
+
+> 5.
+
+KMT-2024-BLG-2005 The light curve of the lensing event KMT-2024-BLG-2005 is shown in Figure 2. Similar to the previous event, it exhibits the same overall morphology, with a short-term anomaly on the rising wing superposed on a broad magnification profile. The anomaly, which lasted for about two days, exhibits two spike features at HJD ′ ≡ HJD − 2460000 ≃ 517 .7 and ≃ 519 .7 resulting from caustic crossings by the source. The underlying light curve peaked at HJD ′ ≃ 525 with a peak magnifi-cation Amax ∼ 9.5. The event was initially identified during its rising phase by the KMTNet survey on 2024 July 29 (HJD ′ =490). The source is located within the overlapping re-gion of fields BLG02 and BLG42, providing a high com-bined observational cadence of 15 minutes. The event was subsequently detected by the PRIME survey on 2024 August 02 (HJD ′ ≃ 524) as the light curve ap-proached its peak magnification. Although the event was not alerted in real-time by the MOA and OGLE surveys, we incorporate their data, derived from post-season photometry, into the analysis to ensure more comprehensive coverage of the event. Guided by the characteristic features of the light curve, we carried out a 2L1S modeling of the light curve. This modeling indicates that the observed anomaly is best explained by a binary lens composed of a host star and a planetary companion. The best-fit binary-lens parameters are ( s, q ) ∼ (1 .1, 1.3 × 10 −3), implying that the planet lies at a projected separation slightly larger than the Einstein radius. The estimated event timescale is tE ∼ 29 days, and the normalized source radius ρ ∼ 6 × 10 −3. The full set of lensing parameters Three Saturn-mass microlensing planets 7 
+
+> Figure 2. Light curve of KMT-2024-BLG-2005. The best-fit model (solution 1) is shown by the solid curve, and the alternative model (solution 2) by the dotted curve. Insets in the lower panel show the lens-system geometries: the two left insets correspond to the wide and enlarged views for solution 1, and the right inset to solution 2.
+
+is summarized in Table 2, and the corresponding best-fit model light curve is presented in Figure 2.The lens-system configuration of the event is presented in the two left insets of the lower panel of Figure 2. The planets induces a resonant caustic, in which the central and peripheral caustics are connected by a slim bridge. The perturbation occurred as the source crossed the pe-ripheral caustic. The profile of the anomaly between the two caustic spikes deviates from a typical U-shape pat-tern because the source asymptotically approached the caustic fold after entering the caustic. We find that the anomaly is uniquely explained by the presented model (Solution 1). A binary-source (1L2S) interpretation is definitively ruled out by the presence of distinct caustic-crossing features in the anomaly. We also explored an alternative binary-lens solution with a higher mass ratio, ( s, q ) ∼ (1 .10 , 0.012) (Solution 2). The corresponding lensing parameters are listed in Ta-ble 2, and the model light curve, residuals, and lens-system geometry are shown in Figure 2 and its inset. However, Solution 2 provides a substantially worse fit than Solution 1, with ∆ χ2 = 330 .2, and we therefore reject this interpretation.  
+
+> 6.
+
+KMT-2025-BLG-0481 The lensing light curve of KMT-2025-BLG-0481 is shown in Figure 3. The overall profile resembles those of the two previous events, consisting of a smooth, broad single-lens light curve with a short-duration anomaly su-perposed upon it. The anomaly lasted for about two days and reached a peak brightness of ∆ I ∼ 1.5 mag above the baseline. It is characterized by two prominent features centered at HJD ′ ≃ 793 .5 and HJD ′ ≃ 794 .4, respectively. The underlying light curve peaked at HJD ′ ≃ 783 .5 with a peak magnification Amax ∼ 4.8. The event was first detected by the KMTNet survey on 2025 April 14 (HJD ′ = 779), prior to the main peak, and was subsequently identified by the OGLE survey on April 28 (HJD ′ = 793), after the peak. The source lies in the KMTNet BLG37 field, which is observed with a 2.5 hr cadence. Based on a 2L1S modeling of the light curve, we find that the anomaly is of planetary origin. Owing to the detailed structure of the signal, we find that the anomaly is uniquely characterized by binary parame-ters ( s, q ) ∼ (1 .4, 2.6 × 10 −3), an Einstein timescale of tE ∼ 16 days, and a normalized source radius of 
+
+ρ ∼ 4.6 × 10 −3. The complete set of lensing parame-ters is presented in Table 2, and the best-fit model is overlaid on the data in Figure 3.The geometry of the lens system is illustrated in the insets of Figure 3. The planet produces a small periph-eral caustic on the planet side of the host, located at a 8  
+
+> Figure 3. Light curve of the event KMT-2025-BLG-0481. Notations are similar to those in Fig. 1.
+
+projected separation of s − 1/s ∼ 0.64 from the host. The observed anomaly occurred as the source traversed this caustic. The source first crossed the tip of the caus-tic, producing the discrete anomaly feature centered at HJD ′ ∼ 793 .5. It then approached the on-axis cusp on the right side, generating the subsequent feature cen-tered at HJD ′ ∼ 794 .4. Although a caustic-tip crossing is expected to produce a pair of sharp caustic spikes, the first spike was not recorded owing to gaps in the observational coverage.  
+
+> 7.
+
+SOURCE STARS AND EINSTEIN RADII For all three analyzed lensing events, the normalized source radius, ρ, was measured, enabling an estimation of the angular Einstein radius via the relation 
+
+θE = θ∗
+
+ρ . (1) Here, θ∗ represents the angular radius of the source star, which can be inferred from its de-reddened color and brightness. Determining θE is essential for character-izing the physical lens parameters, as it is related to the lens mass ( M ) and the lens-source relative parallax (πrel ) by 
+
+θE = √κM π rel ; πrel = au 
+
+( 1
+
+DL
+
+− 1
+
+DS
+
+)
+
+, (2) where κ = 4 G/ (c2au) ≃ 8.14 mas /M ⊙, and DL and DS
+
+denote the distances to the lens and source, respectively. In this section, we therefore determine the de-reddened source color and magnitude, both to characterize the source stars and to derive the corresponding angular Einstein radii. The de-reddened color and magnitude of the source were determined following the standard procedure es-tablished by Yoo et al. (2004 ). First, we measured the instrumental color and magnitude of the source, (V − I, I ), by regressing the I- and V -band light curves against the best-fit model. We then placed the source on the instrumental color–magnitude diagram (CMD) con-structed from stars in the vicinity of the event. Next, we derived the extinction- and reddening-corrected values, (V − I, I )0, using the red giant clump (RGC) centroid in the CMD as a reference. Adopting the intrinsic RGC color and magnitude, ( V −I, I )RGC ,0, from Bensby et al. 
+
+(2013 ) and Table 1 of Nataf et al. (2013 ), we measured the offsets in color and magnitude between the source and the RGC centroid, ∆( V − I, I ). The dereddened source color and magnitude were then obtained as (V − I, I )0 = ( V − I, I )RGC ,0 + ∆( V − I, I ). (3) Finally, using the inferred intrinsic color and magnitude, we estimated the angular source radius from the color– surface-brightness relation of Kervella et al. (2004 ). For KMT-2025-BLG-0481, the source color could not be measured using the procedure described above be-cause the V -band light curve was sparsely sampled. In this case, we combined the CMDs constructed from KMTC and Hubble Space Telescope (HST) observations (Holtzman et al. 1998 ), and then adopted the mean (V − I) color of stars in the HST CMD lying within Three Saturn-mass microlensing planets 9
+
+Table 3. Source parameters, angular Einstein radius, and relative proper motion. 
+
+Parameter KMT-2021-BLG-0852 KMT-2024-BLG-2005 KMT-2025-BLG-0481 
+
+(V − I) 3.275 ± 0.128 2.753 ± 0.074 2.321 ± 0.177 
+
+I 18 .217 ± 0.014 20 .820 ± 0.007 20 .396 ± 0.016 (V − I, I )RGC (3 .504 , 17 .576) (2 .953 , 16 .530) (2 .593 , 16 .922) (V − I, I )RGC ,0 (1 .060 , 14 .610) (1 .060 , 14 .616) (1 .060 , 14 .616) (V − I)0 0.831 ± 0.134 0.860 ± 0.084 0.788 ± 0.177 
+
+I0 15 .251 ± 0.025 18 .689 ± 0.021 18 .090 ± 0.016 Spectral type K0III K0.5V G8IV 
+
+θ∗ (μas) 3.180 ± 0.481 0.680 ± 0.074 0.828 ± 0.158 
+
+θE (mas) 0.467 ± 0.070 0.124 ± 0.019 0.182 ± 0.037 
+
+μ (mas/yr) 2.858 ± 0.432 1.57 ± 0.24 4.14 ± 0.84 
+
+Figure 4. Source positions within the instrumental col-or-magnitude diagrams (CMDs). The red dot represents the centroid of the red giant clump (RGC) used for the photometric calibration of the source color and magnitude. For KMT-2024-BLG-2005, the position of the blended light is also indicated. For KMT-2025-BLG-0481, the CMD is derived from the combination of KMTC (grey) and HST (brown) photometry. 
+
+the same range of I-band magnitude offsets from the RGC centroid. Figure 4 shows the positions of the source stars in the instrumental CMD, together with the RGC cen-troid used for photometric calibration. The estimated values of ( V − I, I ), ( V − I, I )RGC , ( V − I, I )0, and (V − I, I )RGC ,0, along with the inferred spectral types of the source stars, are listed in Table 3. We find that the source star of KMT-2021-BLG-0852 is a K-type giant, whereas the sources of KMT-2024-BLG-2005 and KMT-2025-BLG-0481 are an early K-type main-sequence star and a late G-type subgiant, respectively. Table 3 also lists the estimated angular source radius and Einstein radius, together with the relative lens–source proper mo-tion, μ = θE/t E.   
+
+> 10 010 110 210 3
+> Period (days)
+> 0.000
+> 0.001
+> 0.002
+> 0.003
+> 0.004
+> 0.005
+> 0.006
+> 0.007
+> Lomb–Scargle Power
+> 0.499 d 0.998 d
+
+Figure 5. Lomb–Scargle periodogram for the baseline flux of KMT-2021-BLG-0852. 
+
+Because many giant stars are variable, we check whether the residuals of the KMT-2021-BLG-0852 light curve contain any repeating pattern. To do this, we ap-ply a standard technique for detecting periodic signals in unevenly sampled data. The resulting Lomb–Scargle periodogram is shown in Figure 5. The strongest fea-tures occur near 1.0 day and 0.5 day, which are expected artifacts caused by the roughly once-per-day cadence of ground-based observations. Adopting false-alarm prob-ability thresholds of 1%, 5%, and 10%, we find no other periodic signals that exceed the levels expected from random fluctuations. 
+
+8. PHYSICAL LENS PARAMETERS A unique determination of the lens mass and distance requires measurements of three lensing observables: the event timescale tE, the angular Einstein radius θE, and the microlens parallax πE, where πE ≡ πrel /θ E. To-gether, θE and πE yield the lens mass via M = θE/(κπ E)10 and the lens distance via DL = au /(πEθE + πS), where 
+
+πS is the parallax of the source. For the events an-alyzed here, πE could not be reliably measured. We therefore infer the physical lens parameters through a Bayesian analysis constrained by the measured lensing observables tE and θE.The Bayesian analysis begins by adopting a Galactic model that provides priors on the lens population. The model specifies the lens mass function, the spatial den-sity profiles of disk and bulge stars, and the kinematic distributions for each component. These priors define the relative probability of a lens of a given mass resid-ing at a given distance and having a particular trans-verse velocity along the line of sight. In our analysis, we adopt the lens mass function of Jung et al. (2022 ) and the Galactic model described by Jung et al. (2021 ). Given these priors, we generate a large synthetic en-semble of microlensing events using a Monte Carlo sim-ulation. For each trial, the lens parameters ( M, D L) are drawn from the adopted priors, and the source distance 
+
+DS is selected from the source density distribution. Arelative transverse velocity is then assigned according to the kinematic model, from which the corresponding microlensing observables ( tE, θ E) are computed. Each simulated event is weighted by the microlensing event rate (which scales with the lens density and the effec-tive cross section, ∝ μrel θE) and by the likelihood that its predicted observables match the measured values of 
+
+tE and θE. Specifically, we assign a likelihood weight of the form 
+
+L ∝ exp 
+
+(
+
+− χ2
+
+2
+
+)
+
+, (4) where 
+
+χ2 = (tE − tE,obs )2
+
+σ2
+
+> tE
+
++ (θE − θE,obs )2
+
+σ2
+
+> θE
+
+. (5) Here, ( tE,obs , θ E,obs ) are the observed values of the lens-ing observables and ( σtE , σ θE ) are their uncertainties. The posterior probability distributions for M and DL
+
+are then constructed from the weighted ensemble. Be-cause these distributions can be asymmetric, we adopt the median as the representative value and the central 68% credible interval as the 1 σ uncertainty. For KMT-2021-BLG-0852, the source is relatively bright and is listed in the Gaia DR3 catalog (Collaboration et al. 2023 ). It has a Renormalized Unit Weight Error of RUWE = 1.105, indicating a good single-star astrometric fit. Gaia measures a proper mo-tion of μS = ( μRA , μ DEC ) = ( −5.263 ± 0.572 , , −5.675 ±
+
+0.299) mas yr −1. In our Bayesian analysis, we incorpo-rate this constraint on the source motion when comput-ing the lens–source relative proper motion, μ = μL −μS,  
+
+> Figure 6. Bayesian posterior distributions for the planet mass. In each panel, the solid black vertical line marks the median, and the two dotted lines indicate the 1 σcredible interval of the distribution. The solid magenta line denotes the mass of Saturn.
+
+where μL is the proper motion of the lens. This reduces the allowed range of μ and hence provides a tighter esti-mate of θE = μrel tE, ultimately yielding a more precise posterior distribution for the lens mass and distance. For the source stars of the other two events, the RUWE values are too high to permit a reliable determination of the source proper motion. Table 4 lists the inferred physical lens parameters, in-cluding the host and planet masses ( Mh and Mp), the lens distance ( DL), and the projected planet–host sep-aration ( a⊥). We also provide the relative probabilities that the lens lies in the disk ( pdisk ) or the bulge ( pbulge ). The inferred host masses span ∼ 0.12–0 .75 M⊙, corre-sponding to sub-solar main-sequence stars from early M to mid K types. The hosts are most likely located in the bulge and the inferred projected separations place the planets beyond the snowlines of their hosts, illustrating the power of microlensing to probe wide-separation plan-ets at large distances. Figure 6 presents the Bayesian posterior distributions of Mp, showing that the inferred planet masses for all events are consistent with that of Saturn.  
+
+> 9.
+
+SUMMARY AND DISCUSSION We have analyzed three microlensing events, KMT-2021-BLG-0852, KMT-2024-BLG-2005, and KMT-2025-BLG-0481, that share the common feature of short-lived positive anomalies on the wings of otherwise stan-dard microlensing light curves. The timing and sign of these deviations indicate that they arise from peripheral caustics produced by planetary-mass companions. Mo-tivated by this interpretation, we modeled each event within a binary-lens framework and tested plausible al-ternative explanations, including binary-source models, Three Saturn-mass microlensing planets 11 
+
+Table 4. Physical lens parameters. 
+
+Parameter KMT-2021-BLG-0852 KMT-2024-BLG-2005 KMT-2025-BLG-0481 
+
+Mh (M⊙) 0.75 +0 .26  
+
+> −0.27
+
+0.12 +0 .17  
+
+> −0.06
+
+0.22 +0 .31 
+
+> −0.13
+
+Mp (MJ) 0.49 +0 .17  
+
+> −0.17
+
+0.16 +0 .24  
+
+> −0.09
+
+0.59 +0 .85 
+
+> −0.34
+
+DL (kpc) 7.23 +0 .83  
+
+> −1.03
+
+7.72 +1 .00  
+
+> −1.06
+
+7.98 +1 .13 
+
+> −1.44
+
+a⊥ (au) 7.78 +0 .89  
+
+> −1.11
+
+1.12 +0 .15  
+
+> −0.15
+
+2.18 +0 .31 
+
+> −0.39
+
+pdisk 5% 19% 32% 
+
+pbulge 95% 81% 68% 
+
+higher mass-ratio binary lenses, and degenerate caus-tic geometries. In all cases, the planetary solution is preferred, and the anomaly morphology provides strong leverage for resolving the relevant degeneracies. Using Bayesian estimates of the physical lens param-eters constrained by the event timescale and angular Einstein radius, we infer sub-solar-mass host stars with companions consistent with Saturn-mass planets. The inferred projected separations place the planets in the cold-giant regime beyond the snowline, underscoring the continued role of microlensing in mapping the popula-tion of wide-orbit planets around low-mass hosts. Continued improvements in time-domain coverage and multi-survey baselines are rapidly increasing the number of microlensing planet detections, enabling increasingly detailed investigations of planet formation and evolu-tion. The three Saturn-mass planets reported here are especially valuable because they probe the transition regime between ice giants and gas giants, where for-mation outcomes are highly sensitive to the onset and termination of runaway gas accretion. Consequently, these systems provide strong empirical tests of compet-ing planet-formation pathways and will sharpen demo-graphic constraints on cold giant planets orbiting low-mass stars. The lensing event KMT-2021-BLG-0852 illustrates a pathway for distinguishing a free-floating planet from a wide-separation bound planet. Because the primary event has very low magnification ( Amax ∼ 1.15), it could easily go unnoticed unless attention is drawn by the planetary anomaly, and in some cases it may remain un-detectable even after such follow-up scrutiny. Neverthe-less, an FFP interpretation can still be rejected when the planetary perturbation exhibits a complex morphology induced by shear from a host star, as in this event and in MOA-bin-1 ( Bennett et al. 2012 ). Such events are therefore valuable for probing the observational transi-tion between clearly identifiable 2L1S planetary systems and candidates for truly free-floating planets. ACKNOWLEDGEMENTS C.H. was supported by the National Research Foun-dation of Korea (NRF) grant funded by the Ko-rea government (MSIT: RS-2025-21073000). Work by C.U.Lee research was supported by the Korea Astron-omy and Space Science Institute under the R&D pro-gram (Project No. 2025-1-830-05) supervised by the Ministry of Science and ICT. This research has made use of the KMTNet system operated by the Korea As-tronomy and Space Science Institute (KASI) at three host sites of CTIO in Chile, SAAO in South Africa, and SSO in Australia. Data transfer from the host site to KASI was supported by the Korea Research En-vironment Open NETwork (KREONET). The OGLE project has received funding from the Polish National Science Centre grant OPUS-28 2024/55/B/ST9/00447 to AU. H.Y. and W.Z. acknowledge support by the Na-tional Natural Science Foundation of China (Grant No. 12133005). The MOA project is supported by JSPS KAKENHI Grant Number JP16H06287, JP22H00153 and 23KK0060. C.R. was supported by the Research fellowship of the Alexander von Humboldt Foundation. REFERENCES 
+
+Alard, C., & Lupton, R. H. 1998, ApJ, 503, 325, doi: 10.1086/305984 
+
+Alibert, Y., Mordasini, C., Benz, W., & Winisdoerffer, C. 2005, A&A, 434, A343, doi: 10.1051/0004-6361:20042032 
+
+Bennett, D. P., Sumi, T., Bond, I. A., et al. 2012, ApJ, 757, 119, doi: 10.1088/0004-637X/757/2/119 
+
+Bensby, T., Yee, J. C., Feltzing, S., et al. 2013, A&A, 549, A247, doi: 10.1051/0004-6361/201220678 12 
+
+Bond, I. A., Abe, F., Dodd, R. J., et al. 2001, MNRAS, 327, 868, doi: doi:10.1046/j.1365-8711.2001.04776.x 
+
+Collaboration, G., Vallenari, A., Brown, A. G. A., et al. 2023, A&A, 674, A1, doi: 10.1051/0004-6361/202243940 
+
+Fortney, J. J., Marley, M. S., & Barnes, J. W. 2007, ApJ, 659, 1661, doi: 10.1086/512120 
+
+Gaudi, B. S. 1998, ApJ, 506, 533, doi: 10.1086/306256 
+
+—. 2012, ARA&A, 50, 411, doi: 10.1146/annurev-astro-081811-125518 
+
+Gaudi, B. S., & Gould, A. 1997, ApJ, 486, 85, doi: 10.1086/304491 
+
+Gould, A., & Loeb, A. 1992, ApJ, 396, 104, doi: 10.1086/171700 
+
+Griest, K., & Hu, W. 1992, ApJ, 397, 362, doi: 10.1086/17179 
+
+Griest, K., & Safizadeh, N. 1998, ApJ, 500, 37, doi: 10.1086/30572 
+
+Han, C., Albrow, M. D., Lee, C.-U., et al. 2024a, A&A, 689, A209, doi: 10.1051/0004-6361/202450873 
+
+Han, C., Bond, I. A., Lee, C.-U., et al. 2024b, A&A, 687, A225, doi: 10.1051/0004-6361/202450221 
+
+Holtzman, J. A., Watson, A. M., Baum, W. A., et al. 1998, AJ, 115, 1946, doi: 10.1086/300336 
+
+Hwang, K.-H., Udalski, A., Shvartzvald, Y., et al. 2018, AJ, 155, 20, doi: 10.3847/1538-3881/aa992f 
+
+Hwang, K.-H., Choi, J.-Y., Bond, I. A., et al. 2013, ApJ, 778, 55, doi: 10.1088/0004-637X/778/1/55 
+
+Ida, S., & Lin, D. N. C. 2004, ApJ, 604, 388, doi: 10.1086/381724 
+
+Jung, Y. K., Han, C., Udalski, A., et al. 2021, AJ, 161, 293, doi: 10.3847/1538-3881/abf8bd 
+
+Jung, Y. K., Zang, W., Han, C., et al. 2022, AJ, 164, 262, doi: 10.3847/1538-3881/ac9c5c 
+
+Kennedy, G. M., & Kenyon, S. J. 2008, ApJ, 673, 502, doi: 10.1086/524130 
+
+Kervella, P., Th´ evenin, F., Di Folco, E., & S´ egransan, D. 2004, A&A, 426, 29, doi: 10.1051/0004-6361:20035930 
+
+Kim, S.-L., Lee, C.-U.and Park, B.-G., Kim, D.-J., et al. 2016, JKAS, 49, 37, doi: 10.5303/JKAS.2016.49.1.37 
+
+Mao, S., & Paczy´ nski, B. 1991, ApJL, 374, L37, doi: 10.1086/186066 
+
+Nataf, D. M., Gould, A., Fouqu´ e, P., et al. 2013, ApJ, 769, 88, doi: 10.1088/0004-637X/769/2/88 
+
+Pollack, J. B., Hubickyj, O., Bodenheimer, P., et al. 1996, Icarus, 124, 62, doi: 10.1006/icar.1996.0190 
+
+Shin, I.-G., Yee, J. C., Gould, A., et al. 2019, AJ, 158, 199, doi: 10.3847/1538-3881/ab46a5 
+
+Stevenson, D. J. 1982, Planetary and Space Science, 30, 755, doi: 10.1016/0032-0633(82)90108-8 
+
+Sumi, T., Buckley, D. A. H., Kutyrev, A. S., et al. 2025, AJ, 170, 338, doi: 10.3847/1538-3881/ae14f5 
+
+Sumi, T., Abe, F., Bond, I. A., et al. 2003, ApJ, 591, 204, doi: doi:10.1086/375212 
+
+Tomaney, A. B., & Crotts, A. P. S. 1996, AJ, 112, 2872, doi: 10.1086/118228 
+
+Udalski, A., Szyma´ nski, M. K., & Szyma´ nski, G. 2015, Acta Astronomica, 65, 1, doi: 10.48550/arXiv.1504.0596 
+
+Winn, J. N., & Fabrycky, D. C. 2015, ARA&A, 53, 409, doi: 10.1146/annurev-astro-082214-122246 
+
+Wo´ zniak, P. 2000, Acta Astronomica, 50, 421, doi: 10.48550/arXiv.astro-ph/0012143 
+
+Yee, J. C., Shvartzvald, Y., Gal-Yam, A., et al. 2012, ApJ, 755, 102, doi: 10.1088/0004-637X/755/2/102 
+
+Yoo, J., DePoy, D. L., A., G.-Y., et al. 2004, ApJ, 603, 13, doi: 10.1086/381241

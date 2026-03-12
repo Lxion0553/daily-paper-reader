@@ -1,0 +1,1214 @@
+{
+  "mode": "skims",
+  "generated_at": "2026-03-12T07:40:45.278531+00:00",
+  "stats": {
+    "mode": "skims",
+    "forced_all_quick": true,
+    "min_score": 8.0,
+    "deep_divecandidates": 29,
+    "deep_cap": null,
+    "deep_selected": 0,
+    "quick_candidates": 29,
+    "quick_skim_target": null,
+    "quick_selected": 29
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2602.12955v1",
+      "title": "Anomaly Hunter for Alerts (AHA): Anomaly Detection in the ZTF Transient Alert Stream",
+      "abstract": "Modern time-domain surveys produce alert streams at a scale that makes exhaustive manual inspection infeasible, requiring automated methods to identify unusual transients for follow-up. In this work, we present an unsupervised anomaly detection pipeline applied to the ZTF alert stream using the Lasair broker. We define normal objects as SN Ia, SN II, and SN Ib/c. Anomalous objects include (i) more exotic transients (AGN, TDEs, SLSNe, CVs, and nuclear transients) and (ii) supernova-labeled objects, either spectroscopically or by Lasair, with anomalous properties, such as incorrect or absent host associations, or non-supernova-like light curves. Our pipeline consists of three independently trained simple autoencoders operating on distinct alert stream data products: object features, triplet image cutouts, and light curves. Each model is trained on predominantly normal transients, and performance is assessed using the recall of exotic objects and the purity of all anomalous objects across both a spectroscopically classified held-out test set and the live alert stream. In the test set, performance is evaluated at a fixed rank corresponding to the top ten scoring candidates, while in the alert stream it is evaluated using an anomaly threshold defined from test set behavior. Across both settings, the algorithms consistently recover exotic transients and anomalous supernovae among their top-ranked candidates. Over 25 days of live alert stream application, we identify 87 unusual supernova candidates for follow-up. The overlap between anomalies flagged by different autoencoders in the test set is non-existent, and in the alert stream is small, with maximum overlap between any two algorithms being 11 objects. The framework is data-efficient, requiring only a few thousand training examples, making it well suited for early and ongoing application to the Rubin Observatory alert stream.",
+      "authors": [
+        "Leyla Iskandarli",
+        "Chris J. Lintott",
+        "Steve Croft",
+        "Heloise Stevance",
+        "Joshua Weston"
+      ],
+      "primary_category": "astro-ph.SR",
+      "categories": [
+        "astro-ph.SR",
+        "astro-ph.HE",
+        "astro-ph.IM"
+      ],
+      "published": "2026-02-13T14:21:32+00:00",
+      "link": "https://arxiv.org/pdf/2602.12955v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "unsupervised anomaly detection in ZTF transient alert stream",
+      "llm_evidence_cn": "ZTF瞬变告警流中的无监督异常检测",
+      "llm_evidence": "ZTF瞬变告警流中的无监督异常检测",
+      "canonical_evidence": "ZTF瞬变告警流中的无监督异常检测",
+      "llm_tldr_en": "Presents an unsupervised pipeline using autoencoders to detect rare transients in the ZTF alert stream.",
+      "llm_tldr_cn": "展示了一个使用自动编码器在ZTF告警流中检测罕见瞬变源的无监督流水线。",
+      "llm_tldr": "展示了一个使用自动编码器在ZTF告警流中检测罕见瞬变源的无监督流水线。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "anomaly detection in sky surveys",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.15930v1",
+      "title": "A targeted machine learning approach for detecting diffuse radio emission with Astronomaly: Protege",
+      "abstract": "Diffuse radio emission in galaxy clusters, such as radio halos, relics, and mini halos, is a key tracer of non-thermal processes, turbulence, and magnetic fields within the intra-cluster medium. However, their low surface brightness, as well as contamination from compact sources and imaging artefacts, makes their detection challenging. The sheer volume of data from instruments such as the Square Kilometre Array will render traditional manual-inspection based detection methods infeasible. This paper introduces a novel machine learning approach that uses active learning to rapidly identify diffuse emission candidates from a small, optimally-selected subset of data. We apply the self-supervised deep learning algorithm Bootstrap Your Own Latent to extract features from source cutouts in the MeerKAT Galaxy Cluster Legacy Survey (MGCLS). We then pass these features through the Astronomaly: Protege anomaly detection framework to identify the final candidates. Using a human-labelled set, we evaluate our pipeline on high-resolution (~7''), convolved (15''), and combined-feature MGCLS datasets. Interestingly, the high-resolution features identify diffuse sources more efficiently than the convolved resolution, which are in turn outperformed by the combined features. Of the top 100 sources ranked by Protege, 99% exhibit diffuse characteristics, with 55% confirmed as cluster-related emission. Our work shows that Protege can identify diffuse emission with minimal human labelling effort, offering a powerful, scalable tool capable of detecting both known and novel diffuse radio sources.",
+      "authors": [
+        "Verlon Etsebeth",
+        "Michelle Lochner",
+        "Konstantinos Kolokythas",
+        "Kenda Knowles",
+        "Emma Tolley"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM"
+      ],
+      "published": "2026-02-17T19:00:01+00:00",
+      "link": "https://arxiv.org/pdf/2602.15930v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "self-supervised deep learning for detecting diffuse radio emission in galaxy clusters",
+      "llm_evidence_cn": "用于探测星系团弥散射电辐射的自监督深度学习方法",
+      "llm_evidence": "用于探测星系团弥散射电辐射的自监督深度学习方法",
+      "canonical_evidence": "用于探测星系团弥散射电辐射的自监督深度学习方法",
+      "llm_tldr_en": "Uses self-supervised learning and active learning to detect rare diffuse radio emissions in large surveys.",
+      "llm_tldr_cn": "利用自监督学习和主动学习在大规模巡天中探测稀有的弥散射电辐射。",
+      "llm_tldr": "利用自监督学习和主动学习在大规模巡天中探测稀有的弥散射电辐射。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.17205v1",
+      "title": "Deeper detection limits in astronomical imaging using self-supervised spatiotemporal denoising",
+      "abstract": "The detection limit of astronomical imaging observations is limited by several noise sources. Some of that noise is correlated between neighbouring image pixels and exposures, so in principle could be learned and corrected. We present an astronomical self-supervised transformer-based denoising algorithm (ASTERIS), that integrates spatiotemporal information across multiple exposures. Benchmarking on mock data indicates that ASTERIS improves detection limits by 1.0 magnitude at 90% completeness and purity, while preserving the point spread function and photometric accuracy. Observational validation using data from the James Webb Space Telescope (JWST) and Subaru telescope identifies previously undetectable features, including low-surface-brightness galaxy structures and gravitationally-lensed arcs. Applied to deep JWST images, ASTERIS identifies three times more redshift > 9 galaxy candidates, with rest-frame ultraviolet luminosity 1.0 magnitude fainter, than previous methods.",
+      "authors": [
+        "Yuduo Guo",
+        "Hao Zhang",
+        "Mingyu Li",
+        "Fujiang Yu",
+        "Yunjing Wu",
+        "Yuhan Hao",
+        "Song Huang",
+        "Yongming Liang",
+        "Xiaojing Lin",
+        "Xinyang Li",
+        "Jiamin Wu",
+        "Zheng Cai",
+        "Qionghai Dai"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.CO",
+        "astro-ph.GA",
+        "cs.AI"
+      ],
+      "published": "2026-02-19T09:51:35+00:00",
+      "link": "https://arxiv.org/pdf/2602.17205v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Self-supervised denoising for astronomical imaging",
+      "llm_evidence_cn": "天文图像的自监督去噪",
+      "llm_evidence": "天文图像的自监督去噪",
+      "canonical_evidence": "天文图像的自监督去噪",
+      "llm_tldr_en": "Presents ASTERIS, a self-supervised transformer for denoising astronomical images to improve detection limits.",
+      "llm_tldr_cn": "提出ASTERIS，一种用于天文图像去噪以提高探测极限的自监督Transformer算法。",
+      "llm_tldr": "提出ASTERIS，一种用于天文图像去噪以提高探测极限的自监督Transformer算法。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.18426v1",
+      "title": "Spatio-Spectroscopic Representation Learning using Unsupervised Convolutional Long-Short Term Memory Networks",
+      "abstract": "Integral Field Spectroscopy (IFS) surveys offer a unique new landscape in which to learn in both spatial and spectroscopic dimensions and could help uncover previously unknown insights into galaxy evolution. In this work, we demonstrate a new unsupervised deep learning framework using Convolutional Long-Short Term Memory Network Autoencoders to encode generalized feature representations across both spatial and spectroscopic dimensions spanning $19$ optical emission lines (3800A $< λ<$ 8000A) among a sample of $\\sim 9000$ galaxies from the MaNGA IFS survey. As a demonstrative exercise, we assess our model on a sample of $290$ Active Galactic Nuclei (AGN) and highlight scientifically interesting characteristics of some highly anomalous AGN.",
+      "authors": [
+        "Kameswara Bharadwaj Mantha",
+        "Lucy Fortson",
+        "Ramanakumar Sankar",
+        "Claudia Scarlata",
+        "Chris Lintott",
+        "Sandor Kruk",
+        "Mike Walmsley",
+        "Hugh Dickinson",
+        "Karen Masters",
+        "Brooke Simmons",
+        "Rebecca Smethurst"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "cs.CV"
+      ],
+      "published": "2026-02-20T18:48:36+00:00",
+      "link": "https://arxiv.org/pdf/2602.18426v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "unsupervised representation learning for galaxy images and spectra",
+      "llm_evidence_cn": "星系图像与光谱的无监督表示学习",
+      "llm_evidence": "星系图像与光谱的无监督表示学习",
+      "canonical_evidence": "星系图像与光谱的无监督表示学习",
+      "llm_tldr_en": "Uses unsupervised Conv-LSTM to learn spatio-spectroscopic representations of galaxies in MaNGA survey.",
+      "llm_tldr_cn": "利用无监督Conv-LSTM学习MaNGA巡天中星系的时空光谱表示。",
+      "llm_tldr": "利用无监督Conv-LSTM学习MaNGA巡天中星系的时空光谱表示。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.18883v1",
+      "title": "Characterization of Residual Morphological Substructure Using Supervised and Unsupervised Deep Learning",
+      "abstract": "Automated characterization of galactic substructure is an essential step in understanding the transformative physical processes driving galaxy evolution. In this study, we investigate the application of deep learning (DL) frameworks to characterize different galactic substructures hosted within parametric light-profile subtracted ``residual'' images of a large sample galaxies from the CANDELS survey. We develop a supervised Convolutional Neural Network (CNN) and unsupervised Convolutional Variational Autoencoder (CvAE) and train it on the single-Sérsic profile fitting based residual images of $10,046$ bright and massive galaxies ($H<24.5\\,{\\rm mag}$ and $M_{\\rm stellar} \\geq 10^{9.5}\\,M_{\\odot}$) spanning $1<z<3$, in conjunction with their visual-based classification labels indicating the nature of residual substructures hosted within them. Using our unique data preprocessing approach, we prepare our residual images such that the inputs to our DL networks comprise only ``galaxy of interest'', and augment them such that our sample span uniformly across different residual characteristics. We assess the latent space of the CNN and CvAE using Principle Component Analysis (PCA) along with independently quantified metrics of residual strength (significant pixel flux $SPF$, Bumpiness, and Residual Flux Fraction). We also employ an unsupervised Gaussian Mixture Modeling (GMM) based clustering scheme with Support Vector Classification (SVC) to identify groupings in PCA space that correspond to similar residual substructure. We find that our supervised CNN latent features in PCA space correlate with the $SPF$ values and distinguish between qualitatively strong and weak residual substructures. While our unsupervised CvAE latent space also correlates with visual and quantitative residual characteristics, but lacks clear discriminatory power when characterizing different residual substructures.",
+      "authors": [
+        "Kameswara Bharadwaj Mantha",
+        "Daniel H. McIntosh",
+        "Cody Ciaschi",
+        "Rubyet Evan",
+        "Luther Landry",
+        "Henry C. Ferguson",
+        "Camilla Pacifici",
+        "Joel Primack",
+        "Nimish Hathi",
+        "Anton Koekemoer",
+        "Yicheng Guo",
+        "The CANDELS Collaboration"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "cs.CV"
+      ],
+      "published": "2026-02-21T16:08:25+00:00",
+      "link": "https://arxiv.org/pdf/2602.18883v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "unsupervised convolutional variational autoencoder for galactic substructure characterization",
+      "llm_evidence_cn": "用于星系子结构表征的无监督卷积变分自编码器",
+      "llm_evidence": "用于星系子结构表征的无监督卷积变分自编码器",
+      "canonical_evidence": "用于星系子结构表征的无监督卷积变分自编码器",
+      "llm_tldr_en": "Applies supervised and unsupervised deep learning to characterize morphological substructures in galaxy images.",
+      "llm_tldr_cn": "应用监督和无监督深度学习来表征星系图像中的形态子结构。",
+      "llm_tldr": "应用监督和无监督深度学习来表征星系图像中的形态子结构。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised learning applications in astronomy and astrophysics",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.18923v1",
+      "title": "Variational views for self-supervised learning in radio astronomy",
+      "abstract": "Modern astronomical surveys are producing progressively larger and more complex datasets, making traditional supervised approaches that rely on extensive labelled catalogues increasingly difficult. Consequently, pre-training using self-supervised learning (SSL), which offers a scalable route by extracting structure directly from unlabelled images, is becoming attractive for many downstream applications. In this work we consider the use of coupled self-supervised representation learning approaches for radio galaxy morphology pre-training. In order to account for the more nuanced variations in radio galaxy morphology than are typically included in the augmented views of view-based SSL algorithms, we use a pre-trained Variational Autoencoder (VAE) to generate views for training a larger view-based self-supervised model. To do this, a $β$-VAE was trained on the Radio Galaxy Zoo (RGZ) dataset, where moderate regularization ($β= 2.3$) was found to provide a good balance between reconstruction quality and disentanglement of generative factors such as source multiplicity and lobe asymmetry. An analysis of the $β$-VAE reveals that Fanaroff-Riley class identity manifests as a continuous transition across the latent space, rather than being associated to a single discrete dimension. $β$-VAE reconstructions were then incorporated as generative augmentations within a view-based SSL pipeline. Our experiments show that combining these generative views with standard image augmentations improves downstream classification performance, and we present ablation studies clarifying the relative contribution of each augmentation type. These results indicate that generative and contrastive approaches are complementary, and point toward disentanglement-aware self-supervised learning as a promising direction for future radio astronomy surveys.",
+      "authors": [
+        "Johnny Joseph Alphonse",
+        "Anna M. M. Scaife"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.GA"
+      ],
+      "published": "2026-02-21T18:29:31+00:00",
+      "link": "https://arxiv.org/pdf/2602.18923v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "self-supervised representation learning for radio galaxy morphology",
+      "llm_evidence_cn": "射电星系形态的自监督表示学习",
+      "llm_evidence": "射电星系形态的自监督表示学习",
+      "canonical_evidence": "射电星系形态的自监督表示学习",
+      "llm_tldr_en": "Uses VAE-generated views for self-supervised pre-training of radio galaxy morphology representations.",
+      "llm_tldr_cn": "利用VAE生成的视图进行射电星系形态表示的自监督预训练。",
+      "llm_tldr": "利用VAE生成的视图进行射电星系形态表示的自监督预训练。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.19858v1",
+      "title": "Probing the Milky Way Halo with RR Lyrae Stars from Gaia Data Release 3",
+      "abstract": "The Milky Way (MW) stellar halo, containing debris from past accretion events, serves as a fossil record of hierarchical mass assembly. Due to their distinct properties, RR Lyrae stars (RRLs) serve as excellent tracers for identifying and characterising the halo's substructures. We analysed a sample of 4933 RRLs, for which we calculated the integrals of motion and orbital parameters. We applied the domain-informed novelty detection CLustering in Multiphase Boundaries (CLiMB) framework to identify RRL membership in the MW substructures. We analysed the metallicity distributions of RRLs in major accreted system remnants as a snapshot of their chemical evolutionary status during early epochs. We calculated the weighted mean metallicity ([Fe/H]) and the corresponding standard deviation for Gaia Sausage/Enceladus ([Fe/H] = $-1.57 \\pm 0.25$ dex), Sequoia ([Fe/H] =$ -1.64\\pm0.26$ dex), and the Helmi streams ([Fe/H] = $-1.66\\pm0.19$ dex). The metallicity distribution of RRLs in Thamnos was found to be bimodal, with the metal-poor peak likely representing the genuine accreted Thamnos population ([Fe/H] = $-1.94\\pm0.20$ dex), in agreement with recent works based on spectroscopic abundances. Our analysis shows that the substructures ED-1 and L-RL3 are highly contaminated by thick disc stars. However, the metal-poor tails in their metallicity distributions may be signatures of remnants from small accreted systems. We also identify over-densities of RRLs in correspondence with the recently reported substructures Shiva and Shakti, which we suggest are of in-situ origin. Finally, we applied the RRL-based mass-metallicity relation of galaxies to test the nature of the identified dynamical substructures.",
+      "authors": [
+        "T. Muraveva",
+        "L. Monti",
+        "D. Massari",
+        "M. De Leo",
+        "A. Garofalo",
+        "G. Clementini",
+        "E. Ceccarelli",
+        "U. Michelucci"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.SR"
+      ],
+      "published": "2026-02-23T13:57:28+00:00",
+      "link": "https://arxiv.org/pdf/2602.19858v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Unsupervised novelty detection for identifying Milky Way substructures in Gaia data",
+      "llm_evidence_cn": "用于识别Gaia数据中银河系子结构的无监督新颖性检测",
+      "llm_evidence": "用于识别Gaia数据中银河系子结构的无监督新颖性检测",
+      "canonical_evidence": "用于识别Gaia数据中银河系子结构的无监督新颖性检测",
+      "llm_tldr_en": "Uses unsupervised novelty detection to identify stellar halo substructures in Gaia survey data.",
+      "llm_tldr_cn": "利用无监督新颖性检测技术识别Gaia巡天数据中的星系晕子结构。",
+      "llm_tldr": "利用无监督新颖性检测技术识别Gaia巡天数据中的星系晕子结构。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.20316v1",
+      "title": "Inspectorch: Efficient rare event exploration in solar observations",
+      "abstract": "The Sun is observed in unprecedented detail, enabling studies of its activity on very small spatiotemporal scales. However, the large volume of data collected by our telescopes cannot be fully analyzed with conventional methods. Popular machine learning methods identify general trends from observations, but tend to overlook unusual events due to their low frequency of occurrence. We study the applicability of unsupervised probabilistic methods to efficiently identify rare events in multidimensional solar observations and optimize our computational resources to the study of these extreme phenomena. We introduce Inspectorch, an open-source framework that utilizes flow-based models: flexible density estimators capable of learning the multidimensional distribution of solar observations. Once optimized, it assigns a probability to each sample, allowing us to identify unusual events. We apply this approach by applying it to observations from the Hinode Spectro-Polarimeter, the Interface Region Imaging Spectrograph, the Microlensed Hyperspectral Imager at Swedish 1-m Solar Telescope, the Atmospheric Imaging Assembly on board the Solar Dynamics Observatory and the Extreme Ultraviolet Imager on board Solar Orbiter. We find that the algorithm assigns consistently lower probabilities to spectra that exhibit unusual features. For example, it identifies profiles with very strong Doppler shifts, uncommon broadening, and temporal dynamics associated with small-scale reconnection events, among others. As a result, Inspectorch demonstrates that density estimation using flow-based models offers a powerful approach to identifying rare events in large solar datasets. The resulting probabilistic anomaly scores allow computational resources to be focused on the most informative and physically relevant events. We make our Python package publicly available at https://github.com/cdiazbas/inspectorch.",
+      "authors": [
+        "C. J. Díaz Baso",
+        "I. J. Soler Poquet",
+        "C. Kuckein",
+        "M. van Noort",
+        "N. Poirier"
+      ],
+      "primary_category": "astro-ph.SR",
+      "categories": [
+        "astro-ph.SR",
+        "cs.CV"
+      ],
+      "published": "2026-02-23T20:03:08+00:00",
+      "link": "https://arxiv.org/pdf/2602.20316v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Unsupervised flow-based models for rare event exploration in solar observations",
+      "llm_evidence_cn": "用于太阳观测中罕见事件探索的无监督流模型",
+      "llm_evidence": "用于太阳观测中罕见事件探索的无监督流模型",
+      "canonical_evidence": "用于太阳观测中罕见事件探索的无监督流模型",
+      "llm_tldr_en": "Introduces Inspectorch, a framework using flow-based models to identify rare phenomena in solar data.",
+      "llm_tldr_cn": "引入Inspectorch框架，利用流模型识别太阳观测数据中的极端罕见现象。",
+      "llm_tldr": "引入Inspectorch框架，利用流模型识别太阳观测数据中的极端罕见现象。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.22375v1",
+      "title": "Identifying Evolutionary Stages of Molecular Clumps through Unsupervised and Supervised Machine Learning",
+      "abstract": "The evolutionary classification of molecular clumps, crucial for understanding star formation, is commonly based on human-assigned categories derived from infrared (IR) emission and well-established morphological criteria. However, due to ambiguous signatures, distance uncertainties or heavily obscured IR emission, a significant fraction of sources often remains unclassified. This work demonstrates the capability of machine learning (ML) as a complementary, data-driven approach to automate the identification and classification of these clumps using data from the MALT90 survey, complemented by Spitzer IR photometry. We applied unsupervised clustering with HDBSCAN on molecular line intensities, revealing distinct groupings that correspond to evolutionary stages. Using only five molecular lines (HCO$^+$, HNC, N$_2$H$^+$, HCN, C$_2$H), we identified stable clusters of protostars and regions without active star formation, driven primarily by C$_2$H and N$_2$H$^+$ emission. Incorporating H$^{13}$CO$^+$ gave rise to a distinct UV-dominant cluster, tracing more evolved regions. Infrared properties appeared as non-significant features implying that envelopes of clumps with different masses are similar in their global infrared characteristics. We then employed supervised learning to classify clumps with previously uncertain categories and provided classifications for 522 objects, predominantly as regions without active star formation. Our results show that ML techniques can effectively uncover intrinsic evolutionary structures in complex astrochemical data and assign categories to uncertain sources, providing a powerful, data-driven complement to traditional methods.",
+      "authors": [
+        "K. V. Plakitina",
+        "M. S. Kirsanova",
+        "A. B. Ostrovskii",
+        "A. D. Gimalieva",
+        "S. V. Salii",
+        "A. V. Meshcheryakov"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA"
+      ],
+      "published": "2026-02-25T20:20:11+00:00",
+      "link": "https://arxiv.org/pdf/2602.22375v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "unsupervised clustering with HDBSCAN on molecular clumps in MALT90 survey",
+      "llm_evidence_cn": "在 MALT90 巡天中使用 HDBSCAN 对分子团块进行无监督聚类",
+      "llm_evidence": "在 MALT90 巡天中使用 HDBSCAN 对分子团块进行无监督聚类",
+      "canonical_evidence": "在 MALT90 巡天中使用 HDBSCAN 对分子团块进行无监督聚类",
+      "llm_tldr_en": "Uses unsupervised and supervised ML to classify evolutionary stages of molecular clumps in astronomical surveys.",
+      "llm_tldr_cn": "利用无监督和有监督机器学习对天文巡天中的分子团块演化阶段进行分类。",
+      "llm_tldr": "利用无监督和有监督机器学习对天文巡天中的分子团块演化阶段进行分类。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised learning applications in astronomy and astrophysics",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.23518v1",
+      "title": "Uncovering Physical Drivers of Dark Matter Halo Structures with Auxiliary-Variable-Guided Generative Models",
+      "abstract": "Deep generative models (DGMs) compress high-dimensional data but often entangle distinct physical factors in their latent spaces. We present an auxiliary-variable-guided framework for disentangling representations of thermal Sunyaev-Zel'dovich (tSZ) maps of dark matter halos. We introduce halo mass and concentration as auxiliary variables and apply a lightweight alignment penalty to encourage latent dimensions to reflect these physical quantities. To generate sharp and realistic samples, we extend latent conditional flow matching (LCFM), a state-of-the-art generative model, to enforce disentanglement in the latent space. Our Disentangled Latent-CFM (DL-CFM) model recovers the established mass-concentration scaling relation and identifies latent space outliers that may correspond to unusual halo formation histories. By linking latent coordinates to interpretable astrophysical properties, our method transforms the latent space into a diagnostic tool for cosmological structure. This work demonstrates that auxiliary guidance preserves generative flexibility while yielding physically meaningful, disentangled embeddings, providing a generalizable pathway for uncovering independent factors in complex astronomical datasets.",
+      "authors": [
+        "Arkaprabha Ganguli",
+        "Anirban Samaddar",
+        "Florian Kéruzoré",
+        "Nesar Ramachandra",
+        "Julie Bessac",
+        "Sandeep Madireddy",
+        "Emil Constantinescu"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-02-26T21:45:52+00:00",
+      "link": "https://arxiv.org/pdf/2602.23518v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Deep generative models for dark matter halo structures and tSZ maps",
+      "llm_evidence_cn": "用于暗物质晕结构和tSZ图的深度生成模型",
+      "llm_evidence": "用于暗物质晕结构和tSZ图的深度生成模型",
+      "canonical_evidence": "用于暗物质晕结构和tSZ图的深度生成模型",
+      "llm_tldr_en": "Uses generative models to disentangle physical drivers in dark matter halo structures and astronomical maps.",
+      "llm_tldr_cn": "利用生成模型解耦暗物质晕结构和天文图中的物理驱动因素。",
+      "llm_tldr": "利用生成模型解耦暗物质晕结构和天文图中的物理驱动因素。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "deep generative models for astronomical data augmentation and synthesis",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.00699v1",
+      "title": "Deep learning-based astronomical multimodal data fusion: A comprehensive review",
+      "abstract": "With the rapid advancements in observational technologies and the widespread implementation of large-scale sky surveys, diverse electromagnetic wave data (e.g., optical and infrared) and non-electromagnetic wave data (e.g., gravitational waves) have become increasingly accessible. Astronomy has thus entered an unprecedented era of data abundance and complexity. Astronomers have long relied on unimodal data analysis to perceive the universe, but these efforts often provide only limited insights when confronted with the current massive and heterogeneous astronomical data. In this context, multimodal data fusion (MDF), as an emerging method, provides new opportunities to enhance the value of astronomical data and deepening the understanding of the universe by integrating information from different modalities. Recent progress in artificial intelligence (AI), particularly in deep learning (DL), has greatly accelerated the development of multimodal research in astronomy. Therefore, a timely review of this field is essential. This paper begins by discussing the motivation and necessity of astronomical MDF, followed by an overview of astronomical data sources and major data modalities. It then introduces representative DL models commonly used in astronomical multimodal studies, the general fusion process as well as various fusion strategies, emphasizing their characteristics, applicability, advantages, and limitations. Subsequently, the paper surveys existing astronomical multimodal studies and datasets. Finally, the discussion section synthesizes key findings, identifies potential challenges, and suggests promising directions for future research. By offering a structured overview and critical analysis, this review aims to inspire and guide researchers engaged in DL-based MDF in astronomy.",
+      "authors": [
+        "Wujun Shao",
+        "Dongwei Fan",
+        "Chenzhou Cui",
+        "Yunfei Xu",
+        "Shirui Wei",
+        "Xin Lyu"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM"
+      ],
+      "published": "2026-02-28T15:14:30+00:00",
+      "link": "https://arxiv.org/pdf/2603.00699v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "review of deep learning for astronomical multimodal data fusion",
+      "llm_evidence_cn": "天文多模态数据融合的深度学习综述",
+      "llm_evidence": "天文多模态数据融合的深度学习综述",
+      "canonical_evidence": "天文多模态数据融合的深度学习综述",
+      "llm_tldr_en": "Comprehensive review of deep learning methods for fusing diverse astronomical data types from sky surveys.",
+      "llm_tldr_cn": "全面综述了用于融合巡天中多种天文数据类型的深度学习方法。",
+      "llm_tldr": "全面综述了用于融合巡天中多种天文数据类型的深度学习方法。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.03734v1",
+      "title": "Autoencoder-based framework for anomaly detection in stellar spectra: application to the MaNGA Stellar Library",
+      "abstract": "A machine-learning-based method is developed to identify objects with unusual stellar spectra. The method employs an autoencoder, a neural network trained to compress spectral data into a low-dimensional representation and subsequently reconstruct it. Spectra that deviate significantly from the dominant patterns in the training dataset are identified using the reconstruction error as an anomaly score. The models are applied to selected datasets from the MaNGA Stellar Library, an empirical library of stellar spectra. Several spectra are flagged as anomalous: an object with likely instrumental and/or reduction issues, two carbon stars, and an oxygen-rich thermally pulsating asymptotic giant branch star. The sources of the large reconstruction errors are examined, and the effectiveness and limitations of autoencoder-based approaches for detecting anomalous stellar spectra are discussed.",
+      "authors": [
+        "Akihiro Suzuki"
+      ],
+      "primary_category": "astro-ph.SR",
+      "categories": [
+        "astro-ph.SR",
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-04T05:10:29+00:00",
+      "link": "https://arxiv.org/pdf/2603.03734v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Autoencoder-based anomaly detection for identifying unusual stellar spectra",
+      "llm_evidence_cn": "基于自编码器的异常检测，用于识别异常恒星光谱",
+      "llm_evidence": "基于自编码器的异常检测，用于识别异常恒星光谱",
+      "canonical_evidence": "基于自编码器的异常检测，用于识别异常恒星光谱",
+      "llm_tldr_en": "Uses an autoencoder to identify rare astronomical objects like carbon stars through spectral reconstruction error.",
+      "llm_tldr_cn": "利用自编码器的重构误差识别碳星等罕见天文天体。",
+      "llm_tldr": "利用自编码器的重构误差识别碳星等罕见天文天体。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.08830v1",
+      "title": "16 new quasars at the end of the reionization unveiled by self-supervised learning",
+      "abstract": "Luminous quasars at $z > 6$ are key probes of early supermassive black hole (SMBH) growth, massive galaxy evolution, and intergalactic medium properties during cosmic reionization. However, their discovery is very challenging due to their scarcity and overwhelming contamination, as foreground ultracool dwarfs (UCDs) outnumber $z>6$ quasars by 2-4 orders of magnitude. In this work, we leverage the extensive coverage of DESI Legacy Survey DR10 to conduct a self-supervised search for quasars at $z > 6$, directly analyzing multiband optical images and minimizing the biases of traditional catalog-driven color-color selection criteria. By applying a contrastive learning (CL) method followed by spectral energy distribution (SED) fitting prioritization, we identified 1139 high-priority quasar candidates, for which we expect a competitive $\\sim$1:1 quasar-to-UCD ratio based on literature samples. We spectroscopically confirm 16 new quasars at $z = 5.94$-6.45, achieving a 45\\% success rate. Remarkably, all 16 objects are relatively bright ($M_{1450} < -25.5$) quasars, including several with unusual properties such as narrow Ly$α$ emission (FWHM $< 2600$ km s$^{-1}$), strong Ly$α$+NV emission with equivalent width $>100$ Å, and mildly red observed-frame near-infrared (NIR) continua ($z - J > 0.4$). Notably, three of them would have been missed by traditional color-color selections. These results highlight the power of self-supervised machine learning combined with SED fitting prioritization to uncover rare distant sources beyond conventional techniques. Our approach offers a scalable and robust framework for data mining and can be readily extended to forthcoming wide-field surveys such as Rubin/LSST, 4MOST, Euclid, and Roman, improving the census of high-redshift quasars and constraints on SMBH formation and evolution in the first billion years of the Universe.",
+      "authors": [
+        "L. N. Martínez-Ramírez",
+        "Julien Wolf",
+        "Silvia Belladitta",
+        "Eduardo Bañados",
+        "F. E. Bauer",
+        "Raphael E. Hviding",
+        "Daniel Stern",
+        "Chiara Mazzucchelli",
+        "Romain A. Meyer",
+        "Ezequiel Treister",
+        "Federica Loiacono"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-09T18:40:51+00:00",
+      "link": "https://arxiv.org/pdf/2603.08830v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "self-supervised contrastive learning for discovering rare high-redshift quasars",
+      "llm_evidence_cn": "用于发现稀有高红移类星体的自监督对比学习",
+      "llm_evidence": "用于发现稀有高红移类星体的自监督对比学习",
+      "canonical_evidence": "用于发现稀有高红移类星体的自监督对比学习",
+      "llm_tldr_en": "Discovers 16 new high-redshift quasars using self-supervised contrastive learning on sky survey images.",
+      "llm_tldr_cn": "利用自监督对比学习在巡天图像中发现了16个新的高红移类星体。",
+      "llm_tldr": "利用自监督对比学习在巡天图像中发现了16个新的高红移类星体。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.09762v1",
+      "title": "Supernova scores for active anomaly detection",
+      "abstract": "Large time-domain sky surveys generate extensive multi-year catalogs of light curves in which scientifically valuable transients, such as supernovae (SNe), are vastly outnumbered by artifacts and routine star variability. While supervised machine learning models can efficiently filter known classes, they struggle with extreme class imbalance and may overlook rare or novel events. Conversely, unsupervised anomaly detection provides broad discovery potential but lacks targeted sensitivity. We present a hybrid strategy that integrates a supervised SN probability score (SN-score) into the PineForest active anomaly detection framework to enhance SN discovery rate in the 23rd data release of the Zwicky Transient Facility. We train a binary classifier using light-curve features of spectroscopically confirmed SNe from the ZTF Bright Transient Survey, achieving a ROC-AUC approximately 0.98. Incorporating the SN-score as an additional feature, together with a small set of labeled priors, significantly accelerates the discovery of SN-like transients across ten extragalactic ZTF fields. This method increases discovery efficiency without compromising the ability to identify diverse astrophysical anomalies. Application of the combined methodology resulted in the discovery of seven previously unreported SN candidates, one AGN candidate, one unusual Galactic variable star SNAD283, as well as two host galaxies exhibiting multiple supernova events. These results demonstrate its value for scalable and expert-guided transient search in current and future surveys, including the Vera C. Rubin Observatory Legacy Survey of Space and Time.",
+      "authors": [
+        "Semenikhin T. A.",
+        "Kornilov M. V.",
+        "Pruzhinskaya M. V.",
+        "Krushinsky V. V.",
+        "Malanchev K. L.",
+        "Dodin A."
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-10T15:00:16+00:00",
+      "link": "https://arxiv.org/pdf/2603.09762v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "active anomaly detection in Zwicky Transient Facility light curves",
+      "llm_evidence_cn": "Zwicky Transient Facility光变曲线中的主动异常检测",
+      "llm_evidence": "Zwicky Transient Facility光变曲线中的主动异常检测",
+      "canonical_evidence": "Zwicky Transient Facility光变曲线中的主动异常检测",
+      "llm_tldr_en": "A hybrid strategy combining supervised scores with active anomaly detection to find rare transients in sky surveys.",
+      "llm_tldr_cn": "结合监督评分与主动异常检测的混合策略，用于在巡天数据中发现罕见瞬变源。",
+      "llm_tldr": "结合监督评分与主动异常检测的混合策略，用于在巡天数据中发现罕见瞬变源。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "anomaly detection in sky surveys",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.16095v1",
+      "title": "Three Saturn-mass Microlensing Planets Identified through Signals from Peripheral-caustic Perturbations",
+      "abstract": "We present the discovery and analysis of three microlensing planets identified through brief positive anomalies on the wings of their light curves. The events, KMT-2021-BLG-0852, KMT-2024-BLG-2005, and KMT-2025-BLG-0481, were detected in high-cadence survey data from the KMTNet, OGLE, MOA, and PRIME collaborations. The anomaly morphologies are consistent with major-image perturbations induced by planetary-mass companions located near the peripheral caustic. A systematic exploration of model degeneracies, including binary-source scenarios, higher mass-ratio binary lenses, and the inner--outer caustic degeneracy, firmly establishes the planetary origin of each signal. Measurements of the angular Einstein radius and event timescale, combined with Bayesian priors from a Galactic model, yield the physical parameters of each system. The hosts are low-mass stars (0.12--0.75~$M_\\odot$), while the companions are Saturn-mass planets (0.16--0.59 $M_{\\rm J}$) projected at separations of 1.1--7.8 au, placing them beyond the snowline of their hosts. These results demonstrate the capability of microlensing to detect and characterize cold giant planets around low-mass stars at kpc distances, populating the critical transition region between ice giants and gas giants.",
+      "authors": [
+        "Cheongho Han",
+        "Chung-Uk Lee",
+        "Andrzej Udalski",
+        "Ian A. Bond",
+        "Michael D. Albrow",
+        "Sun-Ju Chung",
+        "Andrew Gould",
+        "Youn Kil Jung",
+        "Kyu-Ha Hwang",
+        "Yoon-Hyun Ryu",
+        "Yossi Shvartzvald",
+        "In-Gu Shin",
+        "Jennifer C. Yee",
+        "Weicheng Zang",
+        "Hongjing Yang",
+        "Doeon Kim",
+        "Dong-Jin Kim",
+        "Sang-Mok Cha",
+        "Seung-Lee Kim",
+        "Dong-Joo Lee",
+        "Yongseok Lee",
+        "Byeong-Gon Park",
+        "Kyeongsoo Hong",
+        "Richard W. Pogge",
+        "Przemek Mróz",
+        "Michał K. Szymański",
+        "Jan Skowron",
+        "Radosław Poleski",
+        "Igor Soszyński",
+        "Paweł Pietrukowicz",
+        "Szymon Kozłowski",
+        "Krzysztof A. Rybicki",
+        "Patryk Iwanek",
+        "Krzysztof Ulaczyk",
+        "Marcin Wrona",
+        "Mariusz Gromadzki",
+        "Mateusz J. Mróz",
+        "Fumio Abe",
+        "David P. Bennett",
+        "Aparna Bhattacharya",
+        "Ryusei Hamada",
+        "Yuki Hirao",
+        "Asahi Idei",
+        "Stela Ishitani Silva",
+        "Shuma Makida",
+        "Shota Miyazaki",
+        "Yasushi Muraki",
+        "Tutumi Nagai",
+        "Togo Nagano",
+        "Seiya Nakayama",
+        "Mayu Nishio",
+        "Kansuke Nunota",
+        "Ryo Ogawa",
+        "Ryunosuke Oishi",
+        "Yui Okumoto",
+        "Greg Olmschenk",
+        "Clément Ranc",
+        "Nicholas J. Rattenbury",
+        "Yuki Satoh",
+        "Takahiro Sumi",
+        "Daisuke Suzuki",
+        "Takuto Tamaoki",
+        "Sean K. Terry",
+        "Paul J. Tristram",
+        "Aikaterini Vandorou",
+        "Hibiki Yama"
+      ],
+      "primary_category": "astro-ph.EP",
+      "categories": [
+        "astro-ph.EP",
+        "astro-ph.GA"
+      ],
+      "published": "2026-02-17T23:51:31+00:00",
+      "link": "https://arxiv.org/pdf/2602.16095v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "discovery of microlensing planets through light curve anomalies",
+      "llm_evidence_cn": "通过光变曲线异常发现微引力透镜行星",
+      "llm_evidence": "通过光变曲线异常发现微引力透镜行星",
+      "canonical_evidence": "通过光变曲线异常发现微引力透镜行星",
+      "llm_tldr_en": "Identifies three microlensing planets by analyzing brief anomalies in high-cadence survey light curves.",
+      "llm_tldr_cn": "通过分析高频巡天光变曲线中的短暂异常，发现了三颗微引力透镜行星。",
+      "llm_tldr": "通过分析高频巡天光变曲线中的短暂异常，发现了三颗微引力透镜行星。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "discovery of rare astronomical phenomena using unsupervised algorithms",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.19647v1",
+      "title": "Searching for and characterizing halo substructures with the GALAH DR4 survey",
+      "abstract": "Recent studies show that the Milky Way stellar halo is composed of populations of different origins, shaped by multiple accretion events. To better understand the formation of the Milky Way and other spiral galaxies, we characterize the chemical and kinematic properties of halo substructures using GALAH DR4 and Gaia data. We apply wavelet transforms in the space of sqrt(J_r) and azimuthal action (L_z) to identify kinematic overdensities. Stars in the detected structures are analyzed in elemental abundance space to determine their origin. We further assess contamination using the unsupervised machine-learning algorithm t-distributed stochastic neighbor embedding (t-SNE), performing chemical tagging with 15 elemental abundances. We recover five structures: the Galactic disk, the Splash, Gaia-Sausage-Enceladus (GSE), Thamnos1, and Thamnos2. GSE shows two peaks; one at sqrt(J_r) ~ 25 kpc km s^-1 is due to disk contamination, while the other above sqrt(J_r) ~ 40 kpc km s^-1 represents the cleanest GSE population. Thamnos exhibits three peaks linked to Thamnos1 and Thamnos2. Thamnos2 shows higher [alpha/Fe], iron-peak elements are enhanced in the Splash, and halo groups retain a stronger r-process signature. The multiply peaked structures suggest that the splashed disk extends beyond prograde orbits. The distinct chemo-dynamical properties of the halo groups support their extragalactic origin.",
+      "authors": [
+        "Iryna Kushniruk",
+        "Kristopher Youakim",
+        "Karin Lind",
+        "Sven Buder",
+        "Janes Kos",
+        "Diane Feuillet",
+        "Sarah L. Martell",
+        "Richard de Grijs",
+        "Geraint F. Lewis",
+        "Joss Bland-Hawthorn",
+        "Gary Da Costa",
+        "Michael Hayden",
+        "Daniel Zucker",
+        "Tomaz Zwitter",
+        "Sanjib Sharma"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.SR"
+      ],
+      "published": "2026-02-23T09:46:51+00:00",
+      "link": "https://arxiv.org/pdf/2602.19647v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "unsupervised t-SNE for chemical tagging in stellar surveys",
+      "llm_evidence_cn": "恒星巡天中用于化学标记的无监督 t-SNE",
+      "llm_evidence": "恒星巡天中用于化学标记的无监督 t-SNE",
+      "canonical_evidence": "恒星巡天中用于化学标记的无监督 t-SNE",
+      "llm_tldr_en": "Uses unsupervised learning to identify and characterize Milky Way halo substructures in the GALAH survey.",
+      "llm_tldr_cn": "利用无监督学习在 GALAH 巡天中识别并表征银河系晕子结构。",
+      "llm_tldr": "利用无监督学习在 GALAH 巡天中识别并表征银河系晕子结构。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "unsupervised learning applications in astronomy and astrophysics",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.23460v1",
+      "title": "OmegaNeuron: Applying GravitySpy Similarity Methods to the Search for LIGO Glitch Witnesses",
+      "abstract": "Gravitational-wave (GW) astronomy has advanced our understanding of compact mergers through instruments like the Laser Interferometer Gravitational-Wave Observatory (LIGO). However, the extreme sensitivity required for these detections makes the instruments susceptible to short-duration transient noise, or glitches, which obscure GW data. Current tools such as Omega Scan and GravitySpy assist in identifying and classifying such noise, but are limited by manual inspection or dependence on large training sets. To address these challenges, we present \\textit{OmegaNeuron}, a machine-learning tool that integrates GravitySpy's image similarity methods with Omega Scan's transient analysis to automate the identification of auxiliary channels that witness glitches. Applied to multiple glitch examples, OmegaNeuron consistently highlighted plausible witness channels and showed strong agreement with existing correlation tools, while providing clearer ranking through a quantitative similarity metric. Integrated into the \\texttt{gwdetchar} package, OmegaNeuron enables faster analysis that improves glitch witness identification, enhancing both detector sensitivity and the reliability of gravitational-wave observations.",
+      "authors": [
+        "Bri Aleman",
+        "Derek Davis"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "gr-qc"
+      ],
+      "published": "2026-02-26T19:31:57+00:00",
+      "link": "https://arxiv.org/pdf/2602.23460v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Automated identification of transient noise in gravitational-wave astronomy using machine learning",
+      "llm_evidence_cn": "利用机器学习自动识别引力波天文中的瞬态噪声",
+      "llm_evidence": "利用机器学习自动识别引力波天文中的瞬态噪声",
+      "canonical_evidence": "利用机器学习自动识别引力波天文中的瞬态噪声",
+      "llm_tldr_en": "OmegaNeuron automates LIGO glitch identification by integrating image similarity and transient analysis.",
+      "llm_tldr_cn": "OmegaNeuron 通过集成图像相似度和瞬态分析，实现了 LIGO 干扰信号的自动识别。",
+      "llm_tldr": "OmegaNeuron 通过集成图像相似度和瞬态分析，实现了 LIGO 干扰信号的自动识别。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04040v1",
+      "title": "Morphologies for DECaLS Galaxies through a combination of non-parametric indices and machine learning methods: A comprehensive catalog using the Galaxy Morphology Extractor (galmex) code",
+      "abstract": "Galaxy morphology encodes key information about formation and evolution. Large imaging surveys require automated, reproducible methods beyond visual inspection. Non--parametric indices provide an useful framework, but their performance must be quantitatively assessed. We present a homogeneous catalog of non--parametric morphological indices for DECaLS galaxies with effective radii larger than 2 arcsec. Our goal is to evaluate the reliability of indices in separating spirals and ellipticals, test their consistency with existing classification schemes, and establish their applicability for the upcoming surveys focused in the southern hemisphere. We developed galmex, a modular Python package for preprocessing images and measuring a variety of non--parametric indices. Using bona-fide spirals and ellipticals as control samples, we assessed the discriminatory power of each index, and compared them with CNN-based T-Types and Galaxy Zoo DECaLS labels. We use the indices as input for a Light Gradient Boosted Machine (LightGBM) to obtain probabilistic classifications. Concentration is the most reliable parameter from the Concentratiom + Asymmetry + Smoothness system (CAS), while asymmetry--based indices (A and S) are limited to detecting disturbed morphologies. MEGG indices (M20, Entropy, Gini, G2) provide stronger separation and trace a gradient with T--Type. By using a simple binary (0/1) label for ellipticals/spirals, classifiers trained on non--parametric indices achieve high accuracy and well--calibrated probabilities, dominated by entropy, concentration, and Gini. We release the first public catalog of CA[A_S]S+MEGG indices for DECaLS, together with galmex. We combine the non-parametric indices with machine learning framework to derive spiral/elliptical separation for galaxies below z~0.15 through a probabilistic approach.",
+      "authors": [
+        "V. M. Sampaio",
+        "Y. Jaffé",
+        "C. Lima-Dias",
+        "S. Véliz Astudillo",
+        "M. Martínez-Marín",
+        "H. Méndez-Hernández",
+        "R. Herrera-Camus",
+        "A. Monachesi"
+      ],
+      "primary_category": "astro-ph.GA",
+      "categories": [
+        "astro-ph.GA",
+        "astro-ph.IM"
+      ],
+      "published": "2026-03-04T13:19:58+00:00",
+      "link": "https://arxiv.org/pdf/2603.04040v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "automated galaxy morphology classification in large sky surveys",
+      "llm_evidence_cn": "大型巡天中的星系形态自动分类",
+      "llm_evidence": "大型巡天中的星系形态自动分类",
+      "canonical_evidence": "大型巡天中的星系形态自动分类",
+      "llm_tldr_en": "Presents a catalog of galaxy morphologies for DECaLS using automated machine learning and non-parametric indices.",
+      "llm_tldr_cn": "利用自动机器学习和非参数指标为 DECaLS 巡天提供星系形态目录。",
+      "llm_tldr": "利用自动机器学习和非参数指标为 DECaLS 巡天提供星系形态目录。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04516v1",
+      "title": "Augmenting representations with scientific papers",
+      "abstract": "Astronomers have acquired vast repositories of multimodal data, including images, spectra, and time series, complemented by decades of literature that analyzes astrophysical sources. Still, these data sources are rarely systematically integrated. This work introduces a contrastive learning framework designed to align X-ray spectra with domain knowledge extracted from scientific literature, facilitating the development of shared multimodal representations. Establishing this connection is inherently complex, as scientific texts encompass a broader and more diverse physical context than spectra. We propose a contrastive pipeline that achieves a 20% Recall@1% when retrieving texts from spectra, proving that a meaningful alignment between these modalities is not only possible but capable of accelerating the interpretation of rare or poorly understood sources. Furthermore, the resulting shared latent space effectively encodes physically significant information. By fusing spectral and textual data, we improve the estimation of 20 physical variables by 16-18% over unimodal spectral baselines. Our results indicate that a Mixture of Experts (MoE) strategy, which leverages both unimodal and shared representations, yields superior performance. Finally, outlier analysis within the multimodal latent space identifies high-priority targets for follow-up investigation, including a candidate pulsating ULX (PULX) and a gravitational lens system. Importantly, this framework can be extended to other scientific domains where aligning observational data with existing literature is possible.",
+      "authors": [
+        "Nicolò Oreste Pinciroli Vago",
+        "Rocco Di Tella",
+        "Carolina Cuesta-Lázaro",
+        "Michael J. Smith",
+        "Cecilia Garraffo",
+        "Rafael Martínez-Galarza"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "astro-ph.IM",
+        "cs.AI"
+      ],
+      "published": "2026-03-04T19:04:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.04516v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Contrastive learning for multimodal astronomical representations (spectra and text)",
+      "llm_evidence_cn": "天文多模态表示（光谱和文本）的对比学习",
+      "llm_evidence": "天文多模态表示（光谱和文本）的对比学习",
+      "canonical_evidence": "天文多模态表示（光谱和文本）的对比学习",
+      "llm_tldr_en": "Aligns X-ray spectra with scientific literature using contrastive learning for shared representations.",
+      "llm_tldr_cn": "利用对比学习将X射线光谱与科学文献对齐，构建共享的多模态表示。",
+      "llm_tldr": "利用对比学习将X射线光谱与科学文献对齐，构建共享的多模态表示。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "self-supervised representation learning for galaxy images",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04535v1",
+      "title": "A Fast Generative Framework for High-dimensional Posterior Sampling: Application to CMB Delensing",
+      "abstract": "We introduce a deep generative framework for high-dimensional Bayesian inference that enables efficient posterior sampling. As telescopes and simulations rapidly expand the volume and resolution of astrophysical data, fast simulation-based inference methods are increasingly needed to extract scientific insights. While diffusion-based approaches offer high-quality generative capabilities, they are hindered by slow sampling speeds. Our method performs posterior sampling an order of magnitude faster than a diffusion baseline. Applied to the problem of CMB delensing, it successfully recovers the unlensed CMB power spectrum from simulated observations. The model also remains robust to shifts in cosmological parameters, demonstrating its potential for out-of-distribution generalization and application to observational cosmological data.",
+      "authors": [
+        "Hadi Sotoudeh",
+        "Pablo Lemos",
+        "Laurence Perreault-Levasseur"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.CO",
+        "cs.LG"
+      ],
+      "published": "2026-03-04T19:21:59+00:00",
+      "link": "https://arxiv.org/pdf/2603.04535v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "deep generative framework for CMB delensing and posterior sampling",
+      "llm_evidence_cn": "用于 CMB 透镜还原和后验采样的深度生成框架",
+      "llm_evidence": "用于 CMB 透镜还原和后验采样的深度生成框架",
+      "canonical_evidence": "用于 CMB 透镜还原和后验采样的深度生成框架",
+      "llm_tldr_en": "Introduces a fast generative framework for high-dimensional Bayesian inference in CMB delensing.",
+      "llm_tldr_cn": "引入一种快速生成框架，用于宇宙微波背景辐射（CMB）透镜还原中的高维贝叶斯推理。",
+      "llm_tldr": "引入一种快速生成框架，用于宇宙微波背景辐射（CMB）透镜还原中的高维贝叶斯推理。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "deep generative models for astronomical data augmentation and synthesis",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.09389v1",
+      "title": "Accurate spectroscopic redshift estimation using non-negative matrix factorization: application to MUSE spectra",
+      "abstract": "Accurate and automated galaxy redshift determination is essential for maximizing the scientific return of spectroscopic surveys. In this paper, we propose a data-driven method to address this challenge. The method first learns a rest-frame representation of galaxy spectra using Non-negative Matrix Factorization (NMF). The method then reconstructs new spectra using this representation at different trial redshifts, and identifies the correct redshift by selecting the one that minimizes the reconstruction error. We apply our method to galaxy spectra from the Multi Unit Spectroscopic Explorer (MUSE), covering redshifts from 0 to 6.7. Our method achieves an overall success rate of 93.7%. We further demonstrate two applications: (i) the separation between true and false sources, and (ii) the detection of blended sources from one-dimensional spectra. Our results demonstrate that NMF-based representations provide a powerful and physically motivated framework for redshift estimation in current and future large spectroscopic surveys.",
+      "authors": [
+        "Masten Bourahma",
+        "Nicolas F. Bouché",
+        "Roland Bacon",
+        "Johan Richard",
+        "Tanya Urrutia",
+        "Afonso Vale",
+        "Martin Wendt",
+        "T. T. Thai"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.GA"
+      ],
+      "published": "2026-03-10T09:00:35+00:00",
+      "link": "https://arxiv.org/pdf/2603.09389v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Data-driven galaxy redshift estimation using non-negative matrix factorization",
+      "llm_evidence_cn": "使用非负矩阵分解的数据驱动星系红移估计",
+      "llm_evidence": "使用非负矩阵分解的数据驱动星系红移估计",
+      "canonical_evidence": "使用非负矩阵分解的数据驱动星系红移估计",
+      "llm_tldr_en": "Uses NMF to learn rest-frame representations for accurate, automated galaxy redshift determination.",
+      "llm_tldr_cn": "利用 NMF 学习静止帧表示，实现准确、自动的星系红移测定。",
+      "llm_tldr": "利用 NMF 学习静止帧表示，实现准确、自动的星系红移测定。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "machine learning for astronomical object classification without labels",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.11264v1",
+      "title": "Time delays and stationarity in quasar light curves",
+      "abstract": "We present a fully Bayesian framework for time delay inference and stationarity tests in quasar light curves using marginalised Gaussian processes. The model separates a deterministic, non-stationary drift (piecewise linear mean) from stationary stochastic variability (Matérn and Spectral Mixture kernels), and jointly models multiple images with per-image microlensing. Bayesian evidence and parameter posteriors are obtained via nested sampling and marginalised over model choices. Applied to the quasars WFI J2033 - 4723, B 1608 + 656, and HE 0435 - 1223, we find strong evidence for non-stationarity in B 1608 + 656 and HE 0435 - 1223, while WFI J2033 - 4723 is consistent with stationarity. The stochastic component favours an Markovian exponential kernel for B 1608 + 656 and a non-Markovian Matérn-$\\frac32$ kernel for WFI J2033 - 4723 and HE 0435 - 1223. Multi-length-scale Spectral Mixture kernels are disfavoured. Time delays are shown to be robust to model assumptions and consistent with prior work within the error. We further identify and mitigate a likelihood pathology which biases toward large delays, providing a practical nested sampling convergence protocol.",
+      "authors": [
+        "Namu Kroupa",
+        "David Yallup",
+        "Will Handley"
+      ],
+      "primary_category": "astro-ph.CO",
+      "categories": [
+        "astro-ph.CO"
+      ],
+      "published": "2026-02-11T19:00:02+00:00",
+      "link": "https://arxiv.org/pdf/2602.11264v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Bayesian framework for quasar light curve analysis and stationarity tests",
+      "llm_evidence_cn": "类星体光变曲线分析和稳态测试的贝叶斯框架",
+      "llm_evidence": "类星体光变曲线分析和稳态测试的贝叶斯框架",
+      "canonical_evidence": "类星体光变曲线分析和稳态测试的贝叶斯框架",
+      "llm_tldr_en": "Presents a Bayesian model using Gaussian processes to infer time delays and test stationarity in quasar light curves.",
+      "llm_tldr_cn": "提出一个使用高斯过程的贝叶斯模型，用于推断类星体光变曲线的时间延迟并测试其平稳性。",
+      "llm_tldr": "提出一个使用高斯过程的贝叶斯模型，用于推断类星体光变曲线的时间延迟并测试其平稳性。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "automated feature extraction from light curves",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.14335v1",
+      "title": "Predicting New Concept-Object Associations in Astronomy by Mining the Literature",
+      "abstract": "We construct a concept-object knowledge graph from the full astro-ph corpus through July 2025. Using an automated pipeline, we extract named astrophysical objects from OCR-processed papers, resolve them to SIMBAD identifiers, and link them to scientific concepts annotated in the source corpus. We then test whether historical graph structure can forecast new concept-object associations before they appear in print. Because the concepts are derived from clustering and therefore overlap semantically, we apply an inference-time concept-similarity smoothing step uniformly to all methods. Across four temporal cutoffs on a physically meaningful subset of concepts, an implicit-feedback matrix factorization model (alternating least squares, ALS) with smoothing outperforms the strongest neighborhood baseline (KNN using text-embedding concept similarity) by 16.8% on NDCG@100 (0.144 vs 0.123) and 19.8% on Recall@100 (0.175 vs 0.146), and exceeds the best recency heuristic by 96% and 88%, respectively. These results indicate that historical literature encodes predictive structure not captured by global heuristics or local neighborhood voting, suggesting a path toward tools that could help triage follow-up targets for scarce telescope time.",
+      "authors": [
+        "Jinchu Li",
+        "Yuan-Sen Ting",
+        "Alberto Accomazzi",
+        "Tirthankar Ghosal",
+        "Nesar Ramachandra"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "cs.IR"
+      ],
+      "published": "2026-02-15T23:07:10+00:00",
+      "link": "https://arxiv.org/pdf/2602.14335v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "AI for astronomy literature mining and concept association",
+      "llm_evidence_cn": "用于天文文献挖掘和概念关联的AI",
+      "llm_evidence": "用于天文文献挖掘和概念关联的AI",
+      "canonical_evidence": "用于天文文献挖掘和概念关联的AI",
+      "llm_tldr_en": "Uses matrix factorization to predict new concept-object associations by mining the astronomical literature.",
+      "llm_tldr_cn": "通过挖掘天文学文献，利用矩阵分解预测新的概念-天体关联。",
+      "llm_tldr": "通过挖掘天文学文献，利用矩阵分解预测新的概念-天体关联。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.15141v1",
+      "title": "Mimicking the large-scale structure of the Local Universe. Synthetic pre-labelled galaxies in large-scale structures",
+      "abstract": "Current observational and simulated large-scale structure (LSS) catalogues often lack consistency in assigning galaxies to specific structures, due to the absence of a universally accepted classification criterion. With the aim to generate synthetic empirical data for fine-tuning LSS classification algorithms, as well as to train machine learning (ML)/deep learning (DL) models for the same purpose, this work presents a purely geometrical simulation based on statistical spatial properties found in LSS surveys, using the spectroscopic main galaxy sample of the Sloan Digital Sky Survey (SDSS) catalogue up to a redshift of z~0.1 as a specific use case. A parallelism between the LSS and the Voronoi tessellation was utilised, in which the nodes, links, surfaces, and cells of the diagram correspond to clusters, filaments, walls, and voids, respectively. The simulation used random positions within voids as seeds for tessellating the 3D space. The resulting structures were randomly populated with galaxies that adhere to the statistical properties of their observational respective structures. As the galaxies were generated, they were tagged with their corresponding structure. In each simulation, six LSS mock catalogues were generated, following the statistical behaviour observed in the SDSS catalogue, depending on the structure they belong to. The Malmquist bias and the Fingers of God effect were simulated as well. We present a novel geometrical LSS simulator, where generated galaxies mimic the statistical properties of their observational belonging structure. The simulator was tuned to mimic the SDSS catalogue, although any other catalogue can be considered. With the generated catalogue, it is possible to adjust the LSS classification algorithms, train and test ML/DL models, and benchmark several LSS classification methods using this pre-labelled data to contrast their results and performance.",
+      "authors": [
+        "M. Alcázar-Laynez",
+        "S. Duarte Puertas",
+        "S. Verley",
+        "G. Blázquez-Calero",
+        "A. Jiménez",
+        "A. Lorenzo-Gutiérrez",
+        "D. Espada",
+        "M. Argudo-Fernández",
+        "I. Pérez"
+      ],
+      "primary_category": "astro-ph.CO",
+      "categories": [
+        "astro-ph.CO"
+      ],
+      "published": "2026-02-16T19:38:02+00:00",
+      "link": "https://arxiv.org/pdf/2602.15141v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "generating synthetic empirical data for large-scale structure surveys",
+      "llm_evidence_cn": "为大规模结构巡天生成合成经验数据",
+      "llm_evidence": "为大规模结构巡天生成合成经验数据",
+      "canonical_evidence": "为大规模结构巡天生成合成经验数据",
+      "llm_tldr_en": "Presents a geometrical simulation to generate synthetic pre-labelled galaxies for training LSS algorithms.",
+      "llm_tldr_cn": "提出一种几何模拟方法，生成合成的预标记星系，用于训练大规模结构分类算法。",
+      "llm_tldr": "提出一种几何模拟方法，生成合成的预标记星系，用于训练大规模结构分类算法。",
+      "llm_tags": [
+        "query:ai-ast"
+      ],
+      "matched_query_tag": "query:ai-ast",
+      "matched_query_text": "deep generative models for astronomical data augmentation and synthesis",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.20277v1",
+      "title": "Neural Bayesian updates to populations with growing gravitational-wave catalogs",
+      "abstract": "As gravitational-wave catalogs grow, they will become increasingly computationally expensive to analyze in their entirety, especially when inferring astrophysical source populations with high-dimensional, flexible models. Bayesian statistics offers a natural remedy, letting us update our knowledge of physical models as new data arrive, without re-analyzing existing data. However, doing so requires the posterior probability density of model parameters for previous observations, which is typically intractable. Here, we use variational neural posterior estimation to rapidly update the inferred population of binary black holes as data are observed in gravitational-wave detectors. We apply this approach to real and simulated catalogs analyzed with both low- and high-dimensional population models, testing the reliability of three update cadences: with new catalogs of sources, month by month during an observing run, and as each new signal arrives. We investigate the success and failure modes of neural sequential updates, finding that the robustness of updating is sensitive to the information contained in each update and that updating is most effective when performed with larger segments of data. We outline one additional scientific application enabled by Bayesian updating: identification of events that are individually informative about the population. Neural Bayesian updates to astrophysical population models also provide efficient likelihood representations for joint analyses with other data, e.g., standard-siren cosmology, and similar methods can be used to perform Bayesian stochastic background searches.",
+      "authors": [
+        "Noah E. Wolfe",
+        "Matthew Mould",
+        "John Veitch",
+        "Salvatore Vitale"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.HE",
+        "gr-qc"
+      ],
+      "published": "2026-02-23T19:02:59+00:00",
+      "link": "https://arxiv.org/pdf/2602.20277v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "neural posterior estimation for gravitational-wave catalogs",
+      "llm_evidence_cn": "引力波目录的神经后验估计",
+      "llm_evidence": "引力波目录的神经后验估计",
+      "canonical_evidence": "引力波目录的神经后验估计",
+      "llm_tldr_en": "Applies variational neural posterior estimation to efficiently update astrophysical population models as new data arrives.",
+      "llm_tldr_cn": "应用变分神经后验估计，在数据到达时高效更新天体物理种群模型。",
+      "llm_tldr": "应用变分神经后验估计，在数据到达时高效更新天体物理种群模型。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2602.24022v1",
+      "title": "Comparison of symbolic regression algorithms in Star/galaxy/quasar separation",
+      "abstract": "This work investigates symbolic regression (SR) as an interpretable alternative to black-box machine learning for the classification of stars, galaxies, and quasars in the Sloan Digital Sky Survey Data Release 17 (SDSS DR17). We conduct a systematic comparative study of four state-of-the-art SR frameworks: {\\tt PySR}, Exhaustive Symbolic Regression ({\\tt ESR}) with MDL-based selection, Physical Symbolic Optimization ({\\tt PhySO}) using deep reinforcement learning, and Multi-View Symbolic Regression ({\\tt MvSR}). By deriving compact analytic functions (complexity $\\leq 10$) on a representative training subset and subsequently evaluating them via a 5-fold stratified cross-validation protocol on 100,000 spectroscopically confirmed objects, we map spectroscopic redshift ($z$) to continuous classification scores. Our results demonstrate that these low-complexity expressions achieve high predictive reliability, with {\\tt MvSR} reaching a Cohen's Kappa of 0.8948 and {\\tt PhySO} achieving exceptional parametric stability ($σ< 0.002$). We show that these models not only match the performance of traditional baselines but also provide a transparent, mathematically concise characterization of the astrophysical boundaries separating galactic and extragalactic populations.",
+      "authors": [
+        "Rachit Deshpande",
+        "Shantanu Desai"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "astro-ph.GA"
+      ],
+      "published": "2026-02-27T13:49:10+00:00",
+      "link": "https://arxiv.org/pdf/2602.24022v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "machine learning for star/galaxy/quasar separation in SDSS data",
+      "llm_evidence_cn": "用于SDSS数据中恒星/星系/类星体分类的机器学习",
+      "llm_evidence": "用于SDSS数据中恒星/星系/类星体分类的机器学习",
+      "canonical_evidence": "用于SDSS数据中恒星/星系/类星体分类的机器学习",
+      "llm_tldr_en": "Compares symbolic regression algorithms for interpretable astronomical object classification.",
+      "llm_tldr_cn": "比较了用于可解释天文天体分类的符号回归算法。",
+      "llm_tldr": "比较了用于可解释天文天体分类的符号回归算法。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.00473v1",
+      "title": "Detection and classification of astronomical sources with Astro-RetinaNet in crowded stellar fields",
+      "abstract": "Upcoming next-generation sky surveys will detect large number of faint objects with magnitudes larger than 25. When objects are crowded within a limited a field of view, blending becomes unavoidable. Blending leads to the omission of many sources during photometry in these fields, which cause an underestimates of tens of percent in crowded fields, and remains a major challenge for existing source-extraction techniques. Although artificial neural networks had shown promising results in the detection and classification in wide-field surveys, they often fail with severely blended stars. We developed a robust deep learning model, Astro-RetinaNet, based on the Retinanet algorithm to detect and classify blended sources in single-band astronomical images. After training and evaluating the performance of our network on simulated images, we find precision of 0.96, 0.89,0.70, 0.50,0.75 for single star, 2-star, 3-star, 4-star and 5-or-more star blending cases, respectively, with star number density $\\sim$22000 stars per $\\rm arcmin^2$. We compare our method's detection capability and completeness both on CSST simulated NGC 2298 images and HST observed M31 images. In crowded and non-crowded stellar fields of simulated NGC 2298, our results show that the model can recover $82\\%$ and $95\\%$ sources respectively at magnitude ($i$ band) of 25, while for SExtractor and Photutils the completeness reduces to $20\\%, 59\\%$ and $60\\%, 88\\%$ respectively. In the M31 case, as faint as 27 magnitude ($F814W$) in a crowded field, Astro-RetinaNet detects 2,224 sources, significantly outperforming Photutils and SExtractor by factors of 3.4 and 7.1, respectively.",
+      "authors": [
+        "Yibo Yan",
+        "Chao Liu",
+        "Jiadong Li",
+        "Feng Wang"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM"
+      ],
+      "published": "2026-02-28T05:19:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.00473v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "deep learning for detection and classification in astronomical fields",
+      "llm_evidence_cn": "天文领域中用于探测和分类的深度学习",
+      "llm_evidence": "天文领域中用于探测和分类的深度学习",
+      "canonical_evidence": "天文领域中用于探测和分类的深度学习",
+      "llm_tldr_en": "Develops Astro-RetinaNet to detect and classify blended astronomical sources in crowded stellar fields.",
+      "llm_tldr_cn": "开发了Astro-RetinaNet，用于在拥挤星场中探测和分类混叠的天体源。",
+      "llm_tldr": "开发了Astro-RetinaNet，用于在拥挤星场中探测和分类混叠的天体源。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.04025v2",
+      "title": "Weak Lensing by Photometric Density Ridges",
+      "abstract": "Ridges in galaxy density fields measured by photometric surveys are 2D projections of filaments in the cosmic web, and so should lens light from background galaxies. We report on a detection of this effect in Dark Energy Survey Year 3 data at high significance, though not independently of galaxy-galaxy lensing. We describe improvements to the existing subspace-constrained mean shift algorithm to locate these ridges efficiently at scale, and examine the dependence of the signal in simulations on cosmological and algorithmic parameters. We find that it depends primarily on $S_8=σ_8 \\left( Ω_m / 0.3 \\right)^{1/2}$, and discuss improvements to our methodology that would be needed to allow precision parameter estimation.",
+      "authors": [
+        "Mehraveh Nikjoo",
+        "Joe Zuntz",
+        "Ben Moews"
+      ],
+      "primary_category": "astro-ph.CO",
+      "categories": [
+        "astro-ph.CO"
+      ],
+      "published": "2026-03-04T13:01:52+00:00",
+      "link": "https://arxiv.org/pdf/2603.04025v2",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Unsupervised mean shift algorithm for locating ridges in photometric galaxy surveys",
+      "llm_evidence_cn": "用于定位光度星系巡天中脊线的无监督均值漂移算法",
+      "llm_evidence": "用于定位光度星系巡天中脊线的无监督均值漂移算法",
+      "canonical_evidence": "用于定位光度星系巡天中脊线的无监督均值漂移算法",
+      "llm_tldr_en": "Improves unsupervised algorithms to detect cosmic web filaments in large-scale photometric surveys.",
+      "llm_tldr_cn": "改进了无监督算法，用于在大规模光度巡天中探测宇宙网丝状结构。",
+      "llm_tldr": "改进了无监督算法，用于在大规模光度巡天中探测宇宙网丝状结构。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.09162v1",
+      "title": "POLISH'ing the Sky: Wide-Field and High-Dynamic Range Interferometric Image Reconstruction with Application to Strong Lens Discovery",
+      "abstract": "Radio interferometry enables high-resolution imaging of astronomical radio sources by synthesizing a large effective aperture from an array of antennas and solving a deconvolution problem to reconstruct the image. Deep learning has emerged as a promising solution to the imaging problem, reducing computational costs and enabling super-resolution. However, existing DL-based methods often fall short of the requirements for real-world deployment due to limitations in handling high dynamic range, large field of view, and mismatches between training and test conditions. In this work, we build upon and extend the POLISH framework, a recent DL model for radio interferometric imaging. We introduce key improvements to enable robust reconstruction and super-resolution under real-world conditions: (1) a patch-wise training and stitching strategy for scaling to wide-field imaging and (2) a nonlinear arcsinh-based intensity transformation to manage high dynamic range. We conduct comprehensive evaluations using the T-RECS simulation suite with realistic sky models and point spead functions (PSF), and demonstrate that our approach significantly improves reconstruction quality and robustness. We test the model on realistic simulated strong gravitational lenses and show that lens systems with Einstein radii near the PSF scale can be recovered after deconvolution with our POLISH model, potentially yielding 10$\\times$ more galaxy-galaxy lensing systems from the Deep Synoptic Array (DSA) survey than with image-plane CLEAN. Our results highlight the potential of DL models as practical, scalable tools for next-generation radio astronomy.",
+      "authors": [
+        "Zihui Wu",
+        "Liam Connor",
+        "Samuel McCarty",
+        "Katherine L. Bouman"
+      ],
+      "primary_category": "astro-ph.IM",
+      "categories": [
+        "astro-ph.IM",
+        "cs.CV",
+        "eess.IV"
+      ],
+      "published": "2026-03-10T03:59:26+00:00",
+      "link": "https://arxiv.org/pdf/2603.09162v1",
+      "tags": [
+        "keyword:AI AST",
+        "query:AI AST"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "deep learning for radio interferometric astronomical imaging",
+      "llm_evidence_cn": "用于射电干涉天文成像的深度学习",
+      "llm_evidence": "用于射电干涉天文成像的深度学习",
+      "canonical_evidence": "用于射电干涉天文成像的深度学习",
+      "llm_tldr_en": "Extends a deep learning framework for high-dynamic range astronomical image reconstruction and lens discovery.",
+      "llm_tldr_cn": "扩展了用于高动态范围天文图像重建和强透镜发现的深度学习框架。",
+      "llm_tldr": "扩展了用于高动态范围天文图像重建和强透镜发现的深度学习框架。",
+      "llm_tags": [
+        "query:ai-ast:composite"
+      ],
+      "matched_query_tag": "query:ai-ast:composite",
+      "matched_query_text": "Papers central to 查找AI for astronomy 与unsupervised learning有关的论文, especially work that connects or combines: s; unsupervised machine learning techniques; anomaly detection in sky surveys; self-supervised representation learning for galaxy images; blind source separation in astronomical imaging; automated feature extraction from light curves; unsupervised learning applications in astronomy and astrophysics; machine learning for astronomical object classification without labels; deep generative models for astronomical data augmentation and synthesis; discovery of rare astronomical phenomena using unsupervised algorithms.",
+      "matched_requirement_id": "req-composite-ai-ast",
+      "selection_source": "fresh_fetch"
+    }
+  ]
+}

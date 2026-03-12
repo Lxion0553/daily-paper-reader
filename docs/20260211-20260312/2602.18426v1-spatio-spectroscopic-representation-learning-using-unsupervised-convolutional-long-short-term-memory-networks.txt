@@ -1,0 +1,164 @@
+Title: Spatio-Spectroscopic Representation Learning using Unsupervised Convolutional Long-Short Term Memory Networks
+
+URL Source: https://arxiv.org/pdf/2602.18426v1
+
+Published Time: Mon, 23 Feb 2026 01:55:46 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# Spatio-Spectroscopic Representation Learning using Unsupervised Convolutional Long-Short Term Memory Networks 
+
+Kameswara Bharadwaj Mantha 1 Lucy Fortson 1 Ramanakumar Sankar 1 Claudia Scarlata 1 Chris Lintott 2
+
+Sandor Kruk 3 Mike Walmsley 4 Hugh Dickinson 5 Karen Masters 6 Brooke Simmons 7 Rebecca Smethurst 2
+
+# Abstract 
+
+Integral Field Spectroscopy (IFS) surveys offer a unique new landscape in which to learn in both spatial and spectroscopic dimensions and could help uncover previously unknown insights into galaxy evolution. In this work, we demonstrate a new unsupervised deep learning framework us-ing Convolutional Long-Short Term Memory Net-work Autoencoders to encode generalized feature representations across both spatial and spectro-scopic dimensions spanning 19 optical emission lines (3800A < λ < 8000A) among a sample of 
+
+∼ 9000 galaxies from the MaNGA IFS survey. As a demonstrative exercise, we assess our model on a sample of 290 Active Galactic Nuclei (AGN) and highlight scientifically interesting characteris-tics of some highly anomalous AGN. 
+
+# 1. Introduction 
+
+Galaxy surveys using Integral Field Spectrographs (IFS) have enabled astronomers to go beyond just using tradi-tional integrated spectra and study spatially resolved spec-tral properties of galaxies and investigate the complex in-terplay between important physical processes governing galaxy evolution such as star formation (S ´anchez, 2020), active supermassive blackhole at galactic nucleus (AGN; 
+
+> 1
+
+Department of Physics and Astronomy, University of Min-nesota Twin Cities, Minneapolis, USA 2Company Name, Location, Country 3European Space Agency (ESA), European Space As-tronomy Centre (ESAC), Camino Bajo del Castillo s/n 28692 Villanueva de la Ca ˜nada, Madrid, Spain 4Jodrell Bank Centre for Astrophyics, Department of Physics and Astronomy, Uni-versity of Manchester, Manchester, United Kingdom 5School of Physical Sciences, The Open University, Milton Keynes, MK7 6AA, UK 6Departments of Physics and Astronomy, Haverford College, 370 Lancaster Avenue, Haverford, Pennsylvania 19041, USA 7Physics Department, Lancaster University, Lancaster, LA1 4YB, UK. Correspondence to: Kameswara Bharadwaj Mantha 
+
+<manth145@umn.edu >.
+
+Proceedings of the 40 th International Conference on Machine Learning , Honolulu, Hawaii, USA. PMLR 202, 2023. Copyright 2023 by the author(s). 
+
+Wylezalek et al., 2017), stellar and gas kinematics (e.g., Cap-pellari, 2016). As such, IFS data offers a unique exploratory pathway to study galaxies. However, the large volume and vast dimensionality nature of the data poses as challenge. Thankfully, deep learning has demonstrated to be an effec-tive strategy to parse and learn relevant information within big data. Extracting compressed and generalized feature representa-tions using unsupervised deep learning approaches such as Convolutional Autoencoders (AEs) and Variational Autoen-coders (vAEs) has been a common approach in computer vision problems (Rumelhart et al., 1986; Masci et al., 2011; Kingma & Welling, 2013). They have also been widely used in astronomy, notably in studying galaxy morphologi-cal demographics in imaging data (e.g., Nishikawa-Toomey et al., 2020; Spindler et al., 2021; Huertas-Company, 2021; Slijepcevic et al., 2022) and characterization of 1D galaxy spectra (e.g., Portillo et al., 2020; Teimoorinia et al., 2022). Recent application driven advancements has led to the use of Long-Short Term Memory Networks (LSTMs; Hochre-iter & Schmidhuber, 1997) to effectively learning complex relationships withing 1D sequential data (e.g., Sutskever et al., 2014) and these later have been adopted to sequential imaging data using 2D Convolutional LSTMs (2DConvL-STMs; Shi et al., 2015). Marrying the concepts of 2DCon-vLSTMs with AEs and vAEs, some recent studies have de-veloped frameworks that learn to encode generalized spatio-sequential representations and used them for identifying abnormal samples within data (i.e., anomaly detection; e.g., Wang et al., 2018; Yu et al., 2020). A galaxy’s spectrum can be conceptually thought of as a 1D sequence and spatially resolved spectral information as a spatially correlated set of sequences. As such, 2DCon-vLSTMs are a natural methodological fit to learn spatio-spectral relationships within IFS based data, yet they remain to be explored. Motivated by this, we investigate the use of 2DConvLSTMs on spatially-resolved galaxy spectra in an unsupervised, data driven way. We demonstrate its utility to learn spatio-spectroscopic representations and explore different galaxies hosting potentially unusual spectral signa-tures that can be of high scientific interest. 1
+
+> arXiv:2602.18426v1 [astro-ph.GA] 20 Feb 2026 Spatio-Spectroscopic Anomaly Detection in MaNGA IFS Data
+
+# 2. Data 
+
+In this section, we describe our sample selection along with the general details of the overall MaNGA galaxy sample, and their MaNGA spectral data cube descriptions. 
+
+2.1. MaNGA Target Sample & IFS Data Cubes 
+
+Our deep learning model is trained on IFS cubes from the MaNGA sky survey. MaNGA is a survey of ∼ 10 , 000 
+
+galaxies taken from the Sloan Digital Sky Survey (SDSS) and observed using an IFS unit with hexagonally-assembled, 2-arcsec fiber optic cables (Bundy et al., 2014). We start with the summary catalog 1 (version 3.1.1 ) from the data reduction pipeline (DRP) on the latest and final MaNGA data release (DR17 2). This catalog contains IFS observations of 11 , 273 objects, among which 10 , 010 ob-servations are of unique galaxies with reliable good quality data. We select a subset of 9043 galaxies that span z < 0.08 
+
+to ensure a consistent spanning of different optical emission lines to be within the wavelength bounds of the MaNGA IFS data used for our training. For the 9043 selected galaxies, we query and down-load their corresponding DRP reduced IFS spectral data cubes 3. MaNGA observed their target sample of galax-ies with different IFS field-of-view layouts ranging from 19 fibers (diameter 12 ”) to 127 fibers (diameter 32 ”). Each raw downloaded spectral cube is a multi-extension FITS file, which contains the flux information (in units of 10 −17 erg /s/cm 2/Angstrom /spaxel ) for an observed wavelength range 3600 ˚A ≲ λ ≲ 10300 ˚A with logarithmic wavelength spacing. In § 4.1, we detail our further process-ing steps for these raw spectral cubes. 
+
+2.2. MaNGA AGN-Hosting Galaxies 
+
+To showcase the working of our framework trained on the aforementioned MaNGA sample, we assess a sub-sample of 
+
+290 AGN galaxies within MaNGA selected from an overall sample of 406 AGN (Comerford et al., 2020, hereafter, C20) after imposing a redshift selection cut z < 0.08 . Briefly, these AGN galaxies have been selected using a wide va-riety of selection criteria (as indicated with specific flags in the catalog) – mid-IR WISE colors, hard X-rays (from SWIFT/BAT), NVSS and FIRST radio observations, and presence of broad emission lines in SDSS spectra. These galaxies span a wide range of physical properties including spiral morphology dominant, star-forming main sequence and quiescent elliptical galaxies (see Figure 3 from C20).   
+
+> 1https://www.sdss4.org/dr17/manga/manga-data/data-access/
+> 2https://www.sdss4.org/dr17/manga/
+> 3see DRP 3D Output Files section in https://www.sdss4. org/dr17/manga/manga-data/data-access/
+> Figure 1. A conceptual overview of our 2DConvLSTM-vAE frame-work. For the 2DConvLSTM-AE architecture, the mean and vari-ance layers are omitted.
+
+# 3. Deep Learning Model Framework 
+
+We develop and apply two model architectures (using 
+
+Tensorflow ) – i) a 2D Convolutional LSTM Autoen-coder (2DConvLSTM-AE); ii) a Convolutional LSTM vari-ational Autoencoder (2DConvLSTM-vAE), where they fol-low the standard (Encoder-Bottleneck-Decoder) architecture style of Convolutional AE and vAEs in the literature (see Figure 1 for a conceptual overview). In the encoder stage, both 2DConvLSTM-AE and 2DConvLSTM-vAE frameworks start with an input 3D spectral cube ( X × Y × λ) which is then passed to two sets of wavelength-wise 2D Convolutional blocks ( Conv2D λ),where each Conv2D λ block is a series of λ Conv2D lay-ers acting on 2D X × Y slices. Following this are three 2D Convolutional LSTM ( 2DConvLSTM ) blocks (with a downsampling factor of 2 in each block). In the case of a 2DConvLSTM-AE, the output of previous block is flat-tened and then passed to a series of three fully-connected (FC ) layers, where the central-most FC layer is considered to be the “bottleneck” ( Z) with dimensions equaling the latent vector embedding size of choice. In the case of the 2DConvLSTM-vAE model, the flattened set of features are passed to two FC layers that describe the mean ( μz ) and log-variance ( log σ2 
+
+> z
+
+) of the multi-dimensional latent space distribution. The latent vector ( Z) is drawn randomly from a Gaussian distribution with that μz and σz . For both our models, we use 512 dimensions as the Z vector embedding size. During the decoder stage, both 2DConvLSTM-AE and 2DConvLSTM-vAE models follow the same structure. First, the latent space vector ( Z) is repeated λ times and is reshaped to ensure consistency to the encoder out-put dimensionality. This is then passed to a series of three wavelength-distributed 2D Transpose Convolutional blocks ( Conv2D Tλ ), where each Conv2D T 
+
+> λ
+
+consists of λ
+
+Conv2D T layers that progressively upsample the features to the output reconstructed image with the same dimensional-ity as the input cube. In both the encoder and decoder stages, all but the final convolutional block employ a Linear ac-2Spatio-Spectroscopic Anomaly Detection in MaNGA IFS Data     
+
+> Figure 2. Visualization of latent space embedding for our ∼9000 galaxies extracted from the 2DConvLSTM-AE (left) and 2DConvLSTM-vAE (right) using a UMAP along with the inset plot showing the histogram of anomaly scores.
+
+tivation and are followed by a Layer Normalization 
+
+layer (Ba et al., 2016). We use ELU (exponential linear unit) as our final layer activation. 
+
+# 4. Methodology 
+
+In this section, we describe the preparation steps involved in processing the raw MaNGA spectral cubes to generate their corresponding emission-line spectral cubes along with our employed data augmentation strategy. We also describe our training process and employed hyper-parameters. 
+
+4.1. Data Preparation 
+
+We describe the construction of emission-line-only spec-tral cubes that sample the raw MaNGA cubes described in § 2.1 at 19 different optical emission lines covered in the SDSS survey 4 – starting from the OII doublet (rest-frame 
+
+λ = 3272 ˚A) to the SII doublet (rest-frame λ = 6733 ˚A). We chose these emission lines to probe key aspects of the physics in galaxies (e.g., star formation, AGN). For each galaxy in our sample, we start by identifying the observed frame wavelengths corresponding to the 19 emission lines using its redshift value. Then, by treating the identified observed-frame wavelengths as the centers, for each emis-sion line, we define a wavelength window with bin width of ten, which corresponds to ∆λ ∼ 6 ˚A. This ensures that our model learns correlations across the emission line pro-files rather than a singular central values. The generated emission-line only spectral cubes have 190 wavelength-wise dimensions. Owing to the different number of fibers used for observing different galaxies in the MaNGA sample, the resultant spec-
+
+> 4https://classic.sdss.org/dr6/algorithms/ linestable.html
+
+tral cubes span different spatial spaxel dimensions (ranging between 32 × 32 to 127 × 127 ). To ensure consistent dimen-sions for model training, we crop each emission-line cube to ( 32 × 32 ) with the galaxy at its center (using RA and DEC 
+
+information). Each cropped emission-line spectral cube has (32 × 32 × 190 ) dimensionality, which are the inputs to our deep learning frameworks. We do not normalize the flux amplitudes of our spectral cube data and train our models to learn in native flux value space. Furthermore, we apply a data augmentation strategy to our emission-line cubes for the models to generalize the feature representation better with respect to the different spatial and morphological variances. We augment each cube three times to randomly incorporate a combination of the follow-ing transformations – horizontal flip, rotation by 90 degrees, Gaussian noise, and random translation along the spatial axes by up to 5 pixels. Therefore, we have ∼ 36 , 000 aug-mented emission-line spectral cubes for our model training. 
+
+4.2. Training Strategy 
+
+We follow standard procedures to train our models. First, we shuffle our augmented spectral cube data set and randomly split the sample into ∼ 30 , 000 training and ∼ 6000 test samples. Next, for our 2DLSTM-AE model, we define our loss function as: 
+
+Lrec =
+
+(X
+
+> x,y
+
+[M AE (I, I ′)] λ + X
+
+> λ
+
+[M AE (I, I ′)] x,y 
+
+) batch 
+
+,
+
+(1) where I and I′ are the input and the reconstructed spectral cubes, respectively. In the case of our 2DLSTM-vAE, we minimize a summation of the Lrec and the Kullback-Leibler (KL) Divergence loss between the latent vector (with μz and 
+
+σz ) and a unit normal distribution. We trained our models with a batch size of 16 cubes and a learning rate of 0.01 and 3Spatio-Spectroscopic Anomaly Detection in MaNGA IFS Data 
+
+an Adaptive gradient ( Adagrad ) optimizer to convergence (30 epochs). 
+
+# 5. Results & Discussion 
+
+We analyze the latent space embedding from our 2DLSTM-AE and 2DLSTM-vAE models along with a per-galaxy met-ric that serves as a proxy for how unusual/anomalous they are. We showcase and discuss the characteristics of highly anomalous galaxies from the general MaNGA sample and also the C20 AGN. We probe the latent space using a nearest neighbour similarity search with the highly anomalous AGN as anchor points and assess the yielded candidates. 
+
+5.1. Latent Space & Anomaly Score Distribution 
+
+For each galaxy, we extract its latent vector from both the models, and compute the mean absolute reconstruction error (MAE) between the input and output reconstructed cubes (hereafter referred to as “anomaly score”). We then ex-tract the first 50 principle components of our sample Z
+
+vectors (corresponding to ∼ 90% explained variance) and further process them to be visualized using Uniform Mani-fold Approximation and Projection (UMAP; McInnes et al., 2018). In Figure 2, we show the latent space distribution in 3D UMAP space and color code each data point with its corresponding anomaly score value. The median anomaly scores for our sample are ∼ 3000 (∼ 5000 ) and 90 th per-centile is ∼ 12000 (∼ 20000 ) for the 2DConvLSTM-AE (2DConvLSTM-vAE), respectively. We note that bulk of our galaxies with low anomaly scores are distributed across moderate-to-high values across the three UMAP dimen-sions, whereas the those with high scores span the “wings” of the spatial toplogy with low UMAP1 and UMAP2 and preferentially high UMAP3 values. In Figure 2, we also show the latent space distribution of the 290 C20 AGNs, split into subgroups that indicate which selection process they were chosen from (Infrared, X-ray, Radio). Generally, we notice that most AGN fall within or close to the loci of low anomaly score samples, although some subset of them have high anomaly scores and fall within the wings of the distribution similarly to other highly anomalous galaxies from our overall sample. While keep-ing in mind the number dominance of the radio selected galaxies within the C20 sample, we note that most of the anomalous AGN are radio selected, with a handful that are X-ray and IR selected; most X-ray and broad-line selected span different UMAP regions populated predominantly by low to intermediate anomaly score samples. This showcases the identification of anomalous AGN galaxies within IFS data in an unsupervised way.  
+
+> Figure 3. Example highly anomalous AGN galaxies (top panel) and example showcase of latent space nearest neighbour search for two anomalous AGN as query galaxies (bottom panel).
+
+5.2. Assessment of Highly Anomalous AGN & Nearest Neighbor Search 
+
+In Figure 3, we showcase some of the highly anomalous AGN galaxies within our sample. Using the online data ex-ploration and visualization tool MaNGA Explorer 5, we observe that these highly anomalous AGN spanned a wide range of physical characteristics spanning between having a disturbed morphology, substantial blue/purple emissions as seen in the RGB images indicative of co-existent rapid star formation. Additionally, they have very strong emis-sions in one ore more emission lines, and contain AGN-like signatures when assessing the provided spaxel-wise BPT diagnostic plots 6. Notably, one of highly anomalous AGN galaxies: 8626-12704 (second panel in Figure 3), is a “Blueberry” galaxy, recently studied as an object of high scientific interest by (Paswan et al., 2022a;b). To showcase the learned representations and their potential relevance to the physical nature of the galaxies, we per-form a Nearest Neighbour (NN) search around some of the anomalous AGN galaxies. We use the kd-Tree method to compute the pair-wise Euclidean distances between differ-ent galaxy data points in the UMAP space and find NNs per query galaxy. In Figure 3, we show six example AGN galaxies from C20 with high anomaly scores (top panel) and show NNs for two anomalous AGN (bottom panel). We used MaNGA Explorer to investigate the nature of these NNs and find that they indeed show emission line ratios (in the BPT plots) indicative of an AGN. 
+
+# 6. Conclusions 
+
+In this work, we implemented an unsupervised 2D Convo-lutional Long-Short Term Memory Autoencoder and Vari-ational Autoencoder to learn feature representations from spatially resolved galaxy spectra information spanning 19 
+
+optical emission lines (3800A < λ < 8000A) among a     
+
+> 5https://manga.voxastro.org/
+> 6([ OIII ]/Hβ vs. [N II ]/Hα vs. [SII ]/Hα )
+
+4Spatio-Spectroscopic Anomaly Detection in MaNGA IFS Data 
+
+sample of 9043 galaxies from the MaNGA survey. We find that our models learn meaningful representations from the data where certain galaxies, including those hosting an AGN are identified to be anomalous and span a wide range of morphological and spectroscopic properties. Using this representation space, we are able to successfully demon-strate our ability to filter and query anomalous galaxies with similar properties. 
+
+# References 
+
+Ba, J. L., Kiros, J. R., and Hinton, G. E. Layer normalization. 
+
+arXiv preprint arXiv:1607.06450 , 2016. Bundy, K., Bershady, M. A., Law, D. R., Yan, R., Drory, N., MacDonald, N., Wake, D. A., Cherinka, B., S ´anchez-Gallego, J. R., Weijmans, A.-M., et al. Overview of the sdss-iv manga survey: mapping nearby galaxies at apache point observatory. The Astrophysical Journal , 798(1):7, 2014. Cappellari, M. Structure and Kinematics of Early-Type Galaxies from Integral Field Spectroscopy. ARA&A ,54:597–665, September 2016. doi: 10.1146/ annurev-astro-082214-122432. Comerford, J. M., Negus, J., M ¨uller-S ´anchez, F., Eracleous, M., Wylezalek, D., Storchi-Bergmann, T., Greene, J. E., Barrows, R. S., Nevin, R., Roy, N., and Stemo, A. A Catalog of 406 AGNs in MaNGA: A Connection between Radio-mode AGNs and Star Formation Quenching. ApJ ,901(2):159, October 2020. doi: 10.3847/1538-4357/ abb2ae. Hochreiter, S. and Schmidhuber, J. Long short-term memory. 
+
+Neural computation , 9(8):1735–1780, 1997. Huertas-Company, M. Galaxy morphology in the deep learn-ing era. In 2021 International Conference on Content-Based Multimedia Indexing (CBMI) , pp. 1–6, 2021. doi: 10.1109/CBMI50038.2021.9461889. Kingma, D. P. and Welling, M. Auto-encoding variational bayes. arXiv preprint arXiv:1312.6114 , 2013. Masci, J., Meier, U., Cire s¸ an, D., and Schmidhuber, J. Stacked convolutional auto-encoders for hierarchical fea-ture extraction. In Artificial Neural Networks and Ma-chine Learning–ICANN 2011: 21st International Confer-ence on Artificial Neural Networks, Espoo, Finland, June 14-17, 2011, Proceedings, Part I 21 , pp. 52–59. Springer, 2011. McInnes, L., Healy, J., and Melville, J. Umap: Uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426 , 2018. Nishikawa-Toomey, M., Smith, L., and Gal, Y. Semi-supervised learning of galaxy morphology using equivari-ant transformer variational autoencoders. arXiv preprint arXiv:2011.08714 , 2020. Paswan, A., Saha, K., Borgohain, A., Leitherer, C., and Dhiwar, S. Unveiling an Old Disk around a Massive Young Leaking Blueberry in SDSS-IV MaNGA. ApJ ,929(1):50, April 2022a. doi: 10.3847/1538-4357/ac5c4b. Paswan, A., Saha, K., Leitherer, C., and Schaerer, D. SDSS-IV MaNGA: Observational Evidence of a Density-bounded Region in a Ly α Emitter. ApJ , 924(2):47, Jan-uary 2022b. doi: 10.3847/1538-4357/ac33a5. Portillo, S. K., Parejko, J. K., Vergara, J. R., and Connolly, A. J. Dimensionality reduction of sdss spectra with varia-tional autoencoders. The Astronomical Journal , 160(1): 45, 2020. Rumelhart, D. E., Hinton, G. E., and Williams, R. J. Learn-ing representations by back-propagating errors. nature ,323(6088):533–536, 1986. S ´anchez, S. F. Spatially Resolved Spectroscopic Properties of Low-Redshift Star-Forming Galaxies. 
+
+ARA&A , 58:99–155, August 2020. doi: 10.1146/ annurev-astro-012120-013326. Shi, X., Chen, Z., Wang, H., Yeung, D.-Y., Wong, W.-K., and Woo, W.-c. Convolutional lstm network: A machine learning approach for precipitation nowcasting. Advances in neural information processing systems , 28, 2015. Slijepcevic, I. V., Scaife, A. M., Walmsley, M., Bowles, M., Wong, O. I., Shabala, S. S., and Tang, H. Radio galaxy zoo: using semi-supervised learning to leverage large unlabelled data sets for radio galaxy classification under data set shift. Monthly Notices of the Royal Astronomical Society , 514(2):2599–2613, 2022. Spindler, A., Geach, J. E., and Smith, M. J. Astrovader: astronomical variational deep embedder for unsupervised morphological classification of galaxies and synthetic image generation. Monthly Notices of the Royal Astro-nomical Society , 502(1):985–1007, 2021. Sutskever, I., Vinyals, O., and Le, Q. V. Sequence to se-quence learning with neural networks. Advances in neural information processing systems , 27, 2014. Teimoorinia, H., Archinuk, F., Woo, J., Shishehchi, S., and Bluck, A. F. Mapping the diversity of galaxy spectra with deep unsupervised machine learning. The Astronomical Journal , 163(2):71, 2022. Wang, L., Zhou, F., Li, Z., Zuo, W., and Tan, H. Abnormal event detection in videos using hybrid spatio-temporal 5Spatio-Spectroscopic Anomaly Detection in MaNGA IFS Data 
+
+autoencoder. In 2018 25th IEEE International Conference on Image Processing (ICIP) , pp. 2276–2280. IEEE, 2018. Wylezalek, D., Schnorr M ¨uller, A., Zakamska, N. L., Storchi-Bergmann, T., Greene, J. E., M ¨uller-S ´anchez, F., Kelly, M., Liu, G., Law, D. R., Barrera-Ballesteros, J. K., et al. Zooming into local active galactic nuclei: the power of combining sdss-iv manga with higher resolution integral field unit observations. Monthly Notices of the Royal Astronomical Society , 467(3):2612–2624, 2017. Yu, J., Liu, X., and Ye, L. Convolutional long short-term memory autoencoder-based feature learning for fault de-tection in industrial processes. IEEE Transactions on Instrumentation and Measurement , 70:1–15, 2020. 6
