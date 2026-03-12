@@ -3608,7 +3608,7 @@ window.$docsify = {
         lines.push(`<p><strong>Authors</strong>: ${escapeHtml(meta.authors || 'Unknown')}</p>`);
         lines.push(`<p><strong>Date</strong>: ${escapeHtml(meta.date || 'Unknown')}</p>`);
         if (meta.pdf) {
-          lines.push(`<p><strong>PDF</strong>: <a href="${escapeHtml(meta.pdf)}" target="_blank">${escapeHtml(meta.pdf)}</a></p>`);
+          lines.push(`<p><strong>PDF</strong>: <a href="${meta.pdf}" target="_blank">${escapeHtml(meta.pdf)}</a></p>`);
         }
         if (meta.tags && meta.tags.length) {
           lines.push(`<p><strong>Tags</strong>: ${renderTags(meta.tags)}</p>`);
