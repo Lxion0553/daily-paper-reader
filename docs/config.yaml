@@ -26,47 +26,53 @@ subscriptions:
     diff_threshold_pct: 15
   keyword_recall_mode: or
   intent_profiles:
-    - tag: AI AST
-      description: 查找AI for astronomy 与unsupervised learning有关的论文
+    - tag: SR
+      description: 符号回归
       enabled: true
       keywords:
         - keyword: symbolic regression
           keyword_cn: 符号回归
-          query: s
-        - keyword: unsupervised learning
-          keyword_cn: 无监督学习
-          query: unsupervised machine learning techniques
-        - keyword: anomaly detection
-          keyword_cn: 异常检测
-          query: anomaly detection in sky surveys
-        - keyword: self-supervised learning
-          keyword_cn: 自监督学习
-          query: self-supervised representation learning for galaxy images
-        - keyword: source separation
-          keyword_cn: 源分离
-          query: blind source separation in astronomical imaging
-        - keyword: feature extraction
-          keyword_cn: 特征提取
-          query: automated feature extraction from light curves
+          query: fundamental principles and methods of symbolic regression
+        - keyword: genetic programming
+          keyword_cn: 遗传编程
+          query: evolutionary algorithms and genetic programming for symbolic regression
+        - keyword: mathematical expression discovery
+          keyword_cn: 数学表达式发现
+          query: automated discovery of mathematical expressions from data
+        - keyword: equation discovery
+          keyword_cn: 方程发现
+          query: algorithms for scientific equation discovery and modeling
+        - keyword: interpretable machine learning
+          keyword_cn: 可解释机器学习
+          query: interpretability and transparency of symbolic regression models
+        - keyword: PySR
+          keyword_cn: PySR库
+          query: high-performance symbolic regression libraries and tools
+        - keyword: symbolic transformer
+          keyword_cn: 符号Transformer
+          query: neural symbolic regression using transformer architectures
+        - keyword: physics-informed regression
+          keyword_cn: 物理启发回归
+          query: incorporating physical constraints into symbolic regression
       intent_queries:
-        - query: unsupervised learning applications in astronomy and astrophysics
-          query_cn: 无监督学习在天文学和天体物理学中的应用
+        - query: state of the art symbolic regression algorithms
+          query_cn: 最先进的符号回归算法
           enabled: true
           source: manual
           note: ''
-        - query: machine learning for astronomical object classification without labels
-          query_cn: 无需标签的天体目标分类机器学习方法
+        - query: comparison between symbolic regression and neural networks
+          query_cn: 符号回归与神经网络的对比
           enabled: true
           source: manual
           note: ''
-        - query: deep generative models for astronomical data augmentation and synthesis
-          query_cn: 用于天文数据增强和合成的深度生成模型
+        - query: applications of symbolic regression in physics and engineering
+          query_cn: 符号回归在物理与工程中的应用
           enabled: true
           source: manual
           note: ''
-        - query: discovery of rare astronomical phenomena using unsupervised algorithms
-          query_cn: 利用无监督算法发现罕见天文现象
+        - query: how to handle noisy data in symbolic regression
+          query_cn: 符号回归如何处理噪声数据
           enabled: true
           source: manual
           note: ''
-      updated_at: '2026-03-12T07:33:51.300Z'
+      updated_at: '2026-03-02T03:40:27.571Z'
